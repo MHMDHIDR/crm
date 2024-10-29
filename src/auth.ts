@@ -15,8 +15,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) {
-        // Ensure user and user.id exist
-        // Store user role in the JWT
+        // Ensure user and user.id exist AND Store user role in the JWT
         token.role = user.role
 
         const sessionToken = crypto.randomUUID()
@@ -24,7 +23,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           .insert(sessions)
           .values({
             sessionToken,
-            userId: user.id, // Now TypeScript knows user.id is defined
+            userId: user.id,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
             userRole: user.role as UserRole
           })
