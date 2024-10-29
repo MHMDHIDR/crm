@@ -1,7 +1,6 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { authenticate } from '@/actions/auth'

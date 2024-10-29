@@ -15,25 +15,27 @@ export const users = pgTable('users', {
   name: text('name'),
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
-  userRole: userRoleEnum('user_role')
+  userRole: userRoleEnum('user_role'),
+  emailVerified: timestamp('email_verified', { mode: 'date' }),
+  image: text('image')
 })
 
 export const accounts = pgTable(
-  'accounts',
+  'account',
   {
-    userId: text('user_id')
+    userId: text('userId')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     type: text('type').notNull(),
     provider: text('provider').notNull(),
-    providerAccountId: text('provider_account_id').notNull(),
-    refreshToken: text('refresh_token'),
-    accessToken: text('access_token'),
-    expiresAt: integer('expires_at'),
-    tokenType: text('token_type'),
+    providerAccountId: text('providerAccountId').notNull(),
+    refresh_token: text('refresh_token'),
+    access_token: text('access_token'),
+    expires_at: integer('expires_at'),
+    token_type: text('token_type'),
     scope: text('scope'),
-    idToken: text('id_token'),
-    sessionState: text('session_state')
+    id_token: text('id_token'),
+    session_state: text('session_state')
   },
   account => ({
     compoundKey: primaryKey({

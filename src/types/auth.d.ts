@@ -11,10 +11,3 @@ export declare module 'next-auth' {
     role: string | null
   }
 }
-
-// // Extend the JWT type to include role
-// declare module '@auth/core/jwt' {
-//   interface JWT {
-//     role: string | null
-//   }
-// }

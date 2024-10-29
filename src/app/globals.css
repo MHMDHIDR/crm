@@ -33,6 +33,14 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -59,6 +67,14 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .rtl {
@@ -72,5 +88,115 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* ===================== Status ICONS STARTS Here ===================== */
+  /* Status Icon with Anitmation */
+  .status__icon--success-circle {
+    stroke-dasharray: 260.752190248px, 260.752190248px;
+    stroke-dashoffset: 260.752190248px;
+    animation: status-icon-circle 1.2s linear both;
+  }
+
+  .status__icon--success-path {
+    stroke-dasharray: 60px 64px;
+    stroke-dashoffset: 62px;
+    stroke-linecap: round;
+    animation: status-icon-path 0.4s 1s ease-in both;
+  }
+
+  .status__icon--error-circle {
+    stroke-width: 0.2352941176rem;
+  }
+
+  .status__icon--error-circle-1 {
+    stroke: rgba(223, 64, 64, 0.5);
+  }
+
+  .status__icon--error-circle-2 {
+    stroke: #df4040;
+    stroke-dasharray: 260.752190248px, 260.752190248px;
+    stroke-dashoffset: 260.752190248px;
+    animation: status-icon-circle 1.2s linear forwards;
+  }
+
+  .status__icon--error-line {
+    stroke: #df4040;
+    stroke-width: 0.2352941176rem;
+    stroke-dasharray: 54px 55px;
+    stroke-dashoffset: 55px;
+    stroke-linecap: round;
+  }
+
+  .status__icon--error-line-1 {
+    animation: ani-error-line 0.15s 1.2s linear both;
+  }
+
+  .status__icon--error-line-2 {
+    animation: ani-error-line 0.2s 0.9s linear both;
+  }
+
+  .status__icon--loading-circle {
+    stroke-width: 0.2352941176rem;
+  }
+
+  .status__icon--loading-circle-1 {
+    stroke: rgba(64, 137, 223, 0.5);
+  }
+
+  .status__icon--loading-circle-2 {
+    stroke: #4089df;
+    stroke-dasharray: 260.752190248px, 260.752190248px;
+    stroke-dashoffset: 260.752190248px;
+    animation: status-icon-circle 2s linear both infinite;
+  }
+  /* ===================== Status ICONS ENDS Here ===================== */
+
+  @keyframes status-icon-circle {
+    0% {
+      stroke-dasharray: 0, 260.752190248px;
+      stroke-dashoffset: 0;
+    }
+
+    35% {
+      stroke-dasharray: 120px, 120px;
+      stroke-dashoffset: -120px;
+    }
+
+    70% {
+      stroke-dasharray: 0, 260.752190248px;
+      stroke-dashoffset: -260.752190248px;
+    }
+
+    100% {
+      stroke-dasharray: 260.752190248px, 0;
+      stroke-dashoffset: -260.752190248px;
+    }
+  }
+
+  @keyframes ani-error-line {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes status-icon-path {
+    0% {
+      stroke-dashoffset: 62px;
+    }
+
+    65% {
+      stroke-dashoffset: -5px;
+    }
+
+    84% {
+      stroke-dashoffset: 4px;
+    }
+
+    100% {
+      stroke-dashoffset: -2px;
+    }
   }
 }

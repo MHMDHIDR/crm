@@ -1,10 +1,11 @@
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { eq } from 'drizzle-orm'
+import { and, eq, lt } from 'drizzle-orm'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { database } from '@/db'
-import { users } from '@/db/schema'
+import { sessions, users } from '@/db/schema'
 import { hashedString } from '@/lib/utils'
+import type { UserRole } from '@/db/schema'
 import type { User } from 'next-auth'
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
@@ -13,8 +14,25 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: { signIn: '/signin' },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
+      if (user?.id) {
+        // Ensure user and user.id exist
+        // Store user role in the JWT
         token.role = user.role
+
+        const sessionToken = crypto.randomUUID()
+        const [session] = await database
+          .insert(sessions)
+          .values({
+            sessionToken,
+            userId: user.id, // Now TypeScript knows user.id is defined
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            userRole: user.role as UserRole
+          })
+          .returning()
+
+        if (session) {
+          token.sessionId = session.sessionToken
+        }
       }
       return token
     },
@@ -22,6 +40,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.sub as string
         session.user.role = token.role
+
+        // Verify the database session is still valid
+        const [dbSession] = await database
+          .select()
+          .from(sessions)
+          .where(eq(sessions.sessionToken, token.sessionId as string))
+
+        if (!dbSession || new Date(dbSession.expires) < new Date()) {
+          // Session has expired, force sign out
+          throw new Error('Session expired')
+        }
       }
       return session
     }
@@ -41,7 +70,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         try {
           const hashedPassword = hashedString(credentials.password as string)
 
-          // Find the user in the users table with proper type handling
+          // Find the user in the users table
           const [user] = await database
             .select()
             .from(users)
@@ -56,12 +85,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             return null
           }
 
-          // Return the user object that will be saved in the token
+          // Clean up expired sessions for this user
+          await database
+            .delete(sessions)
+            .where(and(eq(sessions.userId, user.id), lt(sessions.expires, new Date())))
+
           return {
             id: user.id,
             name: user.name || null,
             email: user.email,
-            role: user.userRole || null // Handle potential null value
+            role: user.userRole || null
           }
         } catch (error) {
           console.error('Auth error:', error)
@@ -69,5 +102,15 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }
       }
     })
-  ]
+  ],
+  events: {
+    async signOut(message) {
+      // Clean up the database session when user signs out
+      if ('token' in message && message.token?.sessionId) {
+        await database
+          .delete(sessions)
+          .where(eq(sessions.sessionToken, message.token.sessionId as string))
+      }
+    }
+  }
 })
