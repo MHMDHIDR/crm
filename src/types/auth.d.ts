@@ -1,22 +1,20 @@
-// Type declarations should come before usage
+// Extend the built-in session types to include role
 export declare module 'next-auth' {
-  interface User {
-    role?: string
-    employeeId?: number
-  }
-
-  interface Session {
+  interface Session extends DefaultSession {
     user: {
       id: string
-      role?: string
-      employeeId?: number
+      role: string | null
     } & DefaultSession['user']
+  }
+
+  interface User {
+    role: string | null
   }
 }
 
-export declare module 'next-auth/jwt' {
-  interface JWT {
-    role?: string
-    employeeId?: number
-  }
-}
+// // Extend the JWT type to include role
+// declare module '@auth/core/jwt' {
+//   interface JWT {
+//     role: string | null
+//   }
+// }

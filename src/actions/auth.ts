@@ -1,42 +1,46 @@
 'use server'
 
-import { z } from 'zod'
 import { signIn } from '@/auth'
+import { userSchema } from '@/validators/user'
 
-const signInSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(50, 'Username cannot exceed 50 characters'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(100, 'Password cannot exceed 100 characters')
-})
+type SignInResult = {
+  success: boolean
+  message: string
+}
 
-export async function authenticate(formData: FormData) {
+export async function authenticate(formData: FormData): Promise<SignInResult> {
+  // Create a subset of userSchema for sign-in validation
+  const signInSchema = userSchema.pick({ email: true, password: true })
+
   const validatedFields = signInSchema.safeParse({
-    username: formData.get('username'),
+    email: formData.get('email'),
     password: formData.get('password')
   })
 
   if (!validatedFields.success) {
     return {
-      error: 'Invalid credentials'
+      success: false,
+      message: 'Invalid email or password'
     }
   }
 
   try {
     await signIn('credentials', {
-      username: validatedFields.data.username,
+      email: validatedFields.data.email,
       password: validatedFields.data.password,
       redirect: false
     })
 
-    return { success: true }
-  } catch (error) {
     return {
-      error: 'Authentication failed'
+      success: true,
+      message: 'Successfully signed in'
+    }
+  } catch (error) {
+    console.error('Sign-in error:', error)
+
+    return {
+      success: false,
+      message: 'Invalid email or password'
     }
   }
 }

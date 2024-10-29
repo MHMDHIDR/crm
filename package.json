@@ -28,6 +28,8 @@
     "drizzle-orm": "^0.34.1",
     "next": "15.0.1",
     "next-auth": "^5.0.0-beta.25",
+    "next-themes": "^0.3.0",
+    "nextjs-toploader": "^3.7.15",
     "postgres": "^3.4.5",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",

@@ -47,14 +47,10 @@ export function useToast(): ToastFunctions {
 
     toast(toastContent, {
       ...options,
-      style: {
-        ...toastStyles[type],
-        gap: '1.5rem',
-        textAlign: 'justify'
-      },
-      className: 'ltr rtl:rtl select-none',
-      position: 'bottom-center'
-      // duration: 60000
+      style: { ...toastStyles[type], gap: '1.5rem' },
+      className: 'ltr rtl:rtl rtl:text-right select-none',
+      position: 'bottom-center',
+      duration: 3000
     })
   }
 

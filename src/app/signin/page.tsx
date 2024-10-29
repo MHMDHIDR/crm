@@ -16,65 +16,60 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
-import { signInSchema } from '@/validators/auth'
-import type { SignInSchemaType } from '@/validators/auth'
+import { userSchema } from '@/validators/user'
+import type { UserSchemaType } from '@/validators/user'
+
+// Create a subset of UserSchemaType for sign-in
+type SignInData = Pick<UserSchemaType, 'email' | 'password'>
+
+const signInSchema = userSchema.pick({ email: true, password: true })
 
 export default function SignInPage() {
   const toast = useToast()
 
-  const form = useForm<SignInSchemaType>({
+  const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
-    defaultValues: { username: '', password: '' }
+    defaultValues: { email: '', password: '' }
   })
 
-  async function onSubmit(data: SignInSchemaType) {
+  async function onSubmit(data: SignInData) {
     try {
       const formData = new FormData()
-      formData.append('username', data.username)
+      formData.append('email', data.email)
       formData.append('password', data.password)
 
       const result = await authenticate(formData)
 
-      if (result.error) {
-        toast.error(result.error)
+      if (!result.success) {
+        toast.error(result.message)
         return
       }
 
-      toast.success('تم تسجيل الدخول بنجاح')
-
-      redirect('/')
+      toast.success(result.message)
     } catch (error) {
-      toast.error('حدث خطأ أثناء تسجيل الدخول')
+      toast.error('An error occurred during sign in')
       console.error('Sign-in error:', error)
     }
+
+    redirect('/dashboard')
   }
 
   return (
-    <div className='p-6 mx-auto max-w-md'>
-      <div className='grid mb-8 w-full text-2xl text-center grid-col-1'>
-        <div>
-          <Image
-            className='mr-auto ml-auto'
-            src='/images/logo.svg'
-            alt='Logo image'
-            width={256}
-            height={256}
-            priority
-          />
-        </div>
-        <span className='mt-4'>تسجيل الدخول</span>
+    <div className='p-6 max-w-2xl mx-auto'>
+      <div className='mb-8 text-center'>
+        <h1 className='text-2xl font-semibold'>Sign In</h1>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
           <FormField
             control={form.control}
-            name='username'
+            name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>اسم المستخدم</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder='ادخل اسم المستخدم' {...field} />
+                  <Input type='email' placeholder='Enter your email' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -86,17 +81,17 @@ export default function SignInPage() {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>كلمة المرور</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type='password' placeholder='ادخل كلمة المرور' {...field} />
+                  <Input type='password' placeholder='Enter your password' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type='submit' className='w-full' disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? 'جاري الدخول...' : 'دخول'}
+          <Button type='submit' className='w-full'>
+            {form.formState.isSubmitting ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
       </Form>

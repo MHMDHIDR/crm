@@ -1,37 +1,27 @@
-import { hash } from 'crypto'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { database } from '@/db'
-import { accounts, sessions, systemEmployeeInfo, users, verificationTokens } from '@/db/schema'
+import { users } from '@/db/schema'
+import { hashedString } from '@/lib/utils'
+import type { User } from 'next-auth'
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(database, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens
-  }),
-  session: {
-    strategy: 'jwt'
-  },
-  pages: {
-    signIn: '/signin'
-  },
+  adapter: DrizzleAdapter(database),
+  session: { strategy: 'jwt' },
+  pages: { signIn: '/signin' },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role
-        token.employeeId = user.employeeId
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub as string
-        session.user.role = token.role as string
-        session.user.employeeId = token.employeeId as number
+        session.user.role = token.role
       }
       return session
     }
@@ -40,40 +30,38 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text' },
+        email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials): Promise<any> {
-        if (!credentials?.username || !credentials?.password) {
+      async authorize(credentials): Promise<User | null> {
+        if (!credentials?.email || !credentials?.password) {
           return null
         }
 
         try {
-          // Hash the provided password to match stored hash
-          const hashedPassword = hash('sha256', credentials.password.toString())
+          const hashedPassword = hashedString(credentials.password as string)
 
-          // Find the employee in systemEmployeeInfo
-          const [employee] = await database
+          // Find the user in the users table with proper type handling
+          const [user] = await database
             .select()
-            .from(systemEmployeeInfo)
-            .where(
-              and(
-                eq(systemEmployeeInfo.username, credentials.username.toString()),
-                eq(systemEmployeeInfo.password, hashedPassword)
-              )
-            )
+            .from(users)
+            .where(eq(users.email, credentials.email as string))
 
-          if (!employee) {
+          if (!user) {
+            return null
+          }
+
+          // Verify password
+          if (user.hashedPassword !== hashedPassword) {
             return null
           }
 
           // Return the user object that will be saved in the token
           return {
-            id: employee.id.toString(),
-            employeeId: employee.employeeId,
-            name: credentials.username.toString(),
-            email: `${credentials.username}@example.com`,
-            role: employee.role
+            id: user.id,
+            name: user.name || null,
+            email: user.email,
+            role: user.userRole || null // Handle potential null value
           }
         } catch (error) {
           console.error('Auth error:', error)
