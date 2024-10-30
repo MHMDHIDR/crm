@@ -1,6 +1,8 @@
 // Get the icons from https://simpleicons.org/?q=icon_name
 import { cn } from '@/lib/cn'
 
+/* eslint-disable max-lines */
+
 const ICON_SIZE_CLASS = 'w-5 h-5'
 
 /**
