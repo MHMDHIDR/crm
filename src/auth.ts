@@ -4,8 +4,8 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { database } from '@/db'
 import { sessions, users } from '@/db/schema'
-import { hashedString } from '@/lib/utils'
-import type { UserRole } from '@/db/schema'
+import { hashedString } from '@/lib/hashed-string'
+import type { UserRole, UserSession } from '@/db/schema'
 import type { User } from 'next-auth'
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
@@ -91,10 +91,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
           return {
             id: user.id,
-            name: user.name || null,
+            name: user.name,
             email: user.email,
-            role: user.role || null
-          }
+            role: user.role,
+            image: user.image
+          } as UserSession
         } catch (error) {
           console.error('Auth error:', error)
           return null

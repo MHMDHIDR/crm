@@ -5,12 +5,14 @@ export const userRoleEnum = pgEnum('role', ['Admin', 'Supervisor', 'Employee'])
 export const clientStatusEnum = pgEnum('client_status', ['active', 'inactive'])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 
+type User = typeof users.$inferSelect
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
 export type UserSession = {
-  id: string
-  name: string
-  email: string
+  id: User['id']
+  name: User['name']
+  email: User['email']
   role: UserRole
+  image: User['image']
 }
 
 // Auth Tables with corrected column names for NextAuth
@@ -18,12 +20,12 @@ export const users = pgTable('users', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text('name'),
+  name: text('name').notNull(),
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
   role: userRoleEnum('role').default('Employee'),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
-  image: text('image')
+  image: text('image').notNull()
 })
 
 export const sessions = pgTable('sessions', {

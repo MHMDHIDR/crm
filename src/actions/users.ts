@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { database } from '@/db'
 import { users } from '@/db/schema'
-import { hashedString } from '@/lib/utils'
+import { hashedString } from '@/lib/hashed-string'
 import { userSchema } from '@/validators/user'
 import type { UserSchemaType } from '@/validators/user'
 
