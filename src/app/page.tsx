@@ -19,24 +19,19 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { UserSession } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
 // Type for the form data matching the schema
-type UserFormData = {
-  name: string
-  email: string
-  password: string
-  userRole: 'Admin' | 'Supervisor' | 'Employee'
-}
 
 export default function CreateUserPage() {
   const toast = useToast()
 
-  const form = useForm<UserFormData>({
-    defaultValues: { name: '', email: '', password: '', userRole: 'Employee' }
+  const form = useForm<UserSession & { password: string }>({
+    defaultValues: { name: '', email: '', password: '', role: 'Employee' }
   })
 
-  async function onSubmit(data: UserFormData) {
+  async function onSubmit(data: UserSession & { password: string }) {
     try {
       const result = await createUser(data)
 
@@ -104,7 +99,7 @@ export default function CreateUserPage() {
 
           <FormField
             control={form.control}
-            name='userRole'
+            name='role'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Role</FormLabel>

@@ -20,7 +20,7 @@ export const userSchema = z.object({
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter'),
 
-  userRole: z
+  role: z
     .enum(['Admin', 'Supervisor', 'Employee'], {
       invalid_type_error: 'Invalid role selected'
     })

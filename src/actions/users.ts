@@ -40,8 +40,8 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
       .values({
         name: validatedData.name,
         email: validatedData.email,
-        hashedPassword,
-        userRole: validatedData.userRole
+        role: validatedData.role,
+        hashedPassword
       })
       .returning()
 

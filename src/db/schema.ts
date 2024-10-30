@@ -1,11 +1,17 @@
 import { pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
 // Enums using pgEnum for type safety and validation
-export const userRoleEnum = pgEnum('user_role', ['Admin', 'Supervisor', 'Employee'])
+export const userRoleEnum = pgEnum('role', ['Admin', 'Supervisor', 'Employee'])
 export const clientStatusEnum = pgEnum('client_status', ['active', 'inactive'])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
+export type UserSession = {
+  id: string
+  name: string
+  email: string
+  role: UserRole
+}
 
 // Auth Tables with corrected column names for NextAuth
 export const users = pgTable('users', {
@@ -15,7 +21,7 @@ export const users = pgTable('users', {
   name: text('name'),
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
-  userRole: userRoleEnum('user_role'),
+  role: userRoleEnum('role').default('Employee'),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
   image: text('image')
 })
@@ -26,7 +32,7 @@ export const sessions = pgTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   expires: timestamp('expires', { mode: 'date' }).notNull(),
-  userRole: userRoleEnum('user_role') // Caching role for active session for consistency
+  role: userRoleEnum('role').default('Employee')
 })
 
 // Core Schema

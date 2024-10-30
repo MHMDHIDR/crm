@@ -25,7 +25,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             sessionToken,
             userId: user.id,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            userRole: user.role as UserRole
+            role: user.role as UserRole
           })
           .returning()
 
@@ -38,7 +38,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub as string
-        session.user.role = token.role
+        session.user.role = token.role as UserRole
 
         // Verify the database session is still valid
         const [dbSession] = await database
@@ -93,7 +93,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             id: user.id,
             name: user.name || null,
             email: user.email,
-            role: user.userRole || null
+            role: user.role || null
           }
         } catch (error) {
           console.error('Auth error:', error)
