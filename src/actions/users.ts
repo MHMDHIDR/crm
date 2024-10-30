@@ -26,10 +26,7 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
       .limit(1)
 
     if (existingUser.length > 0) {
-      return {
-        success: false,
-        message: 'Email is already in use'
-      }
+      return { success: false, message: 'Email is already in use, please use a different email' }
     }
 
     const hashedPassword = hashedString(validatedData.password)
@@ -41,7 +38,9 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         name: validatedData.name,
         email: validatedData.email,
         role: validatedData.role,
-        hashedPassword
+        image: validatedData.image,
+        hashedPassword,
+        emailVerified: new Date() // this is just a placeholder, you should send a verification email
       })
       .returning()
 

@@ -20,6 +20,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { UserSession } from '@/db/schema'
+import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
 
 // Type for the form data matching the schema
@@ -28,7 +29,13 @@ export default function CreateUserPage() {
   const toast = useToast()
 
   const form = useForm<UserSession & { password: string }>({
-    defaultValues: { name: '', email: '', password: '', role: 'Employee' }
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      role: 'Employee',
+      image: env.NEXT_PUBLIC_LOGO_URL
+    }
   })
 
   async function onSubmit(data: UserSession & { password: string }) {
@@ -48,7 +55,7 @@ export default function CreateUserPage() {
   }
 
   return (
-    <div className='p-6 max-w-2xl mx-auto'>
+    <div className='p-6 mx-auto max-w-2xl'>
       <div className='mb-8 text-center'>
         <h1 className='text-2xl font-semibold'>Create New User</h1>
       </div>

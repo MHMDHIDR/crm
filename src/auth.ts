@@ -3,21 +3,71 @@ import { and, eq, lt } from 'drizzle-orm'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { database } from '@/db'
-import { sessions, users } from '@/db/schema'
+import { sessions, twoFactorConfirmations, users } from '@/db/schema'
 import { hashedString } from '@/lib/hashed-string'
+import { getUserById } from '@/services/user'
+import { getTwoFactorConfirmationByUserId } from './services/two-factor-confirmation'
 import type { UserRole, UserSession } from '@/db/schema'
 import type { User } from 'next-auth'
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(database),
   session: { strategy: 'jwt' },
   pages: { signIn: '/signin' },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user?.id) {
-        // Ensure user and user.id exist AND Store user role in the JWT
-        token.role = user.role
+    async signIn({ user }) {
+      const existingUser = await getUserById(user.id as string)
 
+      // Prevent sign in without email verification
+      if (!existingUser?.emailVerified) return false
+
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id)
+
+        if (!twoFactorConfirmation) return false
+
+        // Delete two factor confirmation for next sign in
+        await database
+          .delete(twoFactorConfirmations)
+          .where(eq(twoFactorConfirmations.userId, twoFactorConfirmation.id))
+      }
+
+      return true
+    },
+    async session({ token, session }) {
+      if (session.user) {
+        session.user.id = token.sub as UserSession['id']
+        session.user.name = token.name as UserSession['name']
+        session.user.email = token.email as UserSession['email']
+        session.user.role = token.role as UserRole
+        session.user.isTwoFactorEnabled =
+          token.isTwoFactorEnabled as UserSession['isTwoFactorEnabled']
+
+        // Verify the database session is still valid
+        const [dbSession] = await database
+          .select()
+          .from(sessions)
+          .where(eq(sessions.sessionToken, token.sessionId as string))
+        if (!dbSession || new Date(dbSession.expires) < new Date()) {
+          // Session has expired, force sign out
+          throw new Error('Session expired')
+        }
+      }
+
+      return session
+    },
+    async jwt({ token, user }) {
+      if (!token.sub) return token
+
+      const existingUser = await getUserById(token.sub)
+      if (!existingUser) return token
+
+      token.name = existingUser.name
+      token.role = existingUser.role
+      token.email = existingUser.email
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled
+
+      if (user?.id) {
         const sessionToken = crypto.randomUUID()
         const [session] = await database
           .insert(sessions)
@@ -29,29 +79,29 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           })
           .returning()
 
-        if (session) {
-          token.sessionId = session.sessionToken
-        }
+        token.sessionId = session.sessionToken
       }
+
       return token
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub as string
-        session.user.role = token.role as UserRole
 
-        // Verify the database session is still valid
-        const [dbSession] = await database
-          .select()
-          .from(sessions)
-          .where(eq(sessions.sessionToken, token.sessionId as string))
-
-        if (!dbSession || new Date(dbSession.expires) < new Date()) {
-          // Session has expired, force sign out
-          throw new Error('Session expired')
-        }
-      }
-      return session
+      // if (user?.id) {
+      //   // Ensure user and user.id exist AND Store user role in the JWT
+      //   token.role = user.role
+      //   const sessionToken = crypto.randomUUID()
+      //   const [session] = await database
+      //     .insert(sessions)
+      //     .values({
+      //       sessionToken,
+      //       userId: user.id,
+      //       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      //       role: user.role as UserRole
+      //     })
+      //     .returning()
+      //   if (session) {
+      //     token.sessionId = session.sessionToken
+      //   }
+      // }
+      // return token
     }
   },
   providers: [
@@ -112,5 +162,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           .where(eq(sessions.sessionToken, message.token.sessionId as string))
       }
     }
+    // ,async linkAccount({ user }) {
+    //   await database
+    //     .update(users)
+    //     .set({ emailVerified: new Date() })
+    //     .where(eq(users.id, user.id as string))
+    // }
   }
 })

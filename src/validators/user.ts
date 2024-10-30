@@ -24,7 +24,9 @@ export const userSchema = z.object({
     .enum(['Admin', 'Supervisor', 'Employee'], {
       invalid_type_error: 'Invalid role selected'
     })
-    .default('Employee')
+    .default('Employee'),
+
+  image: z.string().url('Please enter a valid URL for the image')
 })
 
 // Export the type for use in components
