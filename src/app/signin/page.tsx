@@ -54,7 +54,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className='p-6 max-w-2xl mx-auto'>
+    <div className='p-6 mx-auto max-w-2xl'>
       <div className='mb-8 text-center'>
         <h1 className='text-2xl font-semibold'>Sign In</h1>
       </div>

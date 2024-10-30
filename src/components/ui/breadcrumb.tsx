@@ -80,10 +80,10 @@ const BreadcrumbEllipsis = ({ className, ...props }: React.ComponentProps<'span'
   <span
     role='presentation'
     aria-hidden='true'
-    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    className={cn('flex justify-center items-center w-9 h-9', className)}
     {...props}
   >
-    <DotsHorizontalIcon className='h-4 w-4' />
+    <DotsHorizontalIcon className='w-4 h-4' />
     <span className='sr-only'>More</span>
   </span>
 )
@@ -91,10 +91,10 @@ BreadcrumbEllipsis.displayName = 'BreadcrumbElipssis'
 
 export {
   Breadcrumb,
-  BreadcrumbList,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis
+  BreadcrumbSeparator
 }
