@@ -1,25 +1,11 @@
 module.exports = {
   extends: ['next/core-web-vitals', 'prettier'],
   rules: {
-    'no-restricted-imports': [
-      'error',
-      {
-        name: 'next/link',
-        importNames: ['Link', 'redirect', 'usePathname', 'useRouter'],
-        message: 'Please import from `@/i18n/routing` instead.'
-      },
-      {
-        name: 'next/navigation',
-        importNames: ['redirect', 'permanentRedirect', 'useRouter', 'usePathname'],
-        message: 'Please import from `@/i18n/routing` instead.'
-      }
-    ],
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-unused-vars': 'off',
-    'arrow-body-style': ['warn', 'as-needed'],
     'func-names': ['warn', 'as-needed'],
     'max-depth': ['warn', 4],
-    'max-lines': ['warn', { max: 450, skipBlankLines: true, skipComments: true }],
+    'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
     'prefer-arrow-callback': 'warn',
     'prefer-const': 'warn',
     'prefer-template': 'warn',
