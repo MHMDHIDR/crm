@@ -7,7 +7,7 @@ export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR,
 export const clientStatusEnum = pgEnum('client_status', ['active', 'inactive'])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 
-type User = typeof users.$inferSelect
+export type User = typeof users.$inferSelect
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
 export type UserSession = {
   id: User['id']

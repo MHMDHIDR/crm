@@ -2,6 +2,7 @@
 
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { CheckIcon, ChevronRightIcon, DotFilledIcon } from '@radix-ui/react-icons'
+import Link from 'next/link'
 import * as React from 'react'
 import { cn } from '@/lib/cn'
 
@@ -166,6 +167,31 @@ const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTML
 }
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut'
 
+const DropdownMenuLink = React.forwardRef<
+  HTMLAnchorElement,
+  Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className' | 'href'> & {
+    href: string
+    inset?: boolean
+    className?: string
+  }
+>(({ className, inset, href, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.Item asChild>
+    <Link
+      ref={ref}
+      href={href}
+      className={cn(
+        'relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0',
+        inset && 'pl-8',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Link>
+  </DropdownMenuPrimitive.Item>
+))
+DropdownMenuLink.displayName = 'DropdownMenuLink'
+
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -181,5 +207,6 @@ export {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuLink
 }
