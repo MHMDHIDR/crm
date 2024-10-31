@@ -94,7 +94,7 @@ export default function NewPasswordClientPage({ params }: { params: Promise<{ to
       }
     })
     return () => subscription.unsubscribe()
-  }, [form.watch])
+  }, [form])
 
   async function onSubmit(data: NewPasswordData) {
     startTransition(async () => {

@@ -4,4 +4,4 @@
 - [x] Work on two step-verivication for login (Code sent to email) similar to authjs project
 - [x] Work on email verification for registration
 - [x] Work on reset password feature
-- [ ] Work on showing users on the dashboard
+- [x] Work on showing users on the dashboard
