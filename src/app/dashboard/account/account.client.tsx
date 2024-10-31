@@ -183,7 +183,7 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
               />
             </div>
 
-            <Button disabled={isPending} variant='confirm'>
+            <Button disabled={isPending} variant='confirm' className='w-full'>
               Save
             </Button>
           </form>
