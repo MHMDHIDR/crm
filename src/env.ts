@@ -10,7 +10,8 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
     NEXT_PUBLIC_LOGO_URL: z.string().url(),
-    NEXT_PUBLIC_ADMIN_EMAIL: z.string().email()
+    NEXT_PUBLIC_ADMIN_EMAIL: z.string().email(),
+    NEXT_PUBLIC_DEFAULT_REDIRECT: z.string()
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -18,6 +19,7 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_LOGO_URL: process.env.NEXT_PUBLIC_LOGO_URL,
-    NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL
+    NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+    NEXT_PUBLIC_DEFAULT_REDIRECT: process.env.NEXT_PUBLIC_DEFAULT_REDIRECT
   }
 })

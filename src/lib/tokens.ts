@@ -52,10 +52,10 @@ export const generateTwoFactorToken = async (email: string) => {
     await database.delete(TwoFactorToken).where(eq(TwoFactorToken.id, existingToken.id))
   }
 
-  const twoFactorToken = await database
+  const [twoFactorToken] = await database
     .insert(TwoFactorToken)
     .values({ email, token, expires })
     .returning()
 
-  return [twoFactorToken]
+  return twoFactorToken
 }
