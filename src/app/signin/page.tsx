@@ -20,7 +20,6 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/comp
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
 import { userSchema } from '@/validators/user'
-import type { UserSchemaType } from '@/validators/user'
 
 // Create signin schema with optional 2FA code
 const signInSchema = userSchema.pick({ email: true, password: true }).extend({
@@ -33,16 +32,10 @@ export default function SignInPage() {
   const toast = useToast()
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl')
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-      code: ''
-    }
+    defaultValues: { email: '', password: '', code: '' }
   })
 
   function onSubmit(data: SignInData) {
@@ -51,7 +44,6 @@ export default function SignInPage() {
         const formData = new FormData()
         formData.append('email', data.email)
         formData.append('password', data.password)
-        formData.append('callbackUrl', callbackUrl || '')
         if (data.code) {
           formData.append('code', data.code)
         }
@@ -75,7 +67,7 @@ export default function SignInPage() {
         toast.error('An error occurred during sign in')
       }
 
-      redirect(callbackUrl || env.NEXT_PUBLIC_DEFAULT_REDIRECT)
+      redirect(env.NEXT_PUBLIC_DEFAULT_REDIRECT)
     })
   }
 
