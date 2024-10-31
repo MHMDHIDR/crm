@@ -12,7 +12,7 @@ type CreateUserResult = {
   success: boolean
   message: string
 }
-
+//mr.hamood.277@gmail.com
 export async function createUser(data: UserSchemaType): Promise<CreateUserResult> {
   try {
     // Validate the input data

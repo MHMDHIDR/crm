@@ -1,6 +1,6 @@
 'use client'
 
-import { Frame, Settings2, UserCog, UserPlus2, Users2 } from 'lucide-react'
+import { Frame, Group, Settings2, UserCog, UserPlus2, Users2 } from 'lucide-react'
 import { NavMain } from '@/components/nav-main'
 import { NavPinned } from '@/components/nav-pinned'
 import { NavUser } from '@/components/nav-user'
@@ -39,6 +39,11 @@ export function DashboardSidebar({
         url: '#',
         icon: Users2,
         items: [
+          {
+            title: 'All Users',
+            url: '/dashboard/users',
+            icon: Group
+          },
           {
             title: 'Create User',
             url: '/dashboard/create-user',
