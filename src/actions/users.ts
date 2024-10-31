@@ -10,11 +10,8 @@ import { generateVerificationToken } from '@/lib/tokens'
 import { userSchema } from '@/validators/user'
 import type { UserSchemaType } from '@/validators/user'
 
-type CreateUserResult = {
-  success: boolean
-  message: string
-}
-//mr.hamood.277@gmail.com
+type CreateUserResult = { success: boolean; message: string }
+
 export async function createUser(data: UserSchemaType): Promise<CreateUserResult> {
   try {
     // Validate the input data

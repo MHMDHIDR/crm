@@ -16,7 +16,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 }
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetLink = `${DOMAIN}/auth/new-password?token=${token}`
+  const resetLink = `${DOMAIN}/auth/new-password/${token}`
 
   await RESEND.emails.send({
     from: env.NEXT_PUBLIC_ADMIN_EMAIL,

@@ -14,7 +14,7 @@ type newVerificationResult = Promise<{ success: string } | { error: string; stat
  * @param token   The token to verify the email
  * @returns      Promise<{ success: string } | { error: string, status: number }>
  */
-export async function newVerification(token: string): Promise<newVerificationResult> {
+export async function newVerification(token: string): newVerificationResult {
   const existingToken = await getVerificationTokenByToken(token)
   if (!existingToken) {
     return { error: 'Token does not exist!', status: 404 }

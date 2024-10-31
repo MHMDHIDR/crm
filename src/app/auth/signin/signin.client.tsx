@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
@@ -124,6 +125,13 @@ export default function SignInClientPage() {
                     </FormItem>
                   )}
                 />
+
+                <Link
+                  href='/auth/reset-password'
+                  className='inline-flex hover:underline underline-offset-4'
+                >
+                  Forgot password?
+                </Link>
               </>
             ) : (
               <FormField
