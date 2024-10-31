@@ -19,7 +19,7 @@ export const {
 } = NextAuth({
   adapter: DrizzleAdapter(database),
   session: { strategy: 'jwt' },
-  pages: { signIn: '/signin' },
+  pages: { signIn: '/auth/signin' },
   callbacks: {
     async signIn({ user }) {
       const existingUser = await getUserById(user.id as string)

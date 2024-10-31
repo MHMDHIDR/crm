@@ -150,7 +150,7 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                          <SelectItem value={UserRole.USER}>User</SelectItem>
+                          <SelectItem value={UserRole.SUPERVISOR}>Supervisor</SelectItem>
                           <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
                         </SelectContent>
                       </Select>

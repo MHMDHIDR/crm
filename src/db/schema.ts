@@ -2,8 +2,8 @@ import { relations } from 'drizzle-orm'
 import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 // Enums using pgEnum for type safety and validation
-export const UserRole = { ADMIN: 'Admin', USER: 'Supervisor', EMPLOYEE: 'Employee' } as const
-export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.USER, UserRole.EMPLOYEE])
+export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
+export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
 export const clientStatusEnum = pgEnum('client_status', ['active', 'inactive'])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 

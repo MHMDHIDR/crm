@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { database } from '@/db'
 import { users } from '@/db/schema'
 import { hashedString } from '@/lib/crypt'
+import { sendVerificationEmail } from '@/lib/mail'
+import { generateVerificationToken } from '@/lib/tokens'
 import { userSchema } from '@/validators/user'
 import type { UserSchemaType } from '@/validators/user'
 
@@ -39,21 +41,20 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         email: validatedData.email,
         role: validatedData.role,
         image: validatedData.image,
-        hashedPassword,
-        emailVerified: new Date() // this is just a placeholder, you should send a verification email
+        hashedPassword
       })
       .returning()
 
     if (!newUser) {
-      return {
-        success: false,
-        message: 'Failed to create user'
-      }
+      return { success: false, message: 'Failed to create user' }
     }
+
+    const verificationToken = await generateVerificationToken(newUser.email)
+    await sendVerificationEmail(verificationToken.email, verificationToken.token)
 
     return {
       success: true,
-      message: `${newUser.name} has been created successfully`
+      message: `${newUser.name} has been Created Successfully 🎉.\nEmail has been sent to ${newUser.email} for verification.`
     }
   } catch (error) {
     // Handle Zod validation errors
@@ -61,10 +62,7 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
       const errorMessage = error.errors
         .map(err => `${err.path.join('.')}: ${err.message}`)
         .join('. ')
-      return {
-        success: false,
-        message: errorMessage
-      }
+      return { success: false, message: errorMessage }
     }
 
     // Handle other errors

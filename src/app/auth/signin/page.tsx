@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import SignInClientPage from '@/app/signin/signin.client'
+import SignInClientPage from '@/app/auth/signin/signin.client'
 import { auth } from '@/auth'
 
 export default async function SignInPage() {

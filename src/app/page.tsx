@@ -38,7 +38,7 @@ export default function HomePage() {
               <Link href='#pricing'>Pricing</Link>
             </nav>
           </div>
-          <Link href='/signin' className='ml-auto'>
+          <Link href='/auth/signin' className='ml-auto'>
             <Button>Sign in</Button>
           </Link>
           <button className='ml-2 md:hidden' onClick={() => setIsMenuOpen(!isMenuOpen)}>

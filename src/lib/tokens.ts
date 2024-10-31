@@ -34,12 +34,12 @@ export const generatePasswordResetToken = async (email: string) => {
     await database.delete(PasswordResetToken).where(eq(PasswordResetToken.id, existingToken.id))
   }
 
-  const passwordResetToken = await database
+  const [passwordResetToken] = await database
     .insert(PasswordResetToken)
     .values({ email, token, expires })
     .returning()
 
-  return [passwordResetToken]
+  return passwordResetToken
 }
 
 export const generateTwoFactorToken = async (email: string) => {
