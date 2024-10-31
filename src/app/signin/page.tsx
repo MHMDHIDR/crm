@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { redirect } from 'next/navigation'
+import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { authenticate } from '@/actions/auth'
 import { Button } from '@/components/ui/button'
@@ -25,32 +26,36 @@ const signInSchema = userSchema.pick({ email: true, password: true })
 
 export default function SignInPage() {
   const toast = useToast()
+  const [showTwoFactor, setShowTwoFactor] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: '', password: '' }
   })
 
-  async function onSubmit(data: SignInData) {
-    try {
-      const formData = new FormData()
-      formData.append('email', data.email)
-      formData.append('password', data.password)
+  function onSubmit(data: SignInData) {
+    startTransition(async () => {
+      try {
+        const formData = new FormData()
+        formData.append('email', data.email)
+        formData.append('password', data.password)
 
-      const result = await authenticate(formData)
+        const result = await authenticate(formData)
 
-      if (!result.success) {
-        toast.error(result.message)
-        return
+        if (!result.success) {
+          toast.error(result.message)
+          return
+        }
+
+        toast.success(result.message)
+      } catch (error) {
+        toast.error('An error occurred during sign in')
+        console.error('Sign-in error:', error)
       }
 
-      toast.success(result.message)
-    } catch (error) {
-      toast.error('An error occurred during sign in')
-      console.error('Sign-in error:', error)
-    }
-
-    redirect('/dashboard')
+      redirect('/dashboard')
+    })
   }
 
   return (

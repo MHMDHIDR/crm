@@ -18,10 +18,7 @@ export async function authenticate(formData: FormData): Promise<SignInResult> {
   })
 
   if (!validatedFields.success) {
-    return {
-      success: false,
-      message: 'Invalid email or password'
-    }
+    return { success: false, message: 'Invalid email or password' }
   }
 
   try {
@@ -31,16 +28,10 @@ export async function authenticate(formData: FormData): Promise<SignInResult> {
       redirect: false
     })
 
-    return {
-      success: true,
-      message: 'Successfully signed in'
-    }
+    return { success: true, message: 'Successfully signed in' }
   } catch (error) {
     console.error('Sign-in error:', error)
 
-    return {
-      success: false,
-      message: 'Invalid email or password'
-    }
+    return { success: false, message: 'Invalid email or password' }
   }
 }

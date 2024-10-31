@@ -4,13 +4,19 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { database } from '@/db'
 import { sessions, twoFactorConfirmations, users } from '@/db/schema'
-import { hashedString } from '@/lib/hashed-string'
+import { compareHashedStrings } from '@/lib/crypt'
 import { getUserById } from '@/services/user'
 import { getTwoFactorConfirmationByUserId } from './services/two-factor-confirmation'
 import type { UserRole, UserSession } from '@/db/schema'
 import type { User } from 'next-auth'
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const {
+  handlers,
+  auth,
+  signIn,
+  signOut,
+  unstable_update: update
+} = NextAuth({
   adapter: DrizzleAdapter(database),
   session: { strategy: 'jwt' },
   pages: { signIn: '/signin' },
@@ -83,26 +89,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       return token
-
-      // if (user?.id) {
-      //   // Ensure user and user.id exist AND Store user role in the JWT
-      //   token.role = user.role
-      //   const sessionToken = crypto.randomUUID()
-      //   const [session] = await database
-      //     .insert(sessions)
-      //     .values({
-      //       sessionToken,
-      //       userId: user.id,
-      //       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      //       role: user.role as UserRole
-      //     })
-      //     .returning()
-      //   if (session) {
-      //     token.sessionId = session.sessionToken
-      //   }
-      // }
-      // return token
     }
+    // ,async authorized({ auth }) {
+    //   return !!auth
+    // }
   },
   providers: [
     CredentialsProvider({
@@ -117,7 +107,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          const hashedPassword = hashedString(credentials.password as string)
+          const plainPassword = credentials.password as string
 
           // Find the user in the users table
           const [user] = await database
@@ -130,7 +120,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           // Verify password
-          if (user.hashedPassword !== hashedPassword) {
+          const isValidPassword = compareHashedStrings(plainPassword, user.hashedPassword as string)
+
+          if (!isValidPassword) {
             return null
           }
 

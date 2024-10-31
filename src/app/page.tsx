@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { UserSession } from '@/db/schema'
+import { UserRole, UserSession } from '@/db/schema'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
 
@@ -117,9 +117,9 @@ export default function CreateUserPage() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value='Admin'>Admin</SelectItem>
-                    <SelectItem value='Supervisor'>Supervisor</SelectItem>
-                    <SelectItem value='Employee'>Employee</SelectItem>
+                    <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
+                    <SelectItem value={UserRole.USER}>User</SelectItem>
+                    <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
