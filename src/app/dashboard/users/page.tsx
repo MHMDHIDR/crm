@@ -158,6 +158,7 @@ export default function UsersPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [filtering, setFiltering] = useState('') // Add global filtering state
 
   // Fetch users
   const fetchUsers = useCallback(async () => {
@@ -181,11 +182,13 @@ export default function UsersPage() {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setFiltering, // Add global filter change handler
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
+      rowSelection,
+      globalFilter: filtering // Add global filter state
     }
   })
 
@@ -204,9 +207,9 @@ export default function UsersPage() {
       <div className='flex items-center justify-between space-x-2 py-4'>
         <div className='flex items-center space-x-2'>
           <Input
-            placeholder='Filter emails...'
-            value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-            onChange={event => table.getColumn('email')?.setFilterValue(event.target.value)}
+            placeholder='Search all columns...'
+            value={filtering}
+            onChange={event => setFiltering(event.target.value)}
             className='max-w-sm'
           />
           {selectedRows.length > 0 && (
