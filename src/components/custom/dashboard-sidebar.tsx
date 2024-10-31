@@ -1,6 +1,6 @@
 'use client'
 
-import { Frame, Group, Settings2, UserCog, UserPlus2, Users2 } from 'lucide-react'
+import { Frame, Group, Paintbrush2, Settings2, UserCog, UserPlus2, Users2 } from 'lucide-react'
 import { NavMain } from '@/components/nav-main'
 import { NavPinned } from '@/components/nav-pinned'
 import { NavUser } from '@/components/nav-user'
@@ -60,6 +60,11 @@ export function DashboardSidebar({
             title: 'Account',
             url: '/dashboard/account',
             icon: UserCog
+          },
+          {
+            title: 'Preferences',
+            url: '/dashboard/preferences',
+            icon: Paintbrush2
           }
         ]
       }

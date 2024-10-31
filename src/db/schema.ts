@@ -6,6 +6,8 @@ export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'E
 export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
 export const clientStatusEnum = pgEnum('client_status', ['active', 'inactive'])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
+export const themeEnum = pgEnum('theme', ['light', 'dark'])
+export const languageEnum = pgEnum('language', ['en', 'ar'])
 
 export type User = typeof users.$inferSelect
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
@@ -17,6 +19,7 @@ export type UserSession = {
   image: User['image']
   isTwoFactorEnabled: User['isTwoFactorEnabled']
 }
+export type UserPreferences = typeof userPreferences.$inferSelect
 
 // Auth Tables with corrected column names for NextAuth
 export const users = pgTable('users', {
@@ -30,6 +33,17 @@ export const users = pgTable('users', {
   isTwoFactorEnabled: boolean('is_two_factor_enabled').default(false),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
   image: text('image').notNull()
+})
+
+export const userPreferences = pgTable('user_preferences', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  theme: themeEnum('theme').default('light'),
+  language: languageEnum('language').default('en')
 })
 
 export const sessions = pgTable('sessions', {
@@ -138,12 +152,28 @@ export const twoFactorConfirmationsRelations = relations(twoFactorConfirmations,
 }))
 
 /**
- * Define relations for the users table
+ * Define relations for the userPreferences table
+ * @example
+ * ```ts
+ * const userPreferencesWithUser = await db.query.userPreferences.findFirst({
+ *  with: { user: true }})
+ */
+export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [userPreferences.userId],
+    references: [users.id]
+  })
+}))
+
+/**
+ * Define relations for the users table with twoFactorConfirmations and userPreferences
  * @example
  * ```ts
  * const userWithTwoFactor = await db.query.users.findFirst({
- *  with: { twoFactorConfirmations: true }})
+ *  with: { twoFactorConfirmations: true,  preferences: true }
+ * })
  */
-export const usersRelations = relations(users, ({ many }) => ({
-  twoFactorConfirmations: many(twoFactorConfirmations)
+export const usersRelations = relations(users, ({ many, one }) => ({
+  twoFactorConfirmations: many(twoFactorConfirmations),
+  preferences: one(userPreferences)
 }))
