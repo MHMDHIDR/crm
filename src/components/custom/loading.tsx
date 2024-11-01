@@ -15,9 +15,11 @@ type LoadingCardProps = {
  */
 export function LoadingCard({ className, renderedSkeletons = 4 }: LoadingCardProps) {
   return renderedSkeletons ? (
-    Array.from({ length: renderedSkeletons }).map((_, index) => (
-      <Skeleton key={index} className={cn(`w-full h-12`, className)} />
-    ))
+    <div className='flex flex-col gap-y-2'>
+      {Array.from({ length: renderedSkeletons }).map((_, index) => (
+        <Skeleton key={index} className={cn(`w-full h-10`, className)} />
+      ))}
+    </div>
   ) : (
     <Skeleton className={cn(`w-full h-12`, className)} />
   )
