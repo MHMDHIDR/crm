@@ -16,6 +16,7 @@ import { Ban, ChevronDown, Lock, MoreHorizontal, Pencil, Trash, UserCog } from '
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { getUsers } from '@/actions/get-users'
+import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import {
   AlertDialog,
@@ -214,16 +215,19 @@ export default function UsersPage() {
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-        <div className='flex gap-2 items-center'>
+        <div className='flex gap-2 items-center w-full'>
           <SidebarTrigger className='-ml-1' />
           <Separator orientation='vertical' className='mr-2 h-4' />
-          <Breadcrumb>
+          <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden md:block'>
                 <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <Link href='/dashboard/create-user'>
+            <Button>Add New User</Button>
+          </Link>
         </div>
       </header>
       <main className='w-full'>
@@ -304,7 +308,14 @@ export default function UsersPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    No results.
+                    <Link href='/dashboard/create-user'>
+                      <EmptyState>
+                        <p className='mt-4 text-lg text-gray-500 dark:text-gray-400 select-none'>
+                          Sorry we couldn't find any users.
+                        </p>
+                        <Button>Add New User</Button>
+                      </EmptyState>
+                    </Link>
                   </TableCell>
                 </TableRow>
               )}

@@ -10,7 +10,7 @@ export default function EmptyState({
   return (
     <div
       className={`flex flex-col items-center justify-center ${
-        isSmall ? 'gap-y-4 py-4' : 'gap-y-16 py-16'
+        isSmall ? 'gap-y-4 py-4' : 'gap-y-10 py-10'
       }`}
     >
       <Image
