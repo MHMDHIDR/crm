@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2Icon } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { useState, useTransition } from 'react'
@@ -167,7 +168,16 @@ export default function SignInClientPage() {
             )}
 
             <Button type='submit' className='w-full' disabled={isPending}>
-              {isPending ? 'Processing...' : showTwoFactor ? 'Verify Code' : 'Sign In'}
+              {isPending ? (
+                <>
+                  <Loader2Icon className='animate-spin h-5 w-5' />
+                  Signing Now...
+                </>
+              ) : showTwoFactor ? (
+                'Verify Code'
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
         </Form>
