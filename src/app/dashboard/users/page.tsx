@@ -347,7 +347,7 @@ export default function UsersPage() {
                     <Link href='/dashboard/create-user'>
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 dark:text-gray-400 select-none'>
-                          Sorry we couldn't find any users.
+                          Sorry we couldn&apos;t find any users.
                         </p>
                         <Button>Add New User</Button>
                       </EmptyState>
