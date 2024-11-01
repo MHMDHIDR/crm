@@ -1,8 +1,6 @@
 'use client'
 
-import { Briefcase, CheckIcon, ClipboardList, MenuIcon, Users, XIcon } from 'lucide-react'
-import Link from 'next/link'
-import * as React from 'react'
+import { CheckIcon, ClipboardList, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -14,8 +12,6 @@ import {
 } from '@/components/ui/card'
 
 export default function HomePage() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-
   const scrollToFeatures = () => {
     const featuresSection = document.getElementById('features')
     if (featuresSection) {
@@ -25,43 +21,6 @@ export default function HomePage() {
 
   return (
     <div className='flex flex-col min-h-screen'>
-      {/* Navbar */}
-      <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-        <div className='container mx-auto flex h-14 items-center'>
-          <div className='mr-4 hidden md:flex'>
-            <Link className='mr-6 flex items-center space-x-2' href='/'>
-              <Briefcase className='h-6 w-6' />
-              <span className='hidden font-bold sm:inline-block'>CRM Pro</span>
-            </Link>
-            <nav className='flex items-center space-x-6 text-sm font-medium'>
-              <Link href='#features'>Features</Link>
-              <Link href='#pricing'>Pricing</Link>
-            </nav>
-          </div>
-          <Link href='/auth/signin' className='ml-auto'>
-            <Button>Sign in</Button>
-          </Link>
-          <button className='ml-2 md:hidden' onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <XIcon /> : <MenuIcon />}
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className='fixed inset-0 z-50 bg-background md:hidden'>
-          <div className='container flex flex-col items-center justify-center h-full space-y-6'>
-            <Link href='#features' onClick={() => setIsMenuOpen(false)}>
-              Features
-            </Link>
-            <Link href='#pricing' onClick={() => setIsMenuOpen(false)}>
-              Pricing
-            </Link>
-            <Button onClick={() => setIsMenuOpen(false)}>Close</Button>
-          </div>
-        </div>
-      )}
-
       <main className='flex-1'>
         {/* Hero Section */}
         <section className='w-full py-12 md:py-24 lg:py-32 xl:py-48'>
@@ -258,29 +217,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className='w-full py-6 bg-gray-100 dark:bg-neutral-800 dark:text-white'>
-        <div className='container mx-auto px-4 md:px-6'>
-          <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
-            <div className='flex items-center gap-2'>
-              <Briefcase className='h-6 w-6' />
-              <span className='font-bold'>CRM Pro</span>
-            </div>
-            <nav className='flex gap-4 sm:gap-6'>
-              <Link className='text-sm hover:underline underline-offset-4' href='#'>
-                Terms of Service
-              </Link>
-              <Link className='text-sm hover:underline underline-offset-4' href='#'>
-                Privacy Policy
-              </Link>
-            </nav>
-            <p className='text-sm text-gray-500 dark:text-gray-400'>
-              © 2024 CRM Pro. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
