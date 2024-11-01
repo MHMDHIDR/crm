@@ -159,10 +159,7 @@ export const twoFactorConfirmationsRelations = relations(twoFactorConfirmations,
  *  with: { user: true }})
  */
 export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
-  user: one(users, {
-    fields: [userPreferences.userId],
-    references: [users.id]
-  })
+  user: one(users, { fields: [userPreferences.userId], references: [users.id] })
 }))
 
 /**
