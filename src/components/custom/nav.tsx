@@ -1,14 +1,9 @@
-import { Briefcase, MenuIcon, XIcon } from 'lucide-react'
+import { Briefcase, Loader2Icon, MenuIcon, XIcon } from 'lucide-react'
 import Link from 'next/link'
-import { auth } from '@/auth'
 import { Button } from '@/components/ui/button'
 import { UserSession } from '@/db/schema'
 
-export default async function Nav() {
-  const session = await auth()
-
-  const user = session?.user as UserSession
-
+export default function Nav({ user }: { user: UserSession }) {
   return (
     <header className='sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
       <div className='container mx-auto flex h-14 items-center px-4'>
@@ -23,15 +18,9 @@ export default async function Nav() {
           </nav>
         </div>
 
-        {user ? (
-          <Link href='/dashboard'>
-            <Button className='w-full'>Dashboard</Button>
-          </Link>
-        ) : (
-          <Link href='/auth/signin'>
-            <Button className='w-full'>Sign in</Button>
-          </Link>
-        )}
+        <Link href={user ? '/dashboard' : '/auth/signin'}>
+          <Button>{user ? 'Dashboard' : 'Sign in'}</Button>
+        </Link>
 
         {/* Mobile Menu Toggle */}
         <div className='relative ml-auto md:hidden'>
