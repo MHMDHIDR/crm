@@ -9,38 +9,38 @@ import { UserPreferences } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
 function ThemeSwitch({ currentTheme }: { currentTheme: UserPreferences['theme'] }) {
-  const [theme, setTheme] = useState(currentTheme)
+  const [newTheme, setNewTheme] = useState<UserPreferences['theme']>(
+    currentTheme === 'light' || currentTheme === 'dark' ? currentTheme : 'light'
+  )
   const [isUpdating, setIsUpdating] = useState(false)
   const { setTheme: setProviderTheme } = useTheme()
   const toast = useToast()
 
-  const handleThemeChange = async () => {
+  const handleThemeChange = async (theme: UserPreferences['theme']) => {
     setIsUpdating(true)
-    const newTheme = theme === 'light' ? 'dark' : 'light'
 
-    const { message, success } = await updateUserTheme(newTheme)
+    const { message, success } = await updateUserTheme(theme || 'light')
 
     if (success) {
-      setTheme(newTheme)
-      setProviderTheme(newTheme) // Update the theme provider immediately
-
       toast.success(message)
+      setProviderTheme(theme || 'light')
     } else {
       console.error(message)
       toast.error(message)
     }
-
     setIsUpdating(false)
+  }
+
+  const toggleTheme = () => {
+    const newThemeValue: UserPreferences['theme'] = newTheme === 'light' ? 'dark' : 'light'
+    setNewTheme(newThemeValue)
+    handleThemeChange(newThemeValue)
   }
 
   return (
     <div className='flex items-center gap-x-2'>
-      <Switch
-        checked={theme === 'dark'}
-        onCheckedChange={handleThemeChange}
-        disabled={isUpdating}
-      />
-      <Label>{theme === 'dark' ? 'Dark' : 'Light'} Theme</Label>
+      <Switch checked={newTheme === 'dark'} onCheckedChange={toggleTheme} disabled={isUpdating} />
+      <Label>{newTheme === 'dark' ? 'Dark' : 'Light'} Theme</Label>
     </div>
   )
 }
