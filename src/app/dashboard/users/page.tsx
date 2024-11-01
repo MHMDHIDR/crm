@@ -15,6 +15,7 @@ import {
 import { Ban, ChevronDown, Lock, MoreHorizontal, Pencil, Trash, UserCog } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
+import { deleteUsers } from '@/actions/delete-user'
 import { getUsers } from '@/actions/get-users'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
@@ -56,6 +57,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
 import type { User } from '@/db/schema'
 
@@ -98,8 +100,25 @@ const columns: ColumnDef<User>[] = [
     header: 'Name'
   },
   {
+    accessorKey: 'role',
+    header: 'Role',
+    cell: ({ row }) => {
+      return (
+        <span
+          className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+            'text-green-600 bg-green-100': row.getValue('role') === 'Admin',
+            'text-orange-600 bg-orange-100': row.getValue('role') === 'Supervisor',
+            'text-blue-600 bg-blue-100': row.getValue('role') === 'Employee'
+          })}
+        >
+          {row.getValue('role')}
+        </span>
+      )
+    }
+  },
+  {
     accessorKey: 'emailVerified',
-    header: 'Verified',
+    header: 'Verified Status',
     cell: ({ row }) => {
       return (
         <span
@@ -170,6 +189,8 @@ export default function UsersPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [filtering, setFiltering] = useState('') // Add global filtering state
 
+  const toast = useToast()
+
   // Fetch users
   const fetchUsers = useCallback(async () => {
     setLoading(true)
@@ -201,6 +222,21 @@ export default function UsersPage() {
       globalFilter: filtering // Add global filter state
     }
   })
+
+  const handleDelete = async () => {
+    const selectedUserIds = selectedRows.map(row => row.original.id)
+    const result = await deleteUsers(selectedUserIds)
+
+    if (result.success) {
+      setShowDeleteDialog(false)
+      toast.success(result.message as string)
+      // Refresh the users list
+      fetchUsers()
+    } else {
+      toast.error(result.message as string)
+      console.error(result.message)
+    }
+  }
 
   const handleDeleteSelected = () => {
     setShowDeleteDialog(true)
@@ -237,7 +273,7 @@ export default function UsersPage() {
               placeholder='Look for a user...'
               value={filtering}
               onChange={event => setFiltering(event.target.value)}
-              className='max-w-lg'
+              className='max-w-md'
             />
             {selectedRows.length > 0 && (
               <Button variant='destructive' size='sm' onClick={handleDeleteSelected}>
@@ -356,7 +392,9 @@ export default function UsersPage() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className='bg-red-600'>Delete Users</AlertDialogAction>
+              <AlertDialogAction onClick={handleDelete} className='bg-red-600'>
+                Delete Users
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
