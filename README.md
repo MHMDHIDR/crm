@@ -5,4 +5,4 @@
 - [x] Work on email verification for registration
 - [x] Work on reset password feature
 - [x] Work on showing users on the dashboard
-- [ ] Work on the user preferences (dark mode, light mode) in /dashboard/preferences
+- [x] Work on the user preferences (dark mode, light mode) in /dashboard/preferences
