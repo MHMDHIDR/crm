@@ -11,25 +11,28 @@ import { generateVerificationToken } from '@/lib/tokens'
 import { getUserByEmail, getUserById } from '@/services/user'
 import { SettingsSchema } from '@/validators/settings'
 
-export const settings = async (values: z.infer<typeof SettingsSchema>) => {
+interface ExtendedSettingsInput extends z.infer<typeof SettingsSchema> {
+  is2FAToggled: boolean
+}
+
+export const settings = async (values: ExtendedSettingsInput) => {
   const session = await auth()
 
-  if (!session || !session.user) {
+  if (!session?.user) {
     return { error: 'Unauthorized' }
   }
 
-  const user = session.user
-
-  const dbUser = await getUserById(user.id)
+  const dbUser = await getUserById(session.user.id)
 
   if (!dbUser) {
     return { error: 'Unauthorized' }
   }
 
-  if (values.email && values.email !== user.email) {
+  // Handle email change
+  if (values.email && values.email !== session.user.email) {
     const existingUser = await getUserByEmail(values.email)
 
-    if (existingUser && existingUser.id !== user.id) {
+    if (existingUser && existingUser.id !== session.user.id) {
       return { error: 'Email already in use!' }
     }
 
@@ -39,23 +42,44 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     return { success: 'Verification email sent!' }
   }
 
-  const plainPassword = values.password as string
+  // Handle password verification for 2FA toggle
+  if (values.is2FAToggled) {
+    if (!values.password || !dbUser.hashedPassword) {
+      return { error: 'Password is required to change 2FA settings' }
+    }
 
-  // Verify password
-  if (values.password && values.newPassword && dbUser.hashedPassword) {
-    const isValidPassword = compareHashedStrings(plainPassword, dbUser.hashedPassword)
-
+    const isValidPassword = compareHashedStrings(values.password, dbUser.hashedPassword)
     if (!isValidPassword) {
       return { error: 'Incorrect password!' }
     }
+  }
 
-    values.password = hashedString(values.newPassword)
-    values.newPassword = undefined
+  // Handle password change (when not toggling 2FA)
+  if (values.password && !values.is2FAToggled) {
+    if (dbUser.hashedPassword) {
+      // Verify new password is different from current
+      const isSamePassword = compareHashedStrings(values.password, dbUser.hashedPassword)
+      if (isSamePassword) {
+        return { error: 'New password must be different from current password' }
+      }
+    }
+    values.password = hashedString(values.password)
+  }
+
+  // Clear password from values if it was only used for 2FA verification
+  if (values.is2FAToggled && !values.password?.startsWith('$2')) {
+    values.password = undefined
   }
 
   const [updatedUser] = await database
     .update(users)
-    .set({ ...values })
+    .set({
+      name: values.name,
+      email: values.email,
+      hashedPassword: values.password,
+      role: values.role,
+      isTwoFactorEnabled: values.isTwoFactorEnabled
+    })
     .where(eq(users.id, dbUser.id))
     .returning()
 
