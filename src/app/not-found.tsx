@@ -18,7 +18,7 @@ export default function NotFound() {
 
           <div className='flex gap-x-3 items-center mt-6 w-full shrink-0 sm:w-auto'>
             <Link href='/' className='w-full cursor-pointer'>
-              <Button type='button' variant={'confirm'}>
+              <Button type='button' variant={'pressable'}>
                 Go Back Home
               </Button>
             </Link>
