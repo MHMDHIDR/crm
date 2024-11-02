@@ -154,7 +154,7 @@ export default function CreateUserPage() {
                 )}
               />
 
-              <Button variant='confirm' className='w-full'>
+              <Button variant='pressable' className='w-full'>
                 Create User
               </Button>
             </form>

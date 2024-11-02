@@ -183,7 +183,7 @@ export default function UsersPage() {
               'text-red-600 bg-red-100': row.getValue('emailVerified') === null
             })}
           >
-            {row.getValue('emailVerified') ? 'Verified' : 'Pending verification'}
+            {row.getValue('emailVerified') ? 'Verified' : 'Pending'}
           </span>
         )
       }
@@ -460,7 +460,7 @@ export default function UsersPage() {
                     <DropdownMenuItem asChild>
                       <Button
                         className='cursor-pointer w-full'
-                        variant='confirm'
+                        variant='success'
                         size='sm'
                         onClick={handleUnsuspendSelected}
                       >
