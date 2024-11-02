@@ -30,9 +30,10 @@ export const users = pgTable('users', {
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
   role: userRoleEnum('role').default('Employee'),
+  image: text('image').notNull(),
   isTwoFactorEnabled: boolean('is_two_factor_enabled').default(false),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
-  image: text('image').notNull()
+  suspendedAt: timestamp('suspended_at', { mode: 'date' })
 })
 
 export const userPreferences = pgTable('user_preferences', {

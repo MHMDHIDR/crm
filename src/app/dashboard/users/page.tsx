@@ -61,124 +61,6 @@ import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
 import type { User } from '@/db/schema'
 
-// Define columns
-const columns: ColumnDef<User>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({ row }) => {
-      return (
-        <Link href={`/dashboard/users/${row.original.id}`} className='hover:underline'>
-          {row.getValue('email')}
-        </Link>
-      )
-    }
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name'
-  },
-  {
-    accessorKey: 'role',
-    header: 'Role',
-    cell: ({ row }) => {
-      return (
-        <span
-          className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-            'text-green-600 bg-green-100': row.getValue('role') === 'Admin',
-            'text-orange-600 bg-orange-100': row.getValue('role') === 'Supervisor',
-            'text-blue-600 bg-blue-100': row.getValue('role') === 'Employee'
-          })}
-        >
-          {row.getValue('role')}
-        </span>
-      )
-    }
-  },
-  {
-    accessorKey: 'emailVerified',
-    header: 'Verified Status',
-    cell: ({ row }) => {
-      return (
-        <span
-          className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-            'text-green-600 bg-green-100': row.getValue('emailVerified') !== null,
-            'text-red-600 bg-red-100': row.getValue('emailVerified') === null
-          })}
-        >
-          {row.getValue('emailVerified') ? 'Verified' : 'Pending verification'}
-        </span>
-      )
-    }
-  },
-  {
-    id: 'actions',
-    cell: ({ row }) => {
-      const user = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link href={`/dashboard/users/${user.id}`}>
-                <UserCog className='mr-2 h-4 w-4' />
-                View Details
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/dashboard/users/${user.id}/edit`}>
-                <Pencil className='mr-2 h-4 w-4' />
-                Edit User
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Lock className='mr-2 h-4 w-4' />
-              Reset Password
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Ban className='mr-2 h-4 w-4' />
-              Suspend User
-            </DropdownMenuItem>
-            <DropdownMenuItem className='text-red-600'>
-              <Trash className='mr-2 h-4 w-4' />
-              Delete User
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    }
-  }
-]
-
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -187,6 +69,7 @@ export default function UsersPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<string | null>(null) // Track single user to delete
   const [filtering, setFiltering] = useState('') // Add global filtering state
 
   const toast = useToast()
@@ -200,6 +83,128 @@ export default function UsersPage() {
     }
     setLoading(false)
   }, [])
+
+  // Define columns
+  const columns: ColumnDef<User>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Select all'
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={value => row.toggleSelected(!!value)}
+          aria-label='Select row'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => {
+        return (
+          <Link href={`/dashboard/users/${row.original.id}`} className='hover:underline'>
+            {row.getValue('email')}
+          </Link>
+        )
+      }
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name'
+    },
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      cell: ({ row }) => {
+        return (
+          <span
+            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+              'text-green-600 bg-green-100': row.getValue('role') === 'Admin',
+              'text-orange-600 bg-orange-100': row.getValue('role') === 'Supervisor',
+              'text-blue-600 bg-blue-100': row.getValue('role') === 'Employee'
+            })}
+          >
+            {row.getValue('role')}
+          </span>
+        )
+      }
+    },
+    {
+      accessorKey: 'emailVerified',
+      header: 'Verified Status',
+      cell: ({ row }) => {
+        return (
+          <span
+            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+              'text-green-600 bg-green-100': row.getValue('emailVerified') !== null,
+              'text-red-600 bg-red-100': row.getValue('emailVerified') === null
+            })}
+          >
+            {row.getValue('emailVerified') ? 'Verified' : 'Pending verification'}
+          </span>
+        )
+      }
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => {
+        const user = row.original
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='h-4 w-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/users/${user.id}`}>
+                  <UserCog className='mr-2 h-4 w-4' />
+                  View Details
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/users/${user.id}/edit`}>
+                  <Pencil className='mr-2 h-4 w-4' />
+                  Edit User
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Lock className='mr-2 h-4 w-4' />
+                Reset Password
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Ban className='mr-2 h-4 w-4' />
+                Suspend User
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='text-red-600'
+                onClick={() => handleDeleteSingleUser(user.id)}
+              >
+                <Trash className='mr-2 h-4 w-4' />
+                Delete User
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      }
+    }
+  ]
 
   // Initialize table
   const table = useReactTable({
@@ -224,11 +229,12 @@ export default function UsersPage() {
   })
 
   const handleDelete = async () => {
-    const selectedUserIds = selectedRows.map(row => row.original.id)
-    const result = await deleteUsers(selectedUserIds)
+    const userIds = userToDelete ? [userToDelete] : selectedRows.map(row => row.original.id)
+    const result = await deleteUsers(userIds)
 
     if (result.success) {
       setShowDeleteDialog(false)
+      setUserToDelete(null)
       toast.success(result.message as string)
       // Refresh the users list
       fetchUsers()
@@ -239,6 +245,12 @@ export default function UsersPage() {
   }
 
   const handleDeleteSelected = () => {
+    setShowDeleteDialog(true)
+    setUserToDelete(null) // Ensure we're not targeting a specific user this means we're deleting multiple users
+  }
+
+  const handleDeleteSingleUser = (userId: string) => {
+    setUserToDelete(userId)
     setShowDeleteDialog(true)
   }
 
