@@ -12,11 +12,21 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { Ban, ChevronDown, Lock, MoreHorizontal, Pencil, Trash, UserCog } from 'lucide-react'
+import {
+  Ban,
+  ChevronDown,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  SettingsIcon,
+  Trash,
+  UserCog
+} from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteUsers } from '@/actions/delete-user'
 import { getUsers } from '@/actions/get-users'
+import { suspendUsers, unsuspendUsers } from '@/actions/suspense-user'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import {
@@ -59,6 +69,7 @@ import {
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
+import { formatDate } from '@/lib/format-date'
 import type { User } from '@/db/schema'
 
 export default function UsersPage() {
@@ -68,9 +79,30 @@ export default function UsersPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  // const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [userToDelete, setUserToDelete] = useState<string | null>(null) // Track single user to delete
   const [filtering, setFiltering] = useState('') // Add global filtering state
+
+  type DialogPropsType = {
+    open: boolean
+    action: 'delete' | 'suspend' | 'unsuspend' | null
+    title: string
+    description: string
+    buttonText: string
+    buttonClass: string
+    selectedIds: string[]
+  }
+
+  /** Handling Dialogs states (Pefect for Reusable Modals): */
+  const [dialogProps, setDialogProps] = useState<DialogPropsType>({
+    open: false,
+    action: null,
+    title: '',
+    description: '',
+    buttonText: '',
+    buttonClass: '',
+    selectedIds: []
+  })
 
   const toast = useToast()
 
@@ -157,6 +189,22 @@ export default function UsersPage() {
       }
     },
     {
+      accessorKey: 'suspendedAt',
+      header: 'Suspended Status',
+      cell: ({ row }) => {
+        return (
+          <span
+            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+              'text-green-600 bg-green-100': row.getValue('suspendedAt') === null,
+              'text-red-600 bg-red-100': row.getValue('suspendedAt') !== null
+            })}
+          >
+            {row.getValue('suspendedAt') ? formatDate(row.getValue('suspendedAt')) : 'Active'}
+          </span>
+        )
+      }
+    },
+    {
       id: 'actions',
       cell: ({ row }) => {
         const user = row.original
@@ -188,9 +236,19 @@ export default function UsersPage() {
                 <Lock className='mr-2 h-4 w-4' />
                 Reset Password
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                className={clsx({
+                  'text-red-600': !user.suspendedAt,
+                  'text-green-600': user.suspendedAt
+                })}
+                onClick={() =>
+                  user.suspendedAt
+                    ? handleUnsuspendSingleUser(user.id)
+                    : handleSuspendSingleUser(user.id)
+                }
+              >
                 <Ban className='mr-2 h-4 w-4' />
-                Suspend User
+                {user.suspendedAt ? 'Unsuspend User' : 'Suspend User'}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='text-red-600'
@@ -228,33 +286,111 @@ export default function UsersPage() {
     }
   })
 
-  const handleDelete = async () => {
-    const userIds = userToDelete ? [userToDelete] : selectedRows.map(row => row.original.id)
-    const result = await deleteUsers(userIds)
-
-    if (result.success) {
-      setShowDeleteDialog(false)
-      setUserToDelete(null)
-      toast.success(result.message as string)
-      // Refresh the users list
-      fetchUsers()
-    } else {
-      toast.error(result.message as string)
-      console.error(result.message)
-    }
-  }
+  const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleDeleteSelected = () => {
-    setShowDeleteDialog(true)
-    setUserToDelete(null) // Ensure we're not targeting a specific user this means we're deleting multiple users
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'delete',
+      title: 'Delete Selected Users',
+      description:
+        'This action cannot be undone. This will permanently delete the selected users and remove their data from our servers.',
+      buttonText: 'Delete Users',
+      buttonClass: 'bg-red-600',
+      selectedIds: ids
+    })
+    // setUserToDelete(null) // Ensure we're not targeting a specific user this means we're deleting multiple users
   }
 
   const handleDeleteSingleUser = (userId: string) => {
-    setUserToDelete(userId)
-    setShowDeleteDialog(true)
+    // setUserToDelete(userId)
+    setDialogProps({
+      open: true,
+      action: 'delete',
+      title: 'Delete User',
+      description:
+        'This action cannot be undone. This will permanently delete this user and remove their data from our servers.',
+      buttonText: 'Delete User',
+      buttonClass: 'bg-red-600',
+      selectedIds: [userId]
+    })
   }
 
-  const selectedRows = table.getFilteredSelectedRowModel().rows
+  const handleSuspendSelected = () => {
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'suspend',
+      title: 'Suspend Selected Users',
+      description:
+        'Are you sure you want to suspend the selected users? They will not be able to access the system until unsuspended.',
+      buttonText: 'Suspend Users',
+      buttonClass: 'bg-yellow-600',
+      selectedIds: ids
+    })
+  }
+
+  const handleUnsuspendSelected = () => {
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'unsuspend',
+      title: 'Unsuspend Selected Users',
+      description:
+        'Are you sure you want to unsuspend the selected users? They will regain access to the system.',
+      buttonText: 'Unsuspend Users',
+      buttonClass: 'bg-green-600',
+      selectedIds: ids
+    })
+  }
+
+  const handleSuspendSingleUser = (userId: string) => {
+    setDialogProps({
+      open: true,
+      action: 'suspend',
+      title: 'Suspend User',
+      description:
+        'Are you sure you want to suspend this user? They will not be able to access the system until unsuspended.',
+      buttonText: 'Suspend User',
+      buttonClass: 'bg-yellow-600',
+      selectedIds: [userId]
+    })
+  }
+
+  const handleUnsuspendSingleUser = (userId: string) => {
+    setDialogProps({
+      open: true,
+      action: 'unsuspend',
+      title: 'Unsuspend User',
+      description:
+        'Are you sure you want to unsuspend this user? They will regain access to the system.',
+      buttonText: 'Unsuspend User',
+      buttonClass: 'bg-green-600',
+      selectedIds: [userId]
+    })
+  }
+
+  const handleAction = async () => {
+    if (!dialogProps.action || !dialogProps.selectedIds.length) return
+
+    let result
+    if (dialogProps.action === 'delete') {
+      result = await deleteUsers(dialogProps.selectedIds)
+    } else if (dialogProps.action === 'suspend') {
+      result = await suspendUsers(dialogProps.selectedIds)
+    } else if (dialogProps.action === 'unsuspend') {
+      result = await unsuspendUsers(dialogProps.selectedIds)
+    }
+
+    if (result?.success) {
+      setDialogProps(prev => ({ ...prev, open: false }))
+      toast.success(result.message as string)
+      fetchUsers()
+    } else {
+      toast.error(result?.message || 'Operation failed')
+    }
+  }
 
   useEffect(() => {
     fetchUsers()
@@ -288,9 +424,52 @@ export default function UsersPage() {
               className='max-w-md'
             />
             {selectedRows.length > 0 && (
-              <Button variant='destructive' size='sm' onClick={handleDeleteSelected}>
-                Delete Selected
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='outline'>
+                    Bulk Actions <SettingsIcon className='ml-2 h-4 w-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel className='text-center'>Bult Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Button
+                      className='cursor-pointer w-full'
+                      variant='destructive'
+                      size='sm'
+                      onClick={handleDeleteSelected}
+                    >
+                      Delete Selected
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {selectedRows.some(row => row.original.suspendedAt === null) && (
+                    <DropdownMenuItem asChild>
+                      <Button
+                        className='cursor-pointer w-full'
+                        variant='warning'
+                        size='sm'
+                        onClick={handleSuspendSelected}
+                      >
+                        Suspend Selected
+                      </Button>
+                    </DropdownMenuItem>
+                  )}
+                  {selectedRows.some(row => row.original.suspendedAt !== null) && (
+                    <DropdownMenuItem asChild>
+                      <Button
+                        className='cursor-pointer w-full'
+                        variant='confirm'
+                        size='sm'
+                        onClick={handleUnsuspendSelected}
+                      >
+                        Unsuspend Selected
+                      </Button>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
           <DropdownMenu>
@@ -339,9 +518,16 @@ export default function UsersPage() {
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map(row => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+                      'text-orange-700 bg-orange-200 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
+                        row.getValue('suspendedAt') !== null
+                    })}
+                  >
                     {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id}>
+                      <TableCell key={cell.id} className='text-center'>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -393,19 +579,19 @@ export default function UsersPage() {
           </Button>
         </div>
 
-        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialog
+          open={dialogProps.open}
+          onOpenChange={open => setDialogProps(prev => ({ ...prev, open }))}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the selected users and
-                remove their data from our servers.
-              </AlertDialogDescription>
+              <AlertDialogTitle>{dialogProps.title}</AlertDialogTitle>
+              <AlertDialogDescription>{dialogProps.description}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className='bg-red-600'>
-                Delete Users
+              <AlertDialogAction onClick={handleAction} className={dialogProps.buttonClass}>
+                {dialogProps.buttonText}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
