@@ -1,6 +1,6 @@
 'use client'
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut } from 'lucide-react'
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Paintbrush2 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -73,10 +73,10 @@ export function NavUser({ user }: { user: UserSession }) {
                 <BadgeCheck />
                 Account
               </DropdownMenuLink>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
+              <DropdownMenuLink href={'/dashboard/preferences'}>
+                <Paintbrush2 />
+                Preferences
+              </DropdownMenuLink>
               <DropdownMenuItem>
                 <Bell />
                 Notifications

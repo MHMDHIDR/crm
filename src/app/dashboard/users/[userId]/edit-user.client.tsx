@@ -1,6 +1,6 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { updateUser } from '@/actions/update-user'
@@ -33,19 +33,20 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Switch } from '@/components/ui/switch'
-import { UserRole, UserSession } from '@/db/schema'
+import { User, UserRole } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
-export default function AccountClientPage({ user }: { user: UserSession }) {
-  const { update } = useSession()
+export default function EditUserPageClient({ user }: { user: User }) {
   const [isPending, startTransition] = useTransition()
   const toast = useToast()
+  const router = useRouter()
 
   // State to hold the user data
   const [userData, setUserData] = useState(user)
 
   const form = useForm({
     defaultValues: {
+      id: userData.id,
       name: userData.name || '',
       email: userData.email || '',
       password: '',
@@ -60,7 +61,7 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
       name: userData.name,
       email: userData.email,
       password: '',
-      role: userData.role,
+      role: userData.role ?? 'Employee',
       isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false
     })
   }, [userData, form])
@@ -68,16 +69,15 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
   const onSubmit = (values: any) => {
     startTransition(async () => {
       try {
-        const data = await updateUser(values)
+        const data = await updateUser({ id: userData.id, ...values })
 
         if (data.error) {
           toast.error(data.error)
         } else if (data.success) {
-          await update()
           toast.success(data.success)
           // Update local state with new data
           setUserData({ ...userData, ...values })
-          form.reset({ password: '', isTwoFactorEnabled: values.isTwoFactorEnabled })
+          router.refresh() // Refreshes the page
         }
       } catch (error) {
         toast.error('An error occurred')
@@ -98,7 +98,7 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden md:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Account Settings</BreadcrumbPage>
+                <BreadcrumbPage>Edit User</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -106,7 +106,7 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>⚙️ Settings</h1>
+          <h1 className='text-2xl font-bold text-center'>👤 Edit User</h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -138,25 +138,6 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                           disabled={isPending}
                           type='email'
                           placeholder='Enter email address'
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='password'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder='******'
-                          type='password'
-                          disabled={isPending}
                         />
                       </FormControl>
                       <FormMessage />

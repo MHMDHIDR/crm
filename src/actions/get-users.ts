@@ -10,7 +10,7 @@ import type { User } from '@/db/schema'
  */
 export async function getUsers(): Promise<{ success: boolean; data?: User[]; error?: string }> {
   const session = await auth()
-  if (!session || !session.user) {
+  if (!session || !session.user || session.user.role !== 'Admin') {
     return { success: false, error: 'Unauthorized' }
   }
 

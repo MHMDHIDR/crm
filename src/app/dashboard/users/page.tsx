@@ -80,7 +80,7 @@ export default function UsersPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  const [filtering, setFiltering] = useState('') // Add global filtering state
+  const [filtering, setFiltering] = useState('') // This will add global filtering state, which will help us filter the table data
 
   type DialogPropsType = {
     open: boolean
@@ -217,24 +217,14 @@ export default function UsersPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel className='select-none'>Actions</DropdownMenuLabel>
               <DropdownMenuItem asChild>
                 <Link href={`/dashboard/users/${user.id}`}>
-                  <UserCog className='mr-2 h-4 w-4' />
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/users/${user.id}/edit`}>
-                  <Pencil className='mr-2 h-4 w-4' />
-                  Edit User
+                  <Pencil className='mr-0.5 h-4 w-4' />
+                  View / Edit User
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Lock className='mr-2 h-4 w-4' />
-                Reset Password
-              </DropdownMenuItem>
               <DropdownMenuItem
                 className={clsx({
                   'text-red-600': !user.suspendedAt,
@@ -246,14 +236,14 @@ export default function UsersPage() {
                     : handleSuspendSingleUser(user.id)
                 }
               >
-                <Ban className='mr-2 h-4 w-4' />
+                <Ban className='mr-0.5 h-4 w-4' />
                 {user.suspendedAt ? 'Unsuspend User' : 'Suspend User'}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='text-red-600'
                 onClick={() => handleDeleteSingleUser(user.id)}
               >
-                <Trash className='mr-2 h-4 w-4' />
+                <Trash className='mr-0.5 h-4 w-4' />
                 Delete User
               </DropdownMenuItem>
             </DropdownMenuContent>

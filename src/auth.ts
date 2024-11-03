@@ -22,10 +22,14 @@ export const {
   pages: { signIn: '/auth/signin' },
   callbacks: {
     async signIn({ user }) {
-      const existingUser = await getUserById(user.id as string)
+      const { data: existingUser } = await getUserById(user.id as string)
+
+      // TODO: check if this is necessary
+      if (!existingUser) return false // Prevent sign in without user TODO: check if this is necessary
+      // TODO: check if this is necessary
 
       // Prevent sign in without email verification
-      if (!existingUser?.emailVerified) return false
+      if (!existingUser.emailVerified) return false
 
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id)
@@ -65,7 +69,7 @@ export const {
     async jwt({ token, user }) {
       if (!token.sub) return token
 
-      const existingUser = await getUserById(token.sub)
+      const { data: existingUser } = await getUserById(token.sub)
       if (!existingUser) return token
 
       token.name = existingUser.name
