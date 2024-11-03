@@ -53,8 +53,8 @@ export function NavUser({ user }: { user: UserSession }) {
             align='end'
             sideOffset={4}
           >
-            <DropdownMenuLabel className='p-0 font-normal'>
-              <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+            <DropdownMenuGroup className='flex items-center gap-2 p-1 text-left text-sm'>
+              <DropdownMenuLink href={`/dashboard/users/${user.id}`}>
                 <Avatar className='w-8 h-8 rounded-lg'>
                   <AvatarImage src={user.image} alt={user.name} />
                   <AvatarFallback className='rounded-lg'>
@@ -65,8 +65,8 @@ export function NavUser({ user }: { user: UserSession }) {
                   <span className='font-semibold truncate'>{user.name}</span>
                   <span className='text-xs truncate'>{user.email}</span>
                 </div>
-              </div>
-            </DropdownMenuLabel>
+              </DropdownMenuLink>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuLink href={'/dashboard/account'}>
