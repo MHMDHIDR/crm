@@ -2,12 +2,14 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { authenticate } from '@/actions/auth'
+import { getUserTheme } from '@/actions/user-theme'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -19,6 +21,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
+import { UserSession } from '@/db/schema'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
 import { userSchema } from '@/validators/user'
@@ -30,15 +33,31 @@ const signInSchema = userSchema.pick({ email: true, password: true }).extend({
 
 type SignInData = z.infer<typeof signInSchema>
 
-export default function SignInClientPage() {
+export default function SignInClientPage({ user }: { user: UserSession | undefined }) {
   const toast = useToast()
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const { setTheme: setProviderTheme } = useTheme()
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: '', password: '', code: '' }
   })
+
+  useEffect(() => {
+    if (user) {
+      // Fetch and set theme whenever user changes
+      startTransition(async () => {
+        try {
+          const userTheme = await getUserTheme()
+          console.log('User theme:', userTheme)
+          setProviderTheme(userTheme || 'light')
+        } catch (error) {
+          console.error('Error fetching user theme:', error)
+        }
+      })
+    }
+  }, [user, setProviderTheme])
 
   function onSubmit(data: SignInData) {
     startTransition(async () => {
@@ -62,6 +81,10 @@ export default function SignInClientPage() {
           toast.error(result.message)
           return
         }
+
+        // Fetch and set theme after successful authentication
+        const userTheme = await getUserTheme()
+        setProviderTheme(userTheme || 'light')
 
         toast.success(result.message)
       } catch (error) {

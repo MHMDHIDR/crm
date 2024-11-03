@@ -18,7 +18,7 @@ export type UserSession = {
   role: UserRole
   image: User['image']
   isTwoFactorEnabled: User['isTwoFactorEnabled']
-}
+} & Partial<UserPreferences>
 export type UserPreferences = typeof userPreferences.$inferSelect
 
 // Auth Tables with corrected column names for NextAuth

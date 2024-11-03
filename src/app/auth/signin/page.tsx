@@ -5,5 +5,9 @@ import { auth } from '@/auth'
 export default async function SignInPage() {
   const session = await auth()
 
-  return !session || !session.user ? <SignInClientPage /> : redirect('/dashboard')
+  return !session || !session.user ? (
+    <SignInClientPage user={session?.user} />
+  ) : (
+    redirect('/dashboard')
+  )
 }

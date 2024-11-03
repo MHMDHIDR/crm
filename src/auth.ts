@@ -3,7 +3,7 @@ import { and, eq, lt } from 'drizzle-orm'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { database } from '@/db'
-import { sessions, twoFactorConfirmations, users } from '@/db/schema'
+import { sessions, twoFactorConfirmations, userPreferences, users } from '@/db/schema'
 import { compareHashedStrings } from '@/lib/crypt'
 import { getUserById } from '@/services/user'
 import { getTwoFactorConfirmationByUserId } from './services/two-factor-confirmation'
@@ -73,6 +73,7 @@ export const {
       token.email = existingUser.email
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled
 
+      // Add the session ID to the token
       if (user?.id) {
         const sessionToken = crypto.randomUUID()
         const [session] = await database
@@ -109,18 +110,22 @@ export const {
         try {
           const plainPassword = credentials.password as string
 
-          // Find the user in the users table
-          const [user] = await database
+          // Find the user in the users table, join with user_preferences from userPreferences table
+          const [userWithPreferences] = await database
             .select()
             .from(users)
+            .leftJoin(userPreferences, eq(users.id, userPreferences.userId))
             .where(eq(users.email, credentials.email as string))
 
-          if (!user) {
+          if (!userWithPreferences) {
             return null
           }
 
           // Verify password
-          const isValidPassword = compareHashedStrings(plainPassword, user.hashedPassword as string)
+          const isValidPassword = compareHashedStrings(
+            plainPassword,
+            userWithPreferences.users.hashedPassword as string
+          )
 
           if (!isValidPassword) {
             return null
@@ -129,14 +134,20 @@ export const {
           // Clean up expired sessions for this user
           await database
             .delete(sessions)
-            .where(and(eq(sessions.userId, user.id), lt(sessions.expires, new Date())))
+            .where(
+              and(
+                eq(sessions.userId, userWithPreferences.users.id),
+                lt(sessions.expires, new Date())
+              )
+            )
 
           return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            image: user.image
+            id: userWithPreferences.users.id,
+            name: userWithPreferences.users.name,
+            email: userWithPreferences.users.email,
+            role: userWithPreferences.users.role,
+            image: userWithPreferences.users.image,
+            theme: userWithPreferences.user_preferences?.theme ?? 'system'
           } as UserSession
         } catch (error) {
           console.error('Auth error:', error)
