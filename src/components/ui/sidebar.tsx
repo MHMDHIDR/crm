@@ -22,6 +22,25 @@ const SIDEBAR_WIDTH_MOBILE = '18rem'
 const SIDEBAR_WIDTH_ICON = '3rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
+const getCookieValue = (name: string): string | null => {
+  try {
+    if (typeof window === 'undefined') return null
+    const value = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')
+    return value ? (value.pop() as string) : null
+  } catch {
+    return null
+  }
+}
+
+const setCookieValue = (name: string, value: string, maxAge: number) => {
+  try {
+    if (typeof window === 'undefined') return
+    document.cookie = `${name}=${value}; path=/; max-age=${maxAge}`
+  } catch {
+    // Silently fail if cookies are not available
+  }
+}
+
 type SidebarContext = {
   state: 'expanded' | 'collapsed'
   open: boolean
@@ -39,10 +58,10 @@ function useSidebar() {
   if (!context) {
     throw new Error('useSidebar must be used within a SidebarProvider.')
   }
-
   return context
 }
 
+// Modified SidebarProvider to handle SSR correctly
 const SidebarProvider = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
@@ -66,30 +85,38 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
-    // This is the internal state of the sidebar.
-    // We use openProp and setOpenProp for control from outside the component.
+    // Initialize with defaultOpen for SSR
     const [_open, _setOpen] = React.useState(defaultOpen)
+
+    // Effect to initialize client-side state
+    React.useEffect(() => {
+      const cookieValue = getCookieValue(SIDEBAR_COOKIE_NAME)
+      if (cookieValue !== null && cookieValue !== String(defaultOpen)) {
+        _setOpen(cookieValue === 'true')
+      }
+    }, [defaultOpen])
+
     const open = openProp ?? _open
+
     const setOpen = React.useCallback(
-      (value: boolean | ((value: boolean) => boolean)) => {
+      (value: boolean | ((prevValue: boolean) => boolean)) => {
+        const newValue = typeof value === 'function' ? value(open) : value
+
         if (setOpenProp) {
-          return setOpenProp?.(typeof value === 'function' ? value(open) : value)
+          setOpenProp(newValue)
+        } else {
+          _setOpen(newValue)
         }
 
-        _setOpen(value)
-
-        // This sets the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        setCookieValue(SIDEBAR_COOKIE_NAME, String(newValue), SIDEBAR_COOKIE_MAX_AGE)
       },
-      [setOpenProp, open]
+      [open, setOpenProp]
     )
 
-    // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
-      return isMobile ? setOpenMobile(open => !open) : setOpen(open => !open)
-    }, [isMobile, setOpen, setOpenMobile])
+      return isMobile ? setOpenMobile(prev => !prev) : setOpen(prev => !prev)
+    }, [isMobile, setOpen])
 
-    // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
@@ -97,13 +124,8 @@ const SidebarProvider = React.forwardRef<
           toggleSidebar()
         }
       }
-
-      window.addEventListener('keydown', handleKeyDown)
-      return () => window.removeEventListener('keydown', handleKeyDown)
     }, [toggleSidebar])
 
-    // We add a state so that we can do data-state="expanded" or "collapsed".
-    // This makes it easier to style the sidebar with Tailwind classes.
     const state = open ? 'expanded' : 'collapsed'
 
     const contextValue = React.useMemo<SidebarContext>(

@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { auth } from '@/auth'
 import { DashboardSidebar } from '@/components/custom/dashboard-sidebar'
@@ -8,8 +9,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!session || !session.user) notFound()
 
+  const cookieStore = await cookies()
+  const sidebarState = cookieStore.get('sidebar:state')?.value
+  const initialSidebarOpen = sidebarState === 'true'
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={initialSidebarOpen}>
       <DashboardSidebar user={session.user} />
 
       <main className='flex-1 px-2.5 container w-full mx-auto'>
