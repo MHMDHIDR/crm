@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -12,24 +11,18 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import {
-  ArrowUpDown,
-  Ban,
-  ChevronDown,
-  Lock,
-  MoreHorizontal,
-  Pencil,
-  SettingsIcon,
-  Trash,
-  UserCog
-} from 'lucide-react'
+import { ChevronDown, SettingsIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteUsers } from '@/actions/delete-user'
 import { getUsers } from '@/actions/get-users'
 import { suspendUsers, unsuspendUsers } from '@/actions/suspense-user'
+import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
+import { TablePagination } from '@/components/custom/table-pagination'
+import { TableToolbar } from '@/components/custom/table-toolbar'
+import { getUserColumns } from '@/components/custom/user-columns'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,7 +40,6 @@ import {
   BreadcrumbList
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -70,7 +62,6 @@ import {
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
-import { formatDate } from '@/lib/format-date'
 import type { User } from '@/db/schema'
 
 /* eslint-disable max-lines */
@@ -94,14 +85,14 @@ export default function UsersPage() {
   }
 
   /** Handling Dialogs states (Pefect for Reusable Modals): */
-  const [dialogProps, setDialogProps] = useState<DialogPropsType>({
+  const [dialogProps, setDialogProps] = useState({
     open: false,
-    action: null,
+    action: null as 'delete' | 'suspend' | 'unsuspend' | null,
     title: '',
     description: '',
     buttonText: '',
     buttonClass: '',
-    selectedIds: []
+    selectedIds: [] as string[]
   })
 
   const toast = useToast()
@@ -115,219 +106,6 @@ export default function UsersPage() {
     }
     setLoading(false)
   }, [])
-
-  // Define columns
-  const columns: ColumnDef<User>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Select all'
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={value => row.toggleSelected(!!value)}
-          aria-label='Select row'
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false
-    },
-    {
-      accessorKey: 'email',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant='ghost'
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Email
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          </Button>
-        )
-      },
-      cell: ({ row }) => {
-        return (
-          <Link href={`/dashboard/users/${row.original.id}`} className='hover:underline'>
-            {row.getValue('email')}
-          </Link>
-        )
-      }
-    },
-    {
-      accessorKey: 'name',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant='ghost'
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Name
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          </Button>
-        )
-      }
-    },
-    {
-      accessorKey: 'role',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant='ghost'
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Role
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          </Button>
-        )
-      },
-      cell: ({ row }) => {
-        return (
-          <span
-            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': row.getValue('role') === 'Admin',
-              'text-orange-600 bg-orange-100': row.getValue('role') === 'Supervisor',
-              'text-blue-600 bg-blue-100': row.getValue('role') === 'Employee'
-            })}
-          >
-            {row.getValue('role')}
-          </span>
-        )
-      }
-    },
-    {
-      accessorKey: 'emailVerified',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant='ghost'
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Verified Status
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          </Button>
-        )
-      },
-      cell: ({ row }) => {
-        return (
-          <span
-            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': row.getValue('emailVerified') !== null,
-              'text-red-600 bg-red-100': row.getValue('emailVerified') === null
-            })}
-          >
-            {row.getValue('emailVerified') ? 'Verified' : 'Pending'}
-          </span>
-        )
-      }
-    },
-    {
-      accessorKey: 'suspendedAt',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant='ghost'
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Suspended Status
-            <ArrowUpDown className='ml-2 h-4 w-4' />
-          </Button>
-        )
-      },
-      cell: ({ row }) => {
-        return (
-          <span
-            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': row.getValue('suspendedAt') === null,
-              'text-red-600 bg-red-100': row.getValue('suspendedAt') !== null
-            })}
-          >
-            {row.getValue('suspendedAt') ? formatDate(row.getValue('suspendedAt')) : 'Active'}
-          </span>
-        )
-      }
-    },
-    {
-      id: 'actions',
-      header: 'Action',
-      cell: ({ row }) => {
-        const user = row.original
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='ghost' className='h-8 w-8 p-0'>
-                <span className='sr-only'>Open menu</span>
-                <MoreHorizontal className='h-4 w-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuLabel className='select-none'>Actions</DropdownMenuLabel>
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/users/${user.id}`}>
-                  <Pencil className='mr-0.5 h-4 w-4' />
-                  View / Edit User
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className={clsx({
-                  'text-red-600': !user.suspendedAt,
-                  'text-green-600': user.suspendedAt
-                })}
-                onClick={() =>
-                  user.suspendedAt
-                    ? handleUnsuspendSingleUser(user.id)
-                    : handleSuspendSingleUser(user.id)
-                }
-              >
-                <Ban className='mr-0.5 h-4 w-4' />
-                {user.suspendedAt ? 'Unsuspend User' : 'Suspend User'}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='text-red-600'
-                onClick={() => handleDeleteSingleUser(user.id)}
-              >
-                <Trash className='mr-0.5 h-4 w-4' />
-                Delete User
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      }
-    }
-  ]
-
-  // Initialize table
-  const table = useReactTable({
-    data: users,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setFiltering, // Add global filter change handler
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      globalFilter: filtering // Add global filter state
-    }
-  })
-
-  const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleDeleteSelected = () => {
     const ids = selectedRows.map(row => row.original.id)
@@ -415,14 +193,13 @@ export default function UsersPage() {
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    let result
-    if (dialogProps.action === 'delete') {
-      result = await deleteUsers(dialogProps.selectedIds)
-    } else if (dialogProps.action === 'suspend') {
-      result = await suspendUsers(dialogProps.selectedIds)
-    } else if (dialogProps.action === 'unsuspend') {
-      result = await unsuspendUsers(dialogProps.selectedIds)
+    const actions = {
+      delete: deleteUsers,
+      suspend: suspendUsers,
+      unsuspend: unsuspendUsers
     }
+
+    const result = await actions[dialogProps.action](dialogProps.selectedIds)
 
     if (result?.success) {
       setDialogProps(prev => ({ ...prev, open: false }))
@@ -432,6 +209,35 @@ export default function UsersPage() {
       toast.error(result?.message || 'Operation failed')
     }
   }
+
+  const columns = getUserColumns({
+    onDelete: handleDeleteSingleUser,
+    onSuspend: handleSuspendSingleUser,
+    onUnsuspend: handleUnsuspendSingleUser
+  })
+
+  const table = useReactTable({
+    data: users,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setFiltering,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      globalFilter: filtering
+    }
+  })
+
+  const selectedRows = table.getFilteredSelectedRowModel().rows
 
   useEffect(() => {
     fetchUsers()
@@ -456,88 +262,15 @@ export default function UsersPage() {
         </div>
       </header>
       <main className='w-full'>
-        <div className='flex items-center justify-between gap-x-2 py-2.5'>
-          <div className='flex items-center gap-x-2 w-full'>
-            <Input
-              placeholder='Look for a user...'
-              value={filtering}
-              onChange={event => setFiltering(event.target.value)}
-              className='max-w-md'
-            />
-            {selectedRows.length > 0 && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='outline'>
-                    Bulk Actions <SettingsIcon className='ml-2 h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className='space-y-1'>
-                  <DropdownMenuLabel className='text-center'>Bult Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Button
-                      className='cursor-pointer w-full'
-                      variant='destructive'
-                      size='sm'
-                      onClick={handleDeleteSelected}
-                    >
-                      Delete Selected
-                    </Button>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {selectedRows.some(row => row.original.suspendedAt === null) && (
-                    <DropdownMenuItem asChild>
-                      <Button
-                        className='cursor-pointer w-full'
-                        variant='warning'
-                        size='sm'
-                        onClick={handleSuspendSelected}
-                      >
-                        Suspend Selected
-                      </Button>
-                    </DropdownMenuItem>
-                  )}
-                  {selectedRows.some(row => row.original.suspendedAt !== null) && (
-                    <DropdownMenuItem asChild>
-                      <Button
-                        className='cursor-pointer w-full'
-                        variant='success'
-                        size='sm'
-                        onClick={handleUnsuspendSelected}
-                      >
-                        Unsuspend Selected
-                      </Button>
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='outline' className='ml-auto'>
-                Columns <ChevronDown className='ml-2 h-4 w-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              {table
-                .getAllColumns()
-                .filter(column => column.getCanHide())
-                .map(column => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className='capitalize'
-                      checked={column.getIsVisible()}
-                      onCheckedChange={value => column.toggleVisibility(!!value)}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <TableToolbar
+          table={table}
+          filtering={filtering}
+          setFiltering={setFiltering}
+          selectedRows={selectedRows}
+          onDeleteSelected={handleDeleteSelected}
+          onSuspendSelected={handleSuspendSelected}
+          onUnsuspendSelected={handleUnsuspendSelected}
+        />
 
         <div className='rounded-md border'>
           <Table>
@@ -598,45 +331,17 @@ export default function UsersPage() {
           </Table>
         </div>
 
-        <div className='flex items-center justify-end space-x-2 py-4'>
-          <div className='text-sm text-muted-foreground'>
-            {selectedRows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        <TablePagination table={table} selectedRows={selectedRows} />
 
-        <AlertDialog
+        <ConfirmationDialog
           open={dialogProps.open}
           onOpenChange={open => setDialogProps(prev => ({ ...prev, open }))}
-        >
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>{dialogProps.title}</AlertDialogTitle>
-              <AlertDialogDescription>{dialogProps.description}</AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleAction} className={dialogProps.buttonClass}>
-                {dialogProps.buttonText}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+          title={dialogProps.title}
+          description={dialogProps.description}
+          buttonText={dialogProps.buttonText}
+          buttonClass={dialogProps.buttonClass}
+          onConfirm={handleAction}
+        />
       </main>
     </SidebarInset>
   )
