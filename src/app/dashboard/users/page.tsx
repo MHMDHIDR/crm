@@ -72,6 +72,7 @@ import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 import type { User } from '@/db/schema'
 
+/* eslint-disable max-lines */
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -79,8 +80,6 @@ export default function UsersPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  // const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [userToDelete, setUserToDelete] = useState<string | null>(null) // Track single user to delete
   const [filtering, setFiltering] = useState('') // Add global filtering state
 
   type DialogPropsType = {
