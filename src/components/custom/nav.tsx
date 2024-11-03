@@ -67,12 +67,11 @@ export default function Nav({ user }: { user: UserSession }) {
                 >
                   Pricing
                 </Link>
-                <>
-                  <Link href={user ? '/dashboard' : '/auth/signin'} className='mt-4'>
-                    <Button>{user ? 'Dashboard' : 'Sign in'}</Button>
-                  </Link>
-                  {user && <SignOutButton />}
-                </>
+
+                <Link href={user ? '/dashboard' : '/auth/signin'} className='mt-4'>
+                  <Button>{user ? 'Dashboard' : 'Sign in'}</Button>
+                </Link>
+                {user && <SignOutButton />}
               </div>
             </div>
           </div>

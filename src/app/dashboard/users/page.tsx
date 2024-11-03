@@ -13,6 +13,7 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import {
+  ArrowUpDown,
   Ban,
   ChevronDown,
   Lock,
@@ -141,7 +142,17 @@ export default function UsersPage() {
     },
     {
       accessorKey: 'email',
-      header: 'Email',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Email
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         return (
           <Link href={`/dashboard/users/${row.original.id}`} className='hover:underline'>
@@ -152,11 +163,31 @@ export default function UsersPage() {
     },
     {
       accessorKey: 'name',
-      header: 'Name'
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Name
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      }
     },
     {
       accessorKey: 'role',
-      header: 'Role',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Role
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         return (
           <span
@@ -173,7 +204,17 @@ export default function UsersPage() {
     },
     {
       accessorKey: 'emailVerified',
-      header: 'Verified Status',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Verified Status
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         return (
           <span
@@ -189,7 +230,17 @@ export default function UsersPage() {
     },
     {
       accessorKey: 'suspendedAt',
-      header: 'Suspended Status',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Suspended Status
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         return (
           <span
@@ -205,6 +256,7 @@ export default function UsersPage() {
     },
     {
       id: 'actions',
+      header: 'Action',
       cell: ({ row }) => {
         const user = row.original
 
@@ -419,7 +471,7 @@ export default function UsersPage() {
                     Bulk Actions <SettingsIcon className='ml-2 h-4 w-4' />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className='space-y-1'>
                   <DropdownMenuLabel className='text-center'>Bult Actions</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -494,7 +546,7 @@ export default function UsersPage() {
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map(header => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead key={header.id} className='text-center'>
                         {header.isPlaceholder
                           ? null
                           : flexRender(header.column.columnDef.header, header.getContext())}
