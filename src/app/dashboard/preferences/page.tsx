@@ -1,4 +1,3 @@
-import { getUserTheme } from '@/actions/user-theme'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,8 +11,6 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import ThemeSwitch from './theme-switch'
 
 export default async function DashboardPreferencesPage() {
-  const userTheme = await getUserTheme()
-
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
@@ -37,7 +34,7 @@ export default async function DashboardPreferencesPage() {
         <div className='p-4 shadow rounded-lg'>
           <h2 className='text-lg font-bold mb-4'>Select your preferred theme 😎</h2>
 
-          <ThemeSwitch currentTheme={userTheme} />
+          <ThemeSwitch />
         </div>
       </main>
     </SidebarInset>
