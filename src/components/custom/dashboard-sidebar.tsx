@@ -1,10 +1,10 @@
 'use client'
 
 import { Frame, Group, Paintbrush2, Settings2, UserCog, UserPlus2, Users2 } from 'lucide-react'
-import { NavMain } from '@/components/nav-main'
-import { NavPinned } from '@/components/nav-pinned'
-import { NavUser } from '@/components/nav-user'
-import { TeamSwitcher } from '@/components/team-switcher'
+import { NavMain } from '@/components/custom/nav-main'
+import { NavPinned } from '@/components/custom/nav-pinned'
+import { NavUser } from '@/components/custom/nav-user'
+import { TeamSwitcher } from '@/components/custom/team-switcher'
 import {
   Sidebar,
   SidebarContent,
