@@ -2,14 +2,14 @@
 
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { getUserTheme, updateUserTheme } from '@/actions/user-theme'
+import { updateUserTheme } from '@/actions/user-theme'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { UserPreferences } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
-export default function ThemeSwitch() {
-  const [newTheme, setNewTheme] = useState<UserPreferences['theme']>()
+export default function ThemeSwitch({ userTheme }: { userTheme: UserPreferences['theme'] }) {
+  const [newTheme, setNewTheme] = useState<UserPreferences['theme']>(userTheme)
   const [isUpdating, setIsUpdating] = useState(false)
   const { setTheme: setProviderTheme } = useTheme()
   const toast = useToast()
@@ -17,7 +17,6 @@ export default function ThemeSwitch() {
   useEffect(() => {
     // Using this effect to set the user theme when the component mounts
     async function setUserTheme() {
-      const userTheme = await getUserTheme()
       setNewTheme(userTheme || 'light')
     }
     setUserTheme()
