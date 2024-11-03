@@ -1,7 +1,8 @@
-import { Briefcase, Loader2Icon, MenuIcon, XIcon } from 'lucide-react'
+import { Briefcase, MenuIcon, XIcon } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { UserSession } from '@/db/schema'
+import { SignOutButton } from './signout-button'
 
 export default function Nav({ user }: { user: UserSession }) {
   return (
@@ -18,9 +19,12 @@ export default function Nav({ user }: { user: UserSession }) {
           </nav>
         </div>
 
-        <Link href={user ? '/dashboard' : '/auth/signin'}>
-          <Button>{user ? 'Dashboard' : 'Sign in'}</Button>
-        </Link>
+        <div className='flex gap-2'>
+          <Link href={user ? '/dashboard' : '/auth/signin'}>
+            <Button>{user ? 'Dashboard' : 'Sign in'}</Button>
+          </Link>
+          {user && <SignOutButton />}
+        </div>
 
         {/* Mobile Menu Toggle */}
         <div className='relative ml-auto md:hidden'>
@@ -63,15 +67,12 @@ export default function Nav({ user }: { user: UserSession }) {
                 >
                   Pricing
                 </Link>
-                {user ? (
-                  <Link href='/dashboard' className='mt-4'>
-                    <Button className='w-full'>Dashboard</Button>
+                <>
+                  <Link href={user ? '/dashboard' : '/auth/signin'} className='mt-4'>
+                    <Button>{user ? 'Dashboard' : 'Sign in'}</Button>
                   </Link>
-                ) : (
-                  <Link href='/auth/signin' className='mt-4'>
-                    <Button className='w-full'>Sign in</Button>
-                  </Link>
-                )}
+                  {user && <SignOutButton />}
+                </>
               </div>
             </div>
           </div>
