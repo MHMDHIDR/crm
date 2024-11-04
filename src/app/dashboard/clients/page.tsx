@@ -13,15 +13,14 @@ import {
 } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { deleteUsers } from '@/actions/delete-user'
-import { getUsers } from '@/actions/get-users'
-import { suspendUsers, unsuspendUsers } from '@/actions/suspense-user'
+import { deleteClients } from '@/actions/delete-client'
+import { getClients } from '@/actions/get-clients'
+import { getClientColumns } from '@/components/custom/client-columns'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
 import { TableToolbar } from '@/components/custom/table-toolbar'
-import { getUserColumns } from '@/components/custom/user-columns'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,11 +40,11 @@ import {
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
-import type { User } from '@/db/schema'
+import type { Client } from '@/db/schema'
 
 /* eslint-disable max-lines */
-export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([])
+export default function ClientsPage() {
+  const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -56,7 +55,7 @@ export default function UsersPage() {
   /** Handling Dialogs states (Pefect for Reusable Modals): */
   const [dialogProps, setDialogProps] = useState({
     open: false,
-    action: null as 'delete' | 'suspend' | 'unsuspend' | null,
+    action: null as 'delete' | null,
     title: '',
     description: '',
     buttonText: '',
@@ -66,12 +65,12 @@ export default function UsersPage() {
 
   const toast = useToast()
 
-  // Fetch users
-  const fetchUsers = useCallback(async () => {
+  // Fetch clients
+  const fetchClients = useCallback(async () => {
     setLoading(true)
-    const result = await getUsers()
+    const result = await getClients()
     if (result.success && result.data) {
-      setUsers(result.data)
+      setClients(result.data)
     }
     setLoading(false)
   }, [])
@@ -81,81 +80,25 @@ export default function UsersPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Selected Users',
+      title: 'Delete Selected Clients',
       description:
-        'This action cannot be undone. This will permanently delete the selected users and remove their data from our servers.',
-      buttonText: 'Delete Users',
+        'This action cannot be undone. This will permanently delete the selected clients and remove their data from our servers.',
+      buttonText: 'Delete Clients',
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
-    // setUserToDelete(null) // Ensure we're not targeting a specific user this means we're deleting multiple users
   }
 
-  const handleDeleteSingleUser = (userId: string) => {
-    // setUserToDelete(userId)
+  const handleDeleteSingleClient = (clientId: string) => {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete User',
+      title: 'Delete Client',
       description:
         'This action cannot be undone. This will permanently delete this user and remove their data from our servers.',
-      buttonText: 'Delete User',
+      buttonText: 'Delete Client',
       buttonClass: 'bg-red-600',
-      selectedIds: [userId]
-    })
-  }
-
-  const handleSuspendSelected = () => {
-    const ids = selectedRows.map(row => row.original.id)
-    setDialogProps({
-      open: true,
-      action: 'suspend',
-      title: 'Suspend Selected Users',
-      description:
-        'Are you sure you want to suspend the selected users? They will not be able to access the system until unsuspended.',
-      buttonText: 'Suspend Users',
-      buttonClass: 'bg-yellow-600',
-      selectedIds: ids
-    })
-  }
-
-  const handleUnsuspendSelected = () => {
-    const ids = selectedRows.map(row => row.original.id)
-    setDialogProps({
-      open: true,
-      action: 'unsuspend',
-      title: 'Unsuspend Selected Users',
-      description:
-        'Are you sure you want to unsuspend the selected users? They will regain access to the system.',
-      buttonText: 'Unsuspend Users',
-      buttonClass: 'bg-green-600',
-      selectedIds: ids
-    })
-  }
-
-  const handleSuspendSingleUser = (userId: string) => {
-    setDialogProps({
-      open: true,
-      action: 'suspend',
-      title: 'Suspend User',
-      description:
-        'Are you sure you want to suspend this user? They will not be able to access the system until unsuspended.',
-      buttonText: 'Suspend User',
-      buttonClass: 'bg-yellow-600',
-      selectedIds: [userId]
-    })
-  }
-
-  const handleUnsuspendSingleUser = (userId: string) => {
-    setDialogProps({
-      open: true,
-      action: 'unsuspend',
-      title: 'Unsuspend User',
-      description:
-        'Are you sure you want to unsuspend this user? They will regain access to the system.',
-      buttonText: 'Unsuspend User',
-      buttonClass: 'bg-green-600',
-      selectedIds: [userId]
+      selectedIds: [clientId]
     })
   }
 
@@ -163,9 +106,7 @@ export default function UsersPage() {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
     const actions = {
-      delete: deleteUsers,
-      suspend: suspendUsers,
-      unsuspend: unsuspendUsers
+      delete: deleteClients
     }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
@@ -173,20 +114,18 @@ export default function UsersPage() {
     if (result?.success) {
       setDialogProps(prev => ({ ...prev, open: false }))
       toast.success(result.message as string)
-      fetchUsers()
+      fetchClients()
     } else {
       toast.error(result?.message || 'Operation failed')
     }
   }
 
-  const columns = getUserColumns({
-    onDelete: handleDeleteSingleUser,
-    onSuspend: handleSuspendSingleUser,
-    onUnsuspend: handleUnsuspendSingleUser
+  const columns = getClientColumns({
+    onDelete: handleDeleteSingleClient
   })
 
   const table = useReactTable({
-    data: users,
+    data: clients,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -209,8 +148,8 @@ export default function UsersPage() {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   useEffect(() => {
-    fetchUsers()
-  }, [fetchUsers])
+    fetchClients()
+  }, [fetchClients])
 
   return (
     <SidebarInset>
@@ -225,21 +164,19 @@ export default function UsersPage() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <Link href='/dashboard/create-user'>
-            <Button>Add New User</Button>
+          <Link href='/dashboard/create-client'>
+            <Button>Add New Client</Button>
           </Link>
         </div>
       </header>
       <main className='w-full'>
-        <TableToolbar
+        {/* <TableToolbar
           table={table}
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
           onDeleteSelected={handleDeleteSelected}
-          onSuspendSelected={handleSuspendSelected}
-          onUnsuspendSelected={handleUnsuspendSelected}
-        />
+        /> */}
 
         <div className='rounded-md border'>
           <Table>
@@ -264,10 +201,7 @@ export default function UsersPage() {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
-                    className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-                      'text-orange-700 bg-orange-200 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
-                        row.getValue('suspendedAt') !== null
-                    })}
+                    className='rounded-full px-2.5 py-0.5 border select-none'
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className='text-center'>
