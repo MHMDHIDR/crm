@@ -4,7 +4,11 @@ import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/p
 // Enums using pgEnum for type safety and validation
 export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
 export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
-export const clientStatusEnum = pgEnum('client_status', ['active', 'inactive'])
+export const clientStatus = { ACTIVE: 'active', INACTIVE: 'inactive' } as const
+export const clientStatusEnum = pgEnum('client_status', [
+  clientStatus.ACTIVE,
+  clientStatus.INACTIVE
+])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 export const themeEnum = pgEnum('theme', ['light', 'dark'])
 export const languageEnum = pgEnum('language', ['en', 'ar'])
@@ -120,9 +124,9 @@ export const clients = pgTable('clients', {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull(),
-  email: text('email'),
-  phone: text('phone'),
-  status: clientStatusEnum('status').default('active'),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  status: clientStatusEnum('status').notNull().default('active'),
   assignedEmployeeId: text('assigned_employee_id').references(() => users.id, {
     onDelete: 'set null'
   })

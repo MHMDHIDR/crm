@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from 'react-hook-form'
-import { createUser } from '@/actions/users'
+import { createUser } from '@/actions/create-user'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -140,7 +140,7 @@ export default function CreateUserPage() {
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select role' />
+                          <SelectValue placeholder='Select a Role' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

@@ -285,12 +285,12 @@ export default function UsersPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    <Link href='/dashboard/create-user'>
+                    <Link href='/dashboard/create-client'>
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 dark:text-gray-400 select-none'>
-                          Sorry we couldn&apos;t find any users.
+                          Sorry we couldn&apos;t find any clients.
                         </p>
-                        <Button>Add New User</Button>
+                        <Button>Add New Client</Button>
                       </EmptyState>
                     </Link>
                   </TableCell>

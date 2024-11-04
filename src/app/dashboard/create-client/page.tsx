@@ -1,7 +1,9 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { createUser } from '@/actions/users'
+import { createClient } from '@/actions/create-client'
+import { PhoneInput } from '@/components/custom/phone-input'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -30,26 +32,27 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import { UserRole, UserSession } from '@/db/schema'
-import { env } from '@/env'
+import { clientStatus } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
+import { clientSchema } from '@/validators/client'
+import type { ClientSchemaType } from '@/validators/client'
 
 export default function CreateUserPage() {
   const toast = useToast()
 
-  const form = useForm<UserSession & { password: string }>({
+  const form = useForm<ClientSchemaType>({
+    resolver: zodResolver(clientSchema),
     defaultValues: {
       name: '',
       email: '',
-      password: '',
-      role: 'Employee',
-      image: env.NEXT_PUBLIC_LOGO_URL
+      phone: '',
+      status: 'active'
     }
   })
 
-  async function onSubmit(data: UserSession & { password: string }) {
+  async function onSubmit(data: ClientSchemaType) {
     try {
-      const result = await createUser(data)
+      const result = await createClient(data)
 
       if (!result.success) {
         toast.error(result.message)
@@ -76,7 +79,7 @@ export default function CreateUserPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden md:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Create User</BreadcrumbPage>
+                <BreadcrumbPage>Create Client</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -119,12 +122,12 @@ export default function CreateUserPage() {
 
               <FormField
                 control={form.control}
-                name='password'
+                name='phone'
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type='password' placeholder='Enter password' {...field} />
+                  <FormItem className='flex flex-col items-start'>
+                    <FormLabel className='text-left'>Phone Number</FormLabel>
+                    <FormControl className='w-full'>
+                      <PhoneInput placeholder='Enter a phone number' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -133,20 +136,19 @@ export default function CreateUserPage() {
 
               <FormField
                 control={form.control}
-                name='role'
+                name='status'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>Status</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder='Select role' />
+                          <SelectValue placeholder='Select a Status' />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                        <SelectItem value={UserRole.SUPERVISOR}>Supervisor</SelectItem>
-                        <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
+                        <SelectItem value={clientStatus.ACTIVE}>Active</SelectItem>
+                        <SelectItem value={clientStatus.INACTIVE}>Inactive</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -155,7 +157,7 @@ export default function CreateUserPage() {
               />
 
               <Button variant='pressable' className='w-full'>
-                Create User
+                Create Client
               </Button>
             </form>
           </Form>
