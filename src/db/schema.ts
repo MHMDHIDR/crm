@@ -21,6 +21,8 @@ export type UserSession = {
 } & Partial<UserPreferences>
 export type UserPreferences = typeof userPreferences.$inferSelect
 
+export type Client = typeof clients.$inferSelect
+
 // Auth Tables with corrected column names for NextAuth
 export const users = pgTable('users', {
   id: text('id')

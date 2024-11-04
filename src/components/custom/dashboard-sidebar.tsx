@@ -1,6 +1,17 @@
 'use client'
 
-import { Frame, Group, Paintbrush2, Settings2, UserCog, UserPlus2, Users2 } from 'lucide-react'
+import {
+  BriefcaseBusiness,
+  Frame,
+  Group,
+  Paintbrush2,
+  PersonStanding,
+  Settings2,
+  UserCog,
+  UserPlus2,
+  Users2,
+  UsersRound
+} from 'lucide-react'
 import { NavMain } from '@/components/custom/nav-main'
 import { NavPinned } from '@/components/custom/nav-pinned'
 import { NavUser } from '@/components/custom/nav-user'
@@ -34,20 +45,42 @@ export function DashboardSidebar({
       }
     ],
     navMain: [
+      // Only include the "Users" section if the user role is "Admin"
+      ...(user.role === 'Admin'
+        ? [
+            {
+              title: 'Users',
+              url: '#',
+              icon: Users2,
+              items: [
+                {
+                  title: 'All Users',
+                  url: '/dashboard/users',
+                  icon: Group
+                },
+                {
+                  title: 'Create User',
+                  url: '/dashboard/create-user',
+                  icon: UserPlus2
+                }
+              ]
+            }
+          ]
+        : []),
       {
-        title: 'Users',
+        title: 'Clients',
         url: '#',
-        icon: Users2,
+        icon: UsersRound,
         items: [
           {
-            title: 'All Users',
-            url: '/dashboard/users',
+            title: 'All Clients',
+            url: '/dashboard/clients',
             icon: Group
           },
           {
-            title: 'Create User',
-            url: '/dashboard/create-user',
-            icon: UserPlus2
+            title: 'Create New Client',
+            url: '/dashboard/create-client',
+            icon: PersonStanding
           }
         ]
       },

@@ -1,9 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
-import { useForm } from 'react-hook-form'
-import { updateUser } from '@/actions/update-user'
+import { useState, useTransition } from 'react'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,78 +10,60 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import { Switch } from '@/components/ui/switch'
-import { User, UserRole } from '@/db/schema'
+import { Client } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
-export default function EditUserPageClient({ user }: { user: User }) {
+export default function EditClientPageClient({ client }: { client: Client }) {
   const [isPending, startTransition] = useTransition()
   const toast = useToast()
   const router = useRouter()
 
-  // State to hold the user data
-  const [userData, setUserData] = useState(user)
+  // State to hold the client data
+  const [clientData, setClientData] = useState(client)
 
-  const form = useForm({
-    defaultValues: {
-      id: userData.id,
-      name: userData.name || '',
-      email: userData.email || '',
-      password: '',
-      role: userData.role || 'Employee',
-      isTwoFactorEnabled: userData.isTwoFactorEnabled || false
-    }
-  })
+  // const form = useForm({
+  //   defaultValues: {
+  //     id: userData.id,
+  //     name: userData.name || '',
+  //     email: userData.email || '',
+  //     password: '',
+  //     role: userData.role || 'Employee',
+  //     isTwoFactorEnabled: userData.isTwoFactorEnabled || false
+  //   }
+  // })
 
-  // Update form values if userData changes
-  useEffect(() => {
-    form.reset({
-      name: userData.name,
-      email: userData.email,
-      password: '',
-      role: userData.role ?? 'Employee',
-      isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false
-    })
-  }, [userData, form])
+  // // Update form values if userData changes
+  // useEffect(() => {
+  //   form.reset({
+  //     name: userData.name,
+  //     email: userData.email,
+  //     password: '',
+  //     role: userData.role ?? 'Employee',
+  //     isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false
+  //   })
+  // }, [userData, form])
 
-  const onSubmit = (values: any) => {
-    startTransition(async () => {
-      try {
-        const data = await updateUser({ id: userData.id, ...values })
+  // const onSubmit = (values: any) => {
+  //   startTransition(async () => {
+  //     try {
+  //       const data = await updateClient({ id: userData.id, ...values })
 
-        if (data.error) {
-          toast.error(data.error)
-        } else if (data.success) {
-          toast.success(data.success)
-          // Update local state with new data
-          setUserData({ ...userData, ...values })
-          router.refresh() // Refreshes the page
-        }
-      } catch (error) {
-        toast.error('An error occurred')
-      }
-    })
-  }
+  //       if (data.error) {
+  //         toast.error(data.error)
+  //       } else if (data.success) {
+  //         toast.success(data.success)
+  //         // Update local state with new data
+  //         setClientData({ ...userData, ...values })
+  //         router.refresh() // Refreshes the page
+  //       }
+  //     } catch (error) {
+  //       toast.error('An error occurred')
+  //     }
+  //   })
+  // }
 
   return (
     <SidebarInset>
@@ -98,7 +78,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden md:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Edit User</BreadcrumbPage>
+                <BreadcrumbPage>Edit Client</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -106,10 +86,11 @@ export default function EditUserPageClient({ user }: { user: User }) {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>👤 Edit User</h1>
+          <h1 className='text-2xl font-bold text-center'>👤 Edit Client</h1>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
+          {/**
+           * <Form {...form}>
             <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
               <div className='space-y-2'>
                 <FormField
@@ -161,9 +142,9 @@ export default function EditUserPageClient({ user }: { user: User }) {
                             <SelectValue placeholder='Select a role' />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                            <SelectItem value={UserRole.SUPERVISOR}>Supervisor</SelectItem>
-                            <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
+                            <SelectItem value={ClientRole.ADMIN}>Admin</SelectItem>
+                            <SelectItem value={ClientRole.SUPERVISOR}>Supervisor</SelectItem>
+                            <SelectItem value={ClientRole.EMPLOYEE}>Employee</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -197,6 +178,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
               </Button>
             </form>
           </Form>
+           */}
         </CardContent>
       </Card>
     </SidebarInset>
