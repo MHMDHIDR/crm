@@ -1,3 +1,4 @@
+// types/auth.d.ts
 import type { UserRole } from '@/db/schema'
 import type { AdapterUser } from '@auth/core/adapters'
 import type { DefaultSession } from 'next-auth'
@@ -14,24 +15,22 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string
-      name: string
+      name: string | null
       email: string
       role: UserRole
-      image: string
+      image?: string | null
       isTwoFactorEnabled: boolean
-      theme?: 'light' | 'dark' | null
+      theme?: 'light' | 'dark' | 'system'
       emailVerified: Date | null
-    }
+    } & DefaultSession['user']
   }
 
   interface User extends AdapterUser {
     id: string
-    name: string
+    name: string | null
     email: string
-    image: string
-    // isTwoFactorEnabled: boolean
-    // role: UserRole
-    emailVerified: Date | null
+    image?: string | null
+    theme?: 'light' | 'dark' | 'system'
   }
 }
 
@@ -39,6 +38,8 @@ declare module 'next-auth/jwt' {
   interface JWT {
     role: UserRole
     sessionId?: string
-    isTwoFactorEnabled: boolean | null
+    isTwoFactorEnabled: boolean
+    name: string | null
+    email: string
   }
 }
