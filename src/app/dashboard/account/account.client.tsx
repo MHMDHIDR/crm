@@ -93,10 +93,10 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
           <Separator orientation='vertical' className='mr-2 h-4' />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem className='hidden md:block'>
+              <BreadcrumbItem className='hidden sm:block'>
                 <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator className='hidden md:block' />
+              <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
                 <BreadcrumbPage>Account Settings</BreadcrumbPage>
               </BreadcrumbItem>

@@ -44,7 +44,7 @@ export function DashboardSidebar({
       }
     ],
     navMain: [
-      // Only include the "Users" section if the user role is "Admin"
+      // Only include the "Users" section if the user role === "Admin"
       ...(user.role === 'Admin'
         ? [
             {

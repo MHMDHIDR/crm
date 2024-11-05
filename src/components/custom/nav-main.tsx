@@ -11,8 +11,7 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  useSidebar
+  SidebarMenuSubItem
 } from '@/components/ui/sidebar'
 import type { LucideIcon } from 'lucide-react'
 
@@ -31,18 +30,6 @@ export function NavMain({
     }[]
   }[]
 }) {
-  const { isMobile, setOpenMobile, setOpen } = useSidebar()
-
-  const handleSubItemClick = () => {
-    // Close mobile sidebar if on mobile
-    if (isMobile) {
-      setOpenMobile(false)
-    } else {
-      // Close desktop sidebar if in icon/collapsed mode
-      setOpen(false)
-    }
-  }
-
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -67,7 +54,7 @@ export function NavMain({
                   {item.items?.map(subItem => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url} onClick={handleSubItemClick}>
+                        <Link href={subItem.url}>
                           {subItem.icon && <subItem.icon />}
                           <span>{subItem.title}</span>
                         </Link>

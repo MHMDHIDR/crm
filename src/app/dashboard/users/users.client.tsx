@@ -220,7 +220,7 @@ export default function UsersClientPage() {
           <Separator orientation='vertical' className='mr-2 h-4' />
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
-              <BreadcrumbItem className='hidden md:block'>
+              <BreadcrumbItem className='hidden sm:block'>
                 <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>

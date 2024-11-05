@@ -9,6 +9,11 @@ export const clientStatusEnum = pgEnum('client_status', [
   clientStatus.ACTIVE,
   clientStatus.INACTIVE
 ])
+export const projectStatus = { ACTIVE: 'active', INACTIVE: 'inactive' } as const
+export const projectStatusEnum = pgEnum('project_status', [
+  projectStatus.ACTIVE,
+  projectStatus.INACTIVE
+])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 export const themeEnum = pgEnum('theme', ['light', 'dark'])
 export const languageEnum = pgEnum('language', ['en', 'ar'])
@@ -132,18 +137,36 @@ export const clients = pgTable('clients', {
   })
 })
 
+export const projects = pgTable('projects', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text('name').notNull(),
+  description: text('description'),
+  clientId: text('client_id')
+    .notNull()
+    .references(() => clients.id, { onDelete: 'cascade' }),
+  assignedToUserId: text('assigned_to_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'set null' }),
+  status: projectStatusEnum('status').default('active'),
+  startDate: timestamp('start_date', { mode: 'date' }),
+  endDate: timestamp('end_date', { mode: 'date' })
+})
+
 export const tasks = pgTable('tasks', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   title: text('title').notNull(),
   description: text('description'),
-  dueDate: timestamp('due_date', { mode: 'date' }), // useful for CRM tasks
+  dueDate: timestamp('due_date', { mode: 'date' }),
   status: taskStatusEnum('status').default('pending'),
-  clientId: text('client_id').references(() => clients.id, { onDelete: 'cascade' }), // ensures client-tasks link
-  assignedToUserId: text('assigned_to_user_id').references(() => users.id, { onDelete: 'set null' }) // sets null if user removed
+  projectId: text('project_id')
+    .notNull()
+    .references(() => projects.id, { onDelete: 'cascade' }),
+  assignedToUserId: text('assigned_to_user_id').references(() => users.id, { onDelete: 'set null' })
 })
-
 /**
  * Define relations for the twoFactorConfirmations table
  * @example
