@@ -21,7 +21,7 @@ export default function ThemeSwitch() {
       setNewTheme(newTheme || 'light')
     }
     setUserTheme()
-  }, [])
+  }, [newTheme])
 
   const handleThemeChange = async (theme: UserPreferences['theme']) => {
     setIsUpdating(true)
