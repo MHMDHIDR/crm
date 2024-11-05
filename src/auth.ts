@@ -52,6 +52,7 @@ export const {
         session.user.role = token.role as UserRole
         session.user.isTwoFactorEnabled =
           token.isTwoFactorEnabled as UserSession['isTwoFactorEnabled']
+        // Another way: session.user.isTwoFactorEnabled =  (token.isTwoFactorEnabled as UserSession['isTwoFactorEnabled']) ?? false
 
         // Verify the database session is still valid
         const [dbSession] = await database
@@ -151,8 +152,10 @@ export const {
             email: userWithPreferences.users.email,
             role: userWithPreferences.users.role,
             image: userWithPreferences.users.image,
-            theme: userWithPreferences.user_preferences?.theme ?? 'system'
-          } as UserSession
+            emailVerified: userWithPreferences.users.emailVerified,
+            theme: userWithPreferences.user_preferences?.theme ?? 'system',
+            isTwoFactorEnabled: userWithPreferences.users.isTwoFactorEnabled
+          } as User
         } catch (error) {
           console.error('Auth error:', error)
           return null

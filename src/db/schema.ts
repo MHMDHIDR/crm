@@ -37,7 +37,7 @@ export const users = pgTable('users', {
   hashedPassword: text('hashed_password'),
   role: userRoleEnum('role').default('Employee'),
   image: text('image').notNull(),
-  isTwoFactorEnabled: boolean('is_two_factor_enabled').default(false),
+  isTwoFactorEnabled: boolean('is_two_factor_enabled').notNull().default(false),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
   suspendedAt: timestamp('suspended_at', { mode: 'date' })
 })

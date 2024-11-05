@@ -16,17 +16,20 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/cn'
 
+// Rename to follow PascalCase convention
+const RPNInputDefault = RPNInput.default
+
 type PhoneInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> &
-  Omit<RPNInput.Props<typeof RPNInput.default>, 'onChange'> & {
+  Omit<RPNInput.Props<typeof RPNInputDefault>, 'onChange'> & {
     onChange?: (value: RPNInput.Value) => void
   }
 
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> = React.forwardRef<
-  React.ElementRef<typeof RPNInput.default>,
+  React.ElementRef<typeof RPNInputDefault>,
   PhoneInputProps
 >(({ className, onChange, ...props }, ref) => {
   return (
-    <RPNInput.default
+    <RPNInputDefault
       ref={ref}
       className={cn('flex', className)}
       flagComponent={FlagComponent}

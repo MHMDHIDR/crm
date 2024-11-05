@@ -5,19 +5,17 @@ import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { userPreferences } from '@/db/schema'
-import type { UserPreferences } from '@/db/schema'
+import type { UserPreferences, UserSession } from '@/db/schema'
 
 /**
  * Get user theme preference
+ * @param userId  ID of the user to get theme preference for
  * @returns {Promise<UserPreferences['theme']>} A promise that contains an array of user preferences 'light' | 'dark'
  */
-export async function getUserTheme(): Promise<UserPreferences['theme']> {
+export async function getUserTheme(userId: UserSession['id']): Promise<UserPreferences['theme']> {
   try {
-    const session = await auth()
-    if (!session?.user?.id) return 'light'
-
     const preferences = await database.query.userPreferences.findFirst({
-      where: eq(userPreferences.userId, session.user.id)
+      where: eq(userPreferences.userId, userId)
     })
 
     return preferences?.theme || 'light'
