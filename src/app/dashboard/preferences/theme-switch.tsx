@@ -8,23 +8,23 @@ import { Switch } from '@/components/ui/switch'
 import { UserPreferences } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
-export default function ThemeSwitch({ userTheme }: { userTheme: UserPreferences['theme'] }) {
-  const [newTheme, setNewTheme] = useState<UserPreferences['theme']>(userTheme)
+export default function ThemeSwitch() {
+  const storedTheme = localStorage.getItem('theme') as UserPreferences['theme']
+
+  const [newTheme, setNewTheme] = useState(storedTheme)
   const [isUpdating, setIsUpdating] = useState(false)
   const { setTheme: setProviderTheme } = useTheme()
   const toast = useToast()
 
   useEffect(() => {
-    // Using this effect to set the user theme when the component mounts
     async function setUserTheme() {
-      setNewTheme(userTheme || 'light')
+      setNewTheme(newTheme || 'light')
     }
     setUserTheme()
-  }, [userTheme])
+  }, [])
 
   const handleThemeChange = async (theme: UserPreferences['theme']) => {
     setIsUpdating(true)
-
     const { message, success } = await updateUserTheme(theme || 'light')
 
     if (success) {
