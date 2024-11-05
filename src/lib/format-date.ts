@@ -5,7 +5,7 @@
  * @param date the date string to be formatted
  * @returns the formatted date
  */
-export function formatDate(date: string, isNormalDate?: boolean): string {
+export function formatDate(date: string, isNormalDate: boolean = true): string {
   if (isNormalDate) {
     const dateOptions = {
       year: 'numeric' as const,

@@ -31,6 +31,12 @@ export type UserSession = {
 export type UserPreferences = typeof userPreferences.$inferSelect
 
 export type Client = typeof clients.$inferSelect
+export type Project = typeof projects.$inferSelect
+
+export type ExtendedProject = Project & {
+  assignedEmployeeName: User['name']
+  clientName: Client['name']
+}
 
 // Auth Tables with corrected column names for NextAuth
 export const users = pgTable('users', {
@@ -132,9 +138,9 @@ export const clients = pgTable('clients', {
   email: text('email').notNull(),
   phone: text('phone').notNull(),
   status: clientStatusEnum('status').notNull().default('active'),
-  assignedEmployeeId: text('assigned_employee_id').references(() => users.id, {
-    onDelete: 'set null'
-  })
+  assignedEmployeeId: text('assigned_employee_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'set null' })
 })
 
 export const projects = pgTable('projects', {
@@ -146,10 +152,11 @@ export const projects = pgTable('projects', {
   clientId: text('client_id')
     .notNull()
     .references(() => clients.id, { onDelete: 'cascade' }),
-  assignedToUserId: text('assigned_to_user_id')
+  assignedEmployeeId: text('assigned_employee_id')
     .notNull()
     .references(() => users.id, { onDelete: 'set null' }),
   status: projectStatusEnum('status').default('active'),
+  updatedAt: timestamp('updated_at', { mode: 'date' }),
   startDate: timestamp('start_date', { mode: 'date' }),
   endDate: timestamp('end_date', { mode: 'date' })
 })
@@ -165,8 +172,11 @@ export const tasks = pgTable('tasks', {
   projectId: text('project_id')
     .notNull()
     .references(() => projects.id, { onDelete: 'cascade' }),
-  assignedToUserId: text('assigned_to_user_id').references(() => users.id, { onDelete: 'set null' })
+  assignedEmployeeId: text('assigned_employee_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'set null' })
 })
+
 /**
  * Define relations for the twoFactorConfirmations table
  * @example
@@ -203,4 +213,10 @@ export const userPreferencesRelations = relations(userPreferences, ({ one }) => 
 export const usersRelations = relations(users, ({ many, one }) => ({
   twoFactorConfirmations: many(twoFactorConfirmations),
   preferences: one(userPreferences)
+}))
+
+// Relation between projects and users
+export const projectsRelations = relations(projects, ({ one }) => ({
+  assignedEmployee: one(users, { fields: [projects.assignedEmployeeId], references: [users.id] }),
+  client: one(clients, { fields: [projects.clientId], references: [clients.id] })
 }))

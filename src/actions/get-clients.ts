@@ -1,6 +1,9 @@
 'use server'
 
+import { eq } from 'drizzle-orm'
+import { auth } from '@/auth'
 import { database } from '@/db'
+import { clients } from '@/db/schema'
 import type { Client } from '@/db/schema'
 
 /**
@@ -9,9 +12,25 @@ import type { Client } from '@/db/schema'
  */
 export async function getClients(): Promise<{ success: boolean; data?: Client[]; error?: string }> {
   try {
-    const allClients = await database.query.clients.findMany({
-      orderBy: (clients, { desc }) => [desc(clients.email)]
-    })
+    const session = await auth()
+    if (!session) {
+      return { success: false, error: 'You must be logged in to fetch clients' }
+    }
+
+    const role = session.user.role
+
+    let allClients: Client[] = []
+
+    if (role === 'Admin') {
+      allClients = await database.query.clients.findMany({
+        orderBy: (clients, { desc }) => [desc(clients.email)]
+      })
+    } else {
+      allClients = await database.query.clients.findMany({
+        orderBy: (clients, { desc }) => [desc(clients.email)],
+        where: eq(clients.assignedEmployeeId, session.user.id)
+      })
+    }
 
     return { success: true, data: allClients }
   } catch (error) {

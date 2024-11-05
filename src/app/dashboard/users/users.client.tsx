@@ -161,11 +161,7 @@ export default function UsersClientPage() {
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    const actions = {
-      delete: deleteUsers,
-      suspend: suspendUsers,
-      unsuspend: unsuspendUsers
-    }
+    const actions = { delete: deleteUsers, suspend: suspendUsers, unsuspend: unsuspendUsers }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
 
@@ -178,7 +174,7 @@ export default function UsersClientPage() {
     }
   }
 
-  const columns = getSharedColumns<User>('user', {
+  const columns = getSharedColumns<User>('users', {
     onDelete: handleDeleteSingleUser,
     onSuspend: handleSuspendSingleUser,
     onUnsuspend: handleUnsuspendSingleUser,

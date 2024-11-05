@@ -103,9 +103,7 @@ export default function ClientsPage() {
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    const actions = {
-      delete: deleteClients
-    }
+    const actions = { delete: deleteClients }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
 
@@ -118,7 +116,7 @@ export default function ClientsPage() {
     }
   }
 
-  const columns = getSharedColumns<Client>('client', {
+  const columns = getSharedColumns<Client>('clients', {
     onDelete: handleDeleteSingleClient,
     basePath: '/dashboard/clients'
   })
@@ -174,7 +172,7 @@ export default function ClientsPage() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          searchPlaceholder='Look for a client...'
+          searchPlaceholder='Look for a Client...'
           bulkActions={[
             { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
           ]}

@@ -4,9 +4,12 @@ import {
   FileUser,
   Frame,
   Group,
+  PackagePlusIcon,
   Paintbrush2,
   PersonStanding,
   Settings2,
+  ShoppingBagIcon,
+  SquareDashedMousePointer,
   UserCog,
   UserPlus2,
   Users2
@@ -66,6 +69,23 @@ export function DashboardSidebar({
             }
           ]
         : []),
+      {
+        title: 'Projects',
+        url: '#',
+        icon: ShoppingBagIcon,
+        items: [
+          {
+            title: 'All Projects',
+            url: '/dashboard/projects',
+            icon: SquareDashedMousePointer
+          },
+          {
+            title: 'Create New project',
+            url: '/dashboard/create-project',
+            icon: PackagePlusIcon
+          }
+        ]
+      },
       {
         title: 'Clients',
         url: '#',

@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { ExtendedProject } from '@/db/schema'
 import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 
@@ -37,11 +38,11 @@ type TableActions = {
   onDelete: (id: string) => void
   onSuspend?: (id: string) => void
   onUnsuspend?: (id: string) => void
-  basePath: string // e.g., '/dashboard/users' or '/dashboard/clients'
+  basePath: string // e.g., '/dashboard/users' or '/dashboard/clients' or '/dashboard/projects'
 }
 
-export function getSharedColumns<T extends BaseEntity>(
-  entityType: 'user' | 'client',
+export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
+  entityType: 'users' | 'clients' | 'project',
   actions: TableActions
 ): ColumnDef<T>[] {
   const baseColumns: ColumnDef<T>[] = [
@@ -68,6 +69,22 @@ export function getSharedColumns<T extends BaseEntity>(
       enableHiding: false
     },
     {
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Name
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      )
+    }
+  ]
+
+  // User-specific columns
+  const usersColumns: ColumnDef<T>[] = [
+    {
       accessorKey: 'email',
       header: ({ column }) => (
         <Button
@@ -84,22 +101,6 @@ export function getSharedColumns<T extends BaseEntity>(
         </Link>
       )
     },
-    {
-      accessorKey: 'name',
-      header: ({ column }) => (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Name
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      )
-    }
-  ]
-
-  // User-specific columns
-  const userColumns: ColumnDef<T>[] = [
     {
       accessorKey: 'role',
       header: ({ column }) => (
@@ -179,7 +180,24 @@ export function getSharedColumns<T extends BaseEntity>(
   ]
 
   // Client-specific columns
-  const clientColumns: ColumnDef<T>[] = [
+  const clientsColumns: ColumnDef<T>[] = [
+    {
+      accessorKey: 'email',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Email
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <Link href={`${actions.basePath}/${row.original.id}`} className='hover:underline'>
+          {row.getValue('email')}
+        </Link>
+      )
+    },
     {
       accessorKey: 'status',
       header: ({ column }) => (
@@ -207,6 +225,107 @@ export function getSharedColumns<T extends BaseEntity>(
     }
   ]
 
+  // Project-specific columns
+  const projectsColumns: ColumnDef<T>[] = [
+    {
+      accessorKey: 'status',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Status
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const status = (row.original as ExtendedProject).status
+        return (
+          <span
+            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+              'text-green-600 bg-green-100': status === 'active',
+              'text-red-600 bg-red-100': status === 'inactive'
+            })}
+          >
+            {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
+          </span>
+        )
+      }
+    },
+    {
+      accessorKey: 'clientName',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Client Name
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const clientName = (row.original as ExtendedProject).clientName
+        return <span className='truncate'>{clientName}</span>
+      }
+    },
+    {
+      accessorKey: 'assignedEmployee',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Assigned Employee
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const assignedEmployeeName = (row.original as ExtendedProject).assignedEmployeeName
+        return <span className='truncate'>{assignedEmployeeName}</span>
+      }
+    },
+    {
+      accessorKey: 'description',
+      header: 'Description',
+      cell: ({ row }) => {
+        const description = (row.original as ExtendedProject).description
+        return <span className='truncate'>{description}</span>
+      }
+    },
+    {
+      accessorKey: 'startDate',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Start Date
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const startDate = (row.original as ExtendedProject).startDate
+        return <span>{formatDate(String(startDate))}</span>
+      }
+    },
+    {
+      accessorKey: 'endDate',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          End Date
+          <ArrowUpDown className='ml-2 h-4 w-4' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const endDate = (row.original as ExtendedProject).endDate
+        return <span>{formatDate(String(endDate))}</span>
+      }
+    }
+  ]
+
   // Actions column
   const actionsColumn: ColumnDef<T> = {
     id: 'actions',
@@ -227,15 +346,15 @@ export function getSharedColumns<T extends BaseEntity>(
             <DropdownMenuItem asChild>
               <Link href={`${actions.basePath}/${entity.id}`}>
                 <Pencil className='mr-0.5 h-4 w-4' />
-                View / Edit {entityType === 'user' ? 'User' : 'Client'}
+                {`View / Edit ${entityType === 'users' ? 'User' : entityType === 'clients' ? 'Client' : 'Project'}`}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {entityType === 'user' && actions.onSuspend && actions.onUnsuspend && (
+            {entityType === 'users' && actions.onSuspend && actions.onUnsuspend && (
               <DropdownMenuItem
                 className={clsx({
-                  'text-red-600': !(row.original as unknown as User).suspendedAt,
-                  'text-green-600': (row.original as unknown as User).suspendedAt
+                  'text-red-600': !(row.original as User).suspendedAt,
+                  'text-green-600': (row.original as User).suspendedAt
                 })}
                 onClick={() =>
                   (row.original as unknown as User).suspendedAt
@@ -249,7 +368,7 @@ export function getSharedColumns<T extends BaseEntity>(
             )}
             <DropdownMenuItem className='text-red-600' onClick={() => actions.onDelete(entity.id)}>
               <Trash className='mr-0.5 h-4 w-4' />
-              Delete {entityType === 'user' ? 'User' : 'Client'}
+              {`Delete ${entityType === 'users' ? 'User' : entityType === 'clients' ? 'Client' : 'Project'}`}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -258,5 +377,13 @@ export function getSharedColumns<T extends BaseEntity>(
   }
 
   // Combine columns based on entity type
-  return [...baseColumns, ...(entityType === 'user' ? userColumns : clientColumns), actionsColumn]
+  return [
+    ...baseColumns,
+    ...(entityType === 'users'
+      ? usersColumns
+      : entityType === 'clients'
+        ? clientsColumns
+        : projectsColumns),
+    actionsColumn
+  ]
 }
