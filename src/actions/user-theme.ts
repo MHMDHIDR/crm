@@ -12,10 +12,17 @@ import type { UserPreferences, UserSession } from '@/db/schema'
  * @param userId  ID of the user to get theme preference for
  * @returns {Promise<UserPreferences['theme']>} A promise that contains an array of user preferences 'light' | 'dark'
  */
-export async function getUserTheme(userId: UserSession['id']): Promise<UserPreferences['theme']> {
+export async function getUserTheme(): Promise<UserPreferences['theme']> {
   try {
+    const session = await auth()
+    const user = session?.user as UserSession
+
+    if (!user?.id) {
+      return 'light'
+    }
+
     const preferences = await database.query.userPreferences.findFirst({
-      where: eq(userPreferences.userId, userId)
+      where: eq(userPreferences.userId, user.id)
     })
 
     return preferences?.theme || 'light'

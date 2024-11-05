@@ -12,14 +12,19 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 
-interface TableToolbarProps<TData> {
+type BulkAction = {
+  label: string
+  onClick: () => void
+  variant?: 'default' | 'destructive' | 'warning' | 'success'
+}
+
+type TableToolbarProps<TData> = {
   table: Table<TData>
   filtering: string
   setFiltering: (value: string) => void
   selectedRows: any[]
-  onDeleteSelected: () => void
-  onSuspendSelected: () => void
-  onUnsuspendSelected: () => void
+  bulkActions?: BulkAction[]
+  searchPlaceholder?: string
 }
 
 export function TableToolbar<TData>({
@@ -27,20 +32,21 @@ export function TableToolbar<TData>({
   filtering,
   setFiltering,
   selectedRows,
-  onDeleteSelected,
-  onSuspendSelected,
-  onUnsuspendSelected
+  bulkActions = [],
+  searchPlaceholder = 'Search...'
 }: TableToolbarProps<TData>) {
+  const hasBulkActions = bulkActions.length > 0
+
   return (
     <div className='flex items-center justify-between gap-x-2 py-2.5'>
       <div className='flex items-center gap-x-2 w-full'>
         <Input
-          placeholder='Look for a user...'
+          placeholder={searchPlaceholder}
           value={filtering}
           onChange={event => setFiltering(event.target.value)}
           className='max-w-md'
         />
-        {selectedRows.length > 0 && (
+        {selectedRows.length > 0 && hasBulkActions && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='outline'>
@@ -50,41 +56,18 @@ export function TableToolbar<TData>({
             <DropdownMenuContent className='space-y-1'>
               <DropdownMenuLabel className='text-center'>Bulk Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Button
-                  className='cursor-pointer w-full'
-                  variant='destructive'
-                  size='sm'
-                  onClick={onDeleteSelected}
-                >
-                  Delete Selected
-                </Button>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {selectedRows.some(row => row.original.suspendedAt === null) && (
-                <DropdownMenuItem asChild>
+              {bulkActions.map((action, index) => (
+                <DropdownMenuItem key={index} asChild>
                   <Button
                     className='cursor-pointer w-full'
-                    variant='warning'
+                    variant={action.variant || 'default'}
                     size='sm'
-                    onClick={onSuspendSelected}
+                    onClick={action.onClick}
                   >
-                    Suspend Selected
+                    {action.label}
                   </Button>
                 </DropdownMenuItem>
-              )}
-              {selectedRows.some(row => row.original.suspendedAt !== null) && (
-                <DropdownMenuItem asChild>
-                  <Button
-                    className='cursor-pointer w-full'
-                    variant='success'
-                    size='sm'
-                    onClick={onUnsuspendSelected}
-                  >
-                    Unsuspend Selected
-                  </Button>
-                </DropdownMenuItem>
-              )}
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

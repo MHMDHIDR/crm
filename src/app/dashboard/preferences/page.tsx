@@ -1,6 +1,4 @@
-import { notFound } from 'next/navigation'
 import { getUserTheme } from '@/actions/user-theme'
-import { auth } from '@/auth'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,11 +12,7 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import ThemeSwitch from './theme-switch'
 
 export default async function DashboardPreferencesPage() {
-  const session = await auth()
-
-  if (!session?.user) notFound()
-
-  const userTheme = await getUserTheme(session.user.id)
+  const userTheme = await getUserTheme()
 
   return (
     <SidebarInset>

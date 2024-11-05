@@ -17,11 +17,11 @@ import { deleteUsers } from '@/actions/delete-user'
 import { getUsers } from '@/actions/get-users'
 import { suspendUsers, unsuspendUsers } from '@/actions/suspense-user'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
+import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
 import { TableToolbar } from '@/components/custom/table-toolbar'
-import { getUserColumns } from '@/components/custom/user-columns'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -43,7 +43,6 @@ import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
 import type { User } from '@/db/schema'
 
-/* eslint-disable max-lines */
 export default function UsersClientPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -179,10 +178,11 @@ export default function UsersClientPage() {
     }
   }
 
-  const columns = getUserColumns({
+  const columns = getSharedColumns<User>('user', {
     onDelete: handleDeleteSingleUser,
     onSuspend: handleSuspendSingleUser,
-    onUnsuspend: handleUnsuspendSingleUser
+    onUnsuspend: handleUnsuspendSingleUser,
+    basePath: '/dashboard/users'
   })
 
   const table = useReactTable({
@@ -236,9 +236,12 @@ export default function UsersClientPage() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          onDeleteSelected={handleDeleteSelected}
-          onSuspendSelected={handleSuspendSelected}
-          onUnsuspendSelected={handleUnsuspendSelected}
+          searchPlaceholder='Look for a User...'
+          bulkActions={[
+            { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' },
+            { label: 'Suspend Selected', onClick: handleSuspendSelected, variant: 'warning' },
+            { label: 'Unsuspend Selected', onClick: handleUnsuspendSelected, variant: 'success' }
+          ]}
         />
 
         <div className='rounded-md border'>

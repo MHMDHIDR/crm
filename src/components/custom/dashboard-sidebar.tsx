@@ -1,7 +1,7 @@
 'use client'
 
 import {
-  BriefcaseBusiness,
+  FileUser,
   Frame,
   Group,
   Paintbrush2,
@@ -9,8 +9,7 @@ import {
   Settings2,
   UserCog,
   UserPlus2,
-  Users2,
-  UsersRound
+  Users2
 } from 'lucide-react'
 import { NavMain } from '@/components/custom/nav-main'
 import { NavPinned } from '@/components/custom/nav-pinned'
@@ -70,7 +69,7 @@ export function DashboardSidebar({
       {
         title: 'Clients',
         url: '#',
-        icon: UsersRound,
+        icon: FileUser,
         items: [
           {
             title: 'All Clients',

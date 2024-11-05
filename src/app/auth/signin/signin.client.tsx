@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -39,27 +38,11 @@ export default function SignInClientPage({ user }: { user: UserSession | undefin
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()
   const { setTheme: setProviderTheme } = useTheme()
-  const { data: session } = useSession()
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: '', password: '', code: '' }
   })
-
-  useEffect(() => {
-    if (user) {
-      // Fetch and set theme whenever user changes
-      startTransition(async () => {
-        try {
-          const userTheme = await getUserTheme(session?.user.id as string)
-          console.log('User theme:', userTheme)
-          setProviderTheme(userTheme || 'light')
-        } catch (error) {
-          console.error('Error fetching user theme:', error)
-        }
-      })
-    }
-  }, [user, session?.user.id, setProviderTheme])
 
   function onSubmit(data: SignInData) {
     startTransition(async () => {
@@ -85,7 +68,7 @@ export default function SignInClientPage({ user }: { user: UserSession | undefin
         }
 
         // Fetch and set theme after successful authentication
-        const userTheme = await getUserTheme(session?.user.id as string)
+        const userTheme = await getUserTheme()
         setProviderTheme(userTheme || 'light')
 
         toast.success(result.message)

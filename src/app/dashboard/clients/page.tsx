@@ -15,8 +15,8 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteClients } from '@/actions/delete-client'
 import { getClients } from '@/actions/get-clients'
-import { getClientColumns } from '@/components/custom/client-columns'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
+import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
@@ -39,10 +39,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
-import { clsx } from '@/lib/cn'
 import type { Client } from '@/db/schema'
 
-/* eslint-disable max-lines */
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
@@ -120,8 +118,9 @@ export default function ClientsPage() {
     }
   }
 
-  const columns = getClientColumns({
-    onDelete: handleDeleteSingleClient
+  const columns = getSharedColumns<Client>('client', {
+    onDelete: handleDeleteSingleClient,
+    basePath: '/dashboard/clients'
   })
 
   const table = useReactTable({
@@ -170,13 +169,16 @@ export default function ClientsPage() {
         </div>
       </header>
       <main className='w-full'>
-        {/* <TableToolbar
+        <TableToolbar
           table={table}
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          onDeleteSelected={handleDeleteSelected}
-        /> */}
+          searchPlaceholder='Look for a client...'
+          bulkActions={[
+            { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
+          ]}
+        />
 
         <div className='rounded-md border'>
           <Table>
