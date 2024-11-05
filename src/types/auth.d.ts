@@ -5,7 +5,7 @@ import type { DefaultSession } from 'next-auth'
 declare module '@auth/core/adapters' {
   interface AdapterUser {
     role: UserRole
-    // isTwoFactorEnabled: boolean
+    isTwoFactorEnabled: boolean
     emailVerified: Date | null
   }
 }
@@ -28,9 +28,9 @@ declare module 'next-auth' {
     id: string
     name: string
     email: string
-    role: UserRole
     image: string
     // isTwoFactorEnabled: boolean
+    // role: UserRole
     emailVerified: Date | null
   }
 }
