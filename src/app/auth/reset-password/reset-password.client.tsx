@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { reset } from '@/actions/reset'
+import { resetPassword } from '@/actions/auth/reset-password'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -39,7 +39,7 @@ export default function ResetPasswordClientPage() {
         const formData = new FormData()
         formData.append('email', data.email)
 
-        const result = await reset({ email: formData.get('email') as string })
+        const result = await resetPassword({ email: formData.get('email') as string })
 
         if (!result.success) {
           toast.error(result.message)

@@ -1,3 +1,5 @@
+'use server'
+
 import { eq } from 'drizzle-orm'
 import { database } from '@/db'
 import { TwoFactorToken } from '@/db/schema'

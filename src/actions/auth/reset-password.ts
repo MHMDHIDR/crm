@@ -1,9 +1,9 @@
 'use server'
 
 import * as z from 'zod'
+import { getUserByEmail } from '@/actions/users/get-users'
 import { sendPasswordResetEmail } from '@/lib/mail'
 import { generatePasswordResetToken } from '@/lib/tokens'
-import { getUserByEmail } from '@/services/user'
 import { userSchema } from '@/validators/user'
 
 // Create reset password schema with optional 2FA code
@@ -11,7 +11,7 @@ const resetPasswordSchema = userSchema.pick({ email: true })
 
 type resetPasswordResult = { success: boolean; message: string }
 
-export async function reset(
+export async function resetPassword(
   values: z.infer<typeof resetPasswordSchema>
 ): Promise<resetPasswordResult> {
   const validatedFields = resetPasswordSchema.safeParse(values)

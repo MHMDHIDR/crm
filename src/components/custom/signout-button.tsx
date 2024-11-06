@@ -1,7 +1,7 @@
 'use client'
 
 import { LogOutIcon } from 'lucide-react'
-import { handleSignout } from '@/actions/handle-signout'
+import { handleSignout } from '@/actions/auth/handle-signout'
 import { Button } from '@/components/ui/button'
 
 export function SignOutButton() {

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 
-type BulkAction = {
+export type BulkAction = {
   label: string
   onClick: () => void
   variant?: 'default' | 'destructive' | 'warning' | 'success'

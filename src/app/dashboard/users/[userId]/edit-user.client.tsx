@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
-import { updateUser } from '@/actions/update-user'
+import { updateUser } from '@/actions/users/update-user'
 import {
   Breadcrumb,
   BreadcrumbItem,

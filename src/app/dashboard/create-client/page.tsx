@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { createClient } from '@/actions/create-client'
+import { createClient } from '@/actions/clients/create-client'
 import { PhoneInput } from '@/components/custom/phone-input'
 import {
   Breadcrumb,
@@ -148,7 +148,7 @@ export default function CreateUserPage() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={clientStatus.ACTIVE}>Active</SelectItem>
-                        <SelectItem value={clientStatus.INACTIVE}>Inactive</SelectItem>
+                        <SelectItem value={clientStatus.DEACTIVE}>Deactive</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

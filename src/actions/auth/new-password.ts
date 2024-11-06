@@ -3,10 +3,10 @@
 import bcrypt from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import * as z from 'zod'
+import { getPasswordResetTokenByToken } from '@/actions/auth/password-reset-token'
+import { getUserByEmail } from '@/actions/users/get-users'
 import { database } from '@/db'
 import { PasswordResetToken, users } from '@/db/schema'
-import { getPasswordResetTokenByToken } from '@/services/password-reset-token'
-import { getUserByEmail } from '@/services/user'
 import { userSchema } from '@/validators/user'
 
 // Create new password schema with optional 2FA code

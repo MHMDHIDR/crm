@@ -30,7 +30,7 @@ type User = BaseEntity & {
 }
 
 type Client = BaseEntity & {
-  status: 'active' | 'inactive'
+  status: 'active' | 'deactive'
 }
 
 // Define the actions that can be performed
@@ -38,6 +38,8 @@ type TableActions = {
   onDelete: (id: string) => void
   onSuspend?: (id: string) => void
   onUnsuspend?: (id: string) => void
+  onActivate?: (id: string) => void
+  onDeactivate?: (id: string) => void
   basePath: string // e.g., '/dashboard/users' or '/dashboard/clients' or '/dashboard/projects'
 }
 
@@ -215,7 +217,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
               'text-green-600 bg-green-100': status === 'active',
-              'text-red-600 bg-red-100': status === 'inactive'
+              'text-red-600 bg-red-100': status === 'deactive'
             })}
           >
             {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
@@ -244,7 +246,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
               'text-green-600 bg-green-100': status === 'active',
-              'text-red-600 bg-red-100': status === 'inactive'
+              'text-red-600 bg-red-100': status === 'deactive'
             })}
           >
             {String(status).charAt(0).toUpperCase() + String(status).slice(1)}

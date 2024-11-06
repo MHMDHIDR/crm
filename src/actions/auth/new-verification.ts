@@ -1,10 +1,10 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { getVerificationTokenByToken } from '@/actions/auth//verificiation-token'
+import { getUserByEmail } from '@/actions/users/get-users'
 import { database } from '@/db'
 import { users, VerificationToken } from '@/db/schema'
-import { getUserByEmail } from '@/services/user'
-import { getVerificationTokenByToken } from '@/services/verificiation-token'
 
 type newVerificationResult = Promise<{ success: string } | { error: string; status: number }>
 

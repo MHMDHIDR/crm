@@ -3,7 +3,7 @@ import { z } from 'zod'
 // First, let's define the project status enum to match your database
 export const ProjectStatus = {
   ACTIVE: 'active',
-  INACTIVE: 'inactive'
+  DEACTIVE: 'deactive'
 } as const
 
 // Create the base schema without refinements
@@ -35,7 +35,7 @@ const baseProjectSchema = z.object({
     }, 'Invalid date format')
     .optional(),
 
-  status: z.enum([ProjectStatus.ACTIVE, ProjectStatus.INACTIVE], {
+  status: z.enum([ProjectStatus.ACTIVE, ProjectStatus.DEACTIVE], {
     required_error: 'Status is required',
     invalid_type_error: 'Invalid status selected'
   })

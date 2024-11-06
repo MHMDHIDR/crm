@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { use, useEffect } from 'react'
-import { newVerification } from '@/actions/new-verification'
+import { newVerification } from '@/actions/auth/new-verification'
 import { useToast } from '@/hooks/use-toast'
 
 // Define the response type

@@ -13,15 +13,15 @@ import {
 } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { deleteUsers } from '@/actions/delete-user'
-import { getUsers } from '@/actions/get-users'
-import { suspendUsers, unsuspendUsers } from '@/actions/suspense-user'
+import { deleteUsers } from '@/actions/users/delete-user'
+import { getUsers } from '@/actions/users/get-users'
+import { suspendUsers, unsuspendUsers } from '@/actions/users/toggle-user-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
-import { TableToolbar } from '@/components/custom/table-toolbar'
+import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -174,6 +174,42 @@ export default function UsersClientPage() {
     }
   }
 
+  const getBulkActions = () => {
+    // Always include Delete Selected action
+    const actions: BulkAction[] = [
+      { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
+    ]
+
+    // Only proceed if there are selected rows
+    if (selectedRows.length > 0) {
+      // Check if any selected row has suspendedAt as null (active users)
+      const hasActiveUsers = selectedRows.some(row => row.original.suspendedAt === null)
+
+      // Check if any selected row has suspendedAt as not null (suspended users)
+      const hasSuspendedUsers = selectedRows.some(row => row.original.suspendedAt !== null)
+
+      // Add Suspend button if there are any active users
+      if (hasActiveUsers) {
+        actions.push({
+          label: 'Suspend Selected',
+          onClick: handleSuspendSelected,
+          variant: 'warning'
+        })
+      }
+
+      // Add Unsuspend button if there are any suspended users
+      if (hasSuspendedUsers) {
+        actions.push({
+          label: 'Unsuspend Selected',
+          onClick: handleUnsuspendSelected,
+          variant: 'success'
+        })
+      }
+    }
+
+    return actions
+  }
+
   const columns = getSharedColumns<User>('users', {
     onDelete: handleDeleteSingleUser,
     onSuspend: handleSuspendSingleUser,
@@ -233,11 +269,7 @@ export default function UsersClientPage() {
           setFiltering={setFiltering}
           selectedRows={selectedRows}
           searchPlaceholder='Look for a User...'
-          bulkActions={[
-            { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' },
-            { label: 'Suspend Selected', onClick: handleSuspendSelected, variant: 'warning' },
-            { label: 'Unsuspend Selected', onClick: handleUnsuspendSelected, variant: 'success' }
-          ]}
+          bulkActions={getBulkActions()}
         />
 
         <div className='rounded-md border'>

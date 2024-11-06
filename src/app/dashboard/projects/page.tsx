@@ -13,14 +13,15 @@ import {
 } from '@tanstack/react-table'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { deleteProjects } from '@/actions/delete-project'
-import { getProjects } from '@/actions/get-project'
+import { deleteProjects } from '@/actions/projects/delete-project'
+import { getProjects } from '@/actions/projects/get-project'
+import { activateProject, deactivateProject } from '@/actions/projects/toggle-project-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
-import { TableToolbar } from '@/components/custom/table-toolbar'
+import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,6 +40,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
+import { clsx } from '@/lib/cn'
 import type { ExtendedProject } from '@/db/schema'
 
 export default function ProjectsPage() {
@@ -53,7 +55,7 @@ export default function ProjectsPage() {
   /** Handling Dialogs states (Pefect for Reusable Modals): */
   const [dialogProps, setDialogProps] = useState({
     open: false,
-    action: null as 'delete' | null,
+    action: null as 'delete' | 'activate' | 'deactivate' | null,
     title: '',
     description: '',
     buttonText: '',
@@ -64,7 +66,7 @@ export default function ProjectsPage() {
   const toast = useToast()
 
   // Fetch projects
-  const fetchClients = useCallback(async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true)
     const result = await getProjects()
     if (result.success && result.data) {
@@ -78,10 +80,10 @@ export default function ProjectsPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Selected Clients',
+      title: 'Delete Selected Projects',
       description:
         'This action cannot be undone. This will permanently delete the selected projects and remove their data from our servers.',
-      buttonText: 'Delete Clients',
+      buttonText: 'Delete Projects',
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
@@ -93,9 +95,63 @@ export default function ProjectsPage() {
       action: 'delete',
       title: 'Delete Project',
       description:
-        'This action cannot be undone. This will permanently delete this project and remove their data from our servers.',
+        'This action cannot be undone. This will permanently delete this project and remove the data from our servers.',
       buttonText: 'Delete Project',
       buttonClass: 'bg-red-600',
+      selectedIds: [projectId]
+    })
+  }
+
+  const handleActivateSelected = () => {
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'activate',
+      title: 'Activate Selected Project',
+      description:
+        'Are you sure you want to activate the selected project? They will not be able to access the system until deactivated.',
+      buttonText: 'Activate Project',
+      buttonClass: 'bg-green-600',
+      selectedIds: ids
+    })
+  }
+
+  const handleDeactivateSelected = () => {
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'deactivate',
+      title: 'Deactivate Selected Project',
+      description:
+        'Are you sure you want to deactivate the selected project? They will regain access to the system.',
+      buttonText: 'Deactivate Project',
+      buttonClass: 'bg-yellow-600',
+      selectedIds: ids
+    })
+  }
+
+  const handleActivateSingleProject = (projectId: string) => {
+    setDialogProps({
+      open: true,
+      action: 'activate',
+      title: 'Activate Project',
+      description:
+        'Are you sure you want to activate this project? They will not be able to access the system until deactivated.',
+      buttonText: 'Activate Project',
+      buttonClass: 'bg-green-600',
+      selectedIds: [projectId]
+    })
+  }
+
+  const handleDeactivateSingleProject = (projectId: string) => {
+    setDialogProps({
+      open: true,
+      action: 'deactivate',
+      title: 'Deactivate Project',
+      description:
+        'Are you sure you want to deactivate this project? They will regain access to the system.',
+      buttonText: 'Deactivate Project',
+      buttonClass: 'bg-yellow-600',
       selectedIds: [projectId]
     })
   }
@@ -103,21 +159,62 @@ export default function ProjectsPage() {
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    const actions = { delete: deleteProjects }
+    const actions = {
+      delete: deleteProjects,
+      activate: activateProject,
+      deactivate: deactivateProject
+    }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
 
     if (result?.success) {
       setDialogProps(prev => ({ ...prev, open: false }))
       toast.success(result.message as string)
-      fetchClients()
+      fetchProjects()
     } else {
       toast.error(result?.message || 'Operation failed')
     }
   }
 
+  const getBulkActions = () => {
+    const actions: BulkAction[] = [
+      { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
+    ]
+
+    // Only proceed if there are selected rows
+    if (selectedRows.length > 0) {
+      // Check if any selected row has 'deactive' status
+      const hasDeactiveProjects = selectedRows.some(row => row.original.status === 'deactive')
+
+      // Check if any selected row has 'active' status
+      const hasActiveProjects = selectedRows.some(row => row.original.status === 'active')
+
+      // Add Activate button if there are any deactive projects
+      if (hasDeactiveProjects) {
+        actions.push({
+          label: 'Activate Selected',
+          onClick: handleActivateSelected,
+          variant: 'success'
+        })
+      }
+
+      // Add Deactivate button if there are any active projects
+      if (hasActiveProjects) {
+        actions.push({
+          label: 'Deactivate Selected',
+          onClick: handleDeactivateSelected,
+          variant: 'warning'
+        })
+      }
+    }
+
+    return actions
+  }
+
   const columns = getSharedColumns<ExtendedProject>('project', {
     onDelete: handleDeleteSingleProject,
+    onActivate: handleActivateSingleProject,
+    onDeactivate: handleDeactivateSingleProject,
     basePath: '/dashboard/projects'
   })
 
@@ -145,8 +242,8 @@ export default function ProjectsPage() {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   useEffect(() => {
-    fetchClients()
-  }, [fetchClients])
+    fetchProjects()
+  }, [fetchProjects])
 
   return (
     <SidebarInset>
@@ -173,9 +270,7 @@ export default function ProjectsPage() {
           setFiltering={setFiltering}
           selectedRows={selectedRows}
           searchPlaceholder='Look for a Project...'
-          bulkActions={[
-            { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
-          ]}
+          bulkActions={getBulkActions()}
         />
 
         <div className='rounded-md border'>
@@ -201,7 +296,10 @@ export default function ProjectsPage() {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
-                    className='rounded-full px-2.5 py-0.5 border select-none'
+                    className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+                      'text-orange-700 bg-orange-200 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
+                        row.getValue('status') === 'deactive'
+                    })}
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className='text-center'>

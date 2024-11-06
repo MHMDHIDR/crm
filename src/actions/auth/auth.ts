@@ -2,14 +2,14 @@
 
 import { eq } from 'drizzle-orm'
 import { AuthError } from 'next-auth'
+import { getTwoFactorConfirmationByUserId } from '@/actions/auth/two-factor-confirmation'
+import { getTwoFactorTokenByEmail } from '@/actions/auth/two-factor-token'
+import { getUserByEmail } from '@/actions/users/get-users'
 import { signIn } from '@/auth'
 import { database } from '@/db'
 import { twoFactorConfirmations, TwoFactorToken } from '@/db/schema'
 import { sendTwoFactorTokenEmail } from '@/lib/mail'
 import { generateTwoFactorToken } from '@/lib/tokens'
-import { getTwoFactorConfirmationByUserId } from '@/services/two-factor-confirmation'
-import { getTwoFactorTokenByEmail } from '@/services/two-factor-token'
-import { getUserByEmail } from '@/services/user'
 import { userSchema } from '@/validators/user'
 
 type AuthResult = { success: boolean; message: string; twoFactor?: boolean }

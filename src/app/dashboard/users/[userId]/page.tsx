@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getUserById } from '@/services/user'
+import { getUserById } from '@/actions/users/get-users'
 import EditUserPageClient from './edit-user.client'
 import type { User } from '@/db/schema'
 

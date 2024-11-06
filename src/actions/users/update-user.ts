@@ -1,11 +1,11 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { getUserById } from '@/actions/users/get-users'
 import { auth, update } from '@/auth'
 import { database } from '@/db'
 import { users } from '@/db/schema'
 import { compareHashedStrings, hashedString } from '@/lib/crypt'
-import { getUserById } from '@/services/user'
 
 const allowedRoles = ['Admin', 'Supervisor', 'Employee'] as const
 type UserRole = (typeof allowedRoles)[number]

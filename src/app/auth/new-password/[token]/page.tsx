@@ -5,7 +5,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { use, useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { newPassword } from '@/actions/new-password'
+import { newPassword } from '@/actions/auth/new-password'
 import { Button } from '@/components/ui/button'
 import {
   Form,

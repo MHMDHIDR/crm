@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { updateUserTheme } from '@/actions/user-theme'
+import { updateUserTheme } from '@/actions/users/user-theme'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { UserPreferences } from '@/db/schema'

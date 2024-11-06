@@ -1,10 +1,10 @@
 import crypto from 'crypto'
 import { eq } from 'drizzle-orm'
+import { getPasswordResetTokenByEmail } from '@/actions/auth/password-reset-token'
+import { getTwoFactorTokenByEmail } from '@/actions/auth/two-factor-token'
+import { getVerificationTokenByEmail } from '@/actions/auth/verificiation-token'
 import { database } from '@/db'
 import { PasswordResetToken, TwoFactorToken, VerificationToken } from '@/db/schema'
-import { getPasswordResetTokenByEmail } from '@/services/password-reset-token'
-import { getTwoFactorTokenByEmail } from '@/services/two-factor-token'
-import { getVerificationTokenByEmail } from '@/services/verificiation-token'
 
 export const generateVerificationToken = async (email: string) => {
   const token = crypto.randomUUID() // bcrypt.hashSync(email, 10)

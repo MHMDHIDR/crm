@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getClientById } from '@/services/client'
+import { getClientById } from '@/actions/clients/get-clients'
 import EditClientPageClient from './edit-client.client'
 import type { Client } from '@/db/schema'
 

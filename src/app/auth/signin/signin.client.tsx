@@ -8,8 +8,8 @@ import { redirect } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { authenticate } from '@/actions/auth'
-import { getUserTheme } from '@/actions/user-theme'
+import { authenticate } from '@/actions/auth/auth'
+import { getUserTheme } from '@/actions/users/user-theme'
 import { Button } from '@/components/ui/button'
 import {
   Form,

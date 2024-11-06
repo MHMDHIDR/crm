@@ -15,7 +15,7 @@ export const clientSchema = z.object({
 
   phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
 
-  status: z.enum(['active', 'inactive'], {
+  status: z.enum(['active', 'deactive'], {
     invalid_type_error: 'Invalid status selected'
   })
 })

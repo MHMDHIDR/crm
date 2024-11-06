@@ -4,15 +4,15 @@ import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/p
 // Enums using pgEnum for type safety and validation
 export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
 export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
-export const clientStatus = { ACTIVE: 'active', INACTIVE: 'inactive' } as const
+export const clientStatus = { ACTIVE: 'active', DEACTIVE: 'deactive' } as const
 export const clientStatusEnum = pgEnum('client_status', [
   clientStatus.ACTIVE,
-  clientStatus.INACTIVE
+  clientStatus.DEACTIVE
 ])
-export const projectStatus = { ACTIVE: 'active', INACTIVE: 'inactive' } as const
+export const projectStatus = { ACTIVE: 'active', DEACTIVE: 'deactive' } as const
 export const projectStatusEnum = pgEnum('project_status', [
   projectStatus.ACTIVE,
-  projectStatus.INACTIVE
+  projectStatus.DEACTIVE
 ])
 export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
 export const themeEnum = pgEnum('theme', ['light', 'dark'])

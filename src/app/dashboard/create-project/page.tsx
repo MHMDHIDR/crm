@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { createProject } from '@/actions/create-project'
-import { getClients } from '@/actions/get-clients'
+import { getClients } from '@/actions/clients/get-clients'
+import { createProject } from '@/actions/projects/create-project'
 import { SearchableSelectItem } from '@/components/custom/searchable-select'
 import {
   Breadcrumb,
@@ -267,7 +267,7 @@ export default function CreateProjectPage() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={clientStatus.ACTIVE}>Active</SelectItem>
-                        <SelectItem value={clientStatus.INACTIVE}>Inactive</SelectItem>
+                        <SelectItem value={clientStatus.DEACTIVE}>Deactive</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
