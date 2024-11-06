@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import SignInClientPage from '@/app/auth/signin/signin.client'
+import SignInClientPage from '@/app/[locale]/auth/signin/signin.client'
 import { auth } from '@/auth'
 import type { UserSession } from '@/db/schema'
 

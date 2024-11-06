@@ -1,0 +1,322 @@
+{
+  "Nav": {
+    "projects": "Projects",
+    "about": "About",
+    "services": "Services",
+    "blog": "Blog",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "signOut": "Sign Out",
+    "LanguageSwitcher": {
+      "ariaLabel": "Change language",
+      "title": "Change language"
+    }
+  },
+  "Hero": {
+    "build": "Build",
+    "flipWords": "WebApp, MobileApp, Desktop Apps, Landing Pages",
+    "with": "With TechnoDevLabs.",
+    "getStarted": "Get Started"
+  },
+  "about": {
+    "pageTitle": "We Are",
+    "homeTitle": "Crafting Digital Solutions for the Future with Passion and Precision",
+    "aboutText": "At TechnoDevLabs.com, we believe that software development is not just a profession—it's an art form. Our team combines technical expertise with creativity to deliver innovative digital solutions that empower businesses to thrive in a competitive landscape. We approach programming with a playful spirit, transforming complex challenges into engaging experiences that resonate with users.",
+    "aboutDividerText": "Whether it's building intuitive web applications or designing captivating user interfaces, our passion for technology drives us to push boundaries and explore new possibilities. Join us on this exciting journey as we shape the future of digital innovation, one line of code at a time!",
+    "agencyText": "TechnoDevLabs.com is a software development agency that provides software development services to clients mainly towards the middle-eastern.",
+    "knowMore": "Know More!",
+    "ctaButton": "Let's Bring Your Project to Life"
+  },
+  "services": {
+    "pageTitle": "Our Services",
+    "exploreButton": "Explore More Services",
+    "ctaButton": "Let's Bring Your Project to Life",
+    "customSoftwareDevelopment": {
+      "title": "Custom Software Development",
+      "description": "Tailored software solutions to meet your unique business needs."
+    },
+    "cloudSolutions": {
+      "title": "Cloud Solutions",
+      "description": "Leverage the power of the cloud to scale and optimize your business."
+    },
+    "mobileAppDevelopment": {
+      "title": "Mobile App Development",
+      "description": "iOS and Android apps designed to enhance user experience and functionality."
+    },
+    "dataAnalyticsBI": {
+      "title": "Data Analytics & BI",
+      "description": "Transform data into actionable insights to drive your business forward."
+    },
+    "databaseManagement": {
+      "title": "Database Management",
+      "description": "Efficient and secure database solutions for high-performance applications."
+    },
+    "cybersecurityServices": {
+      "title": "Cybersecurity Services",
+      "description": "Protect your digital assets with cutting-edge security solutions."
+    },
+    "apiIntegrationServices": {
+      "title": "API & Integration Services",
+      "description": "Seamlessly connect different platforms with robust API solutions."
+    }
+  },
+  "posts": {
+    "readMoreCTA": "You Can Read More Here",
+    "pageTitle": "Posts",
+    "noPosts": "Sorry, there are no posts available.",
+    "backToBlog": "Back to Blog",
+    "publishedOn": "Published on",
+    "addPost": "Add Post",
+    "editPost": "Edit Post",
+    "readMoreLink": "Read More",
+    "readTime": "Read Time",
+    "deletePost": "Delete Post",
+    "deletePostConfirmation": "Are you sure you want to delete this post?",
+    "share": "Share Post",
+    "previousPost": "Previous",
+    "nextPost": "Next"
+  },
+  "projects": {
+    "pageTitle": "Our Projects",
+    "noProjects": "Sorry, there are no projects available.",
+    "publishedOn": "Published on",
+    "addProject": "Add Project",
+    "editProject": "Edit Project",
+    "exploreMoreCTA": "Explore More Projects",
+    "CATParagraph": "Want a project similar to {projectName}?",
+    "contactUsCTA": "Let's Build Something Great Together",
+    "viewProject": "Check Out Project"
+  },
+  "contact": {
+    "pageTitle": "Contact Us",
+    "title": "Your message is important to us",
+    "description": "We will get back to you as soon as possible.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "placeholderFirstName": "Mohammed",
+    "placeholderLastName": "Ahmed",
+    "placeholderEmail": "example@example.com",
+    "placeholderSubject": "I have a question",
+    "placeholderMessage": "Hi, I would like to know more about your services.",
+    "sendButton": "Send",
+    "sendingButton": "Sending...",
+    "contactEmail": "Email us at"
+  },
+  "privacy": {
+    "privacyPolicyTitle": "Privacy Policy",
+    "lastUpdated": "Last updated: 2024-10-01",
+    "introduction": {
+      "header": "1. Introduction",
+      "content": "TechnoDevLabs (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy outlines our practices concerning the collection, use, and disclosure of your personal information when you use our service at https://www.technodevlabs.com."
+    },
+    "informationWeCollect": {
+      "header": "2. Information We Collect",
+      "content": "We collect and use the following types of information:",
+      "personalData": "Personal Data: Information that can identify you, such as your name and email address.",
+      "usageData": "Usage Data: Information on how you access and use our service."
+    },
+    "howWeUseYourInformation": {
+      "header": "3. How We Use Your Information",
+      "content": "We use your information to provide, maintain, and improve our services, as well as to communicate with you about updates, offers, and support."
+    },
+    "dataSharingAndDisclosure": {
+      "header": "4. Data Sharing and Disclosure",
+      "content": "We do not sell your personal information. We may share your information in limited circumstances, such as to comply with legal obligations or to protect our rights."
+    },
+    "yourRightsAndChoices": {
+      "header": "5. Your Rights and Choices",
+      "content": "You have the right to access, update, or delete your personal information. Contact us to exercise these rights."
+    },
+    "security": {
+      "header": "6. Security",
+      "content": "We implement reasonable security measures to protect your personal information. However, no method of transmission over the Internet is 100% secure."
+    },
+    "changesToThisPolicy": {
+      "header": "7. Changes to This Policy",
+      "content": "We may update this Privacy Policy periodically. We will notify you of any significant changes by posting the new policy on this page."
+    },
+    "contactUs": {
+      "header": "8. Contact Us",
+      "content": "If you have any questions about this Privacy Policy, please contact us at ",
+      "email": "Support@TechnoDevLabs.com"
+    }
+  },
+  "terms": {
+    "termsTitle": "Terms and Conditions",
+    "lastUpdated": "Last updated: {date}",
+    "introduction": {
+      "header": "Introduction",
+      "content": "Welcome to TechnoDevLabs (\"Company\", \"we\", \"our\", \"us\"). These Terms of Service govern your use of our website at https://www.technodevlabs.com (\"Service\"). By using our Service, you agree to these Terms and our Privacy Policy. If you disagree with these terms, please do not use our Service."
+    },
+    "useOfService": {
+      "header": "Use of Service",
+      "content": "You agree to use our Service only for lawful purposes and in accordance with these Terms. Prohibited uses include:",
+      "prohibitedUses1": "Violating any applicable laws",
+      "prohibitedUses2": "Exploiting or harming minors",
+      "prohibitedUses3": "Sending spam or unsolicited promotional material",
+      "prohibitedUses4": "Impersonating others",
+      "prohibitedUses5": "Infringing on others' rights",
+      "prohibitedUses6": "Interfering with the proper working of the Service"
+    },
+    "intellectualProperty": {
+      "header": "Intellectual Property",
+      "content": "Our Service and its original content are the exclusive property of TechnoDevLabs. You may not use our trademarks without our prior written consent."
+    },
+    "userContent": {
+      "header": "User Content",
+      "content": "You retain your rights to any content you submit, post or display on our Service. By posting content, you grant us a license to use, modify, publicly perform, publicly display, reproduce, and distribute such content."
+    },
+    "termination": {
+      "header": "Termination",
+      "content": "We may terminate or suspend your account at any time, without prior notice or liability, for any reason, including breach of these Terms."
+    },
+    "limitationOfLiability": {
+      "header": "Limitation of Liability",
+      "content": "To the fullest extent permitted by law, TechnoDevLabs shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the Service."
+    },
+    "changesToTerms": {
+      "header": "Changes to Terms",
+      "content": "We reserve the right to modify these Terms at any time. Your continued use of the Service after any changes indicates your acceptance of the new Terms."
+    },
+    "contactUs": {
+      "header": "Contact Us",
+      "content": "For any questions about these Terms, please contact us at: ",
+      "email": "Support@TechnoDevLabs.com"
+    }
+  },
+  "footer": {
+    "company": "Company",
+    "aboutUs": "About us",
+    "blog": "Blog",
+    "contact": "Contact",
+    "legal": "Legal",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "ourVision": "Our Vision",
+    "visionText": "At TechnoDevLabs, we strive to be a trusted partner for businesses in the Middle East, delivering innovative and tailored software solutions that meet the unique needs of our clients. Our goal is to empower organizations by providing high-quality, reliable, and scalable technology that drives growth and fosters success in a rapidly evolving digital landscape.",
+    "allRightsReserved": "© {year} TechnoDevLabs. All rights reserved."
+  },
+  "dashboard": {
+    "pageTitle": "Dashboard",
+    "post": {
+      "noPosts": "No posts available",
+      "addPost": "Add Post",
+      "postTitle": "Post Title",
+      "postContent": "Post Content",
+      "editPostButton": "Edit Post",
+      "editor": {
+        "h1": "H1",
+        "h2": "H2",
+        "h3": "H3",
+        "code": "Code",
+        "codeBlock": "Code Block",
+        "blockquote": "Blockquote",
+        "bold": "Bold",
+        "italic": "Italic",
+        "bulletList": "Bullet List",
+        "addImage": "Add Image"
+      },
+      "idRequired": "Post ID is required to update post",
+      "published": "The Post is Published",
+      "isPublished": "The Post is Published",
+      "isUnpublished": "The Post is Unpublished",
+      "updatePost": "Update Post",
+      "updateSuccessMessage": "Post updated successfully",
+      "addSuccessMessage": "Post added successfully",
+      "deleteSuccessMessage": "Post deleted successfully",
+      "updateErrorMessage": "Failed to update post or post not found",
+      "addErrorMessage": "Failed to add post",
+      "postExits": "A post with this title already exists. Please choose a different title."
+    },
+    "project": {
+      "noProjects": "No projects available",
+      "addProject": "Add Project",
+      "projectTitle": "Project Title (English)",
+      "projectTitleAr": "Project Title (Arabic)",
+      "projectURL": "Project View URL",
+      "projectDescription": "Project Description (English)",
+      "projectDescriptionAr": "Project Description (Arabic)",
+      "projectAddImages": "Add New Project Images (Max 5MB), First Image is Project Cover",
+      "projectImages": "Uploaded Images",
+      "updateProject": "Update Project",
+      "isUpdating": "Updating Project...",
+      "titleTooLong": "The title is too long, try to make it shorter so it fits better",
+      "updateSuccessMessage": "Project updated successfully",
+      "updateErrorMessage": "Failed to update project or project not found",
+      "addSuccessMessage": "Project added successfully",
+      "projectExits": "A project with this title already exists. Please choose a different title.",
+      "idRequired": "Project ID is required",
+      "FailedProjectDeleted": "Failed to delete project or project not found",
+      "successProjectDeleted": "Project and associated files deleted successfully",
+      "images": {
+        "dropFilesHere": "Drop files here",
+        "dragAndDropFiles": "Drag and drop files here, or click to select files",
+        "selectedFiles_Single": "{count} file selected",
+        "selectedFiles_Multiple": "{count} files selected",
+        "imgDeleted": "File deleted from S3 and project updated successfully",
+        "imgsDeleted": "All project files deleted successfully from S3",
+        "imgFailedDelete": "Failed to delete file from S3 or update project",
+        "imgsFailedDelete": "Failed to delete project files from S3",
+        "projectFailedUpdate": "File deleted from S3, but failed to update project",
+        "invalidURL": "OOPS!, Invalid image URL"
+      }
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "blog": "Blog",
+      "settings": "Settings",
+      "analytics": "Analytics",
+      "signOut": "Sign Out"
+    },
+    "settings": {
+      "layout": "Layout Settings",
+      "grid": "Grid Layout",
+      "grid-small": "Small Grid Layout",
+      "dotted": "Dotted Layout",
+      "noSettingsFound": "No settings found"
+    },
+    "analytics": {
+      "avgVisitorsPerDay": "Avg. visitors/day",
+      "visitorsToday": "Visitors today",
+      "topVisitorsThisWeek": "This weeks top visitors:",
+      "visitors": "Visitors",
+      "analyticsType": "{analyticsType} Analytics",
+      "analyticsForLast7Days": "{analyticsType} Analytics for the last 7 days",
+      "totalViews": "{totalViews} total views from {totalDevices} devices",
+      "showingTop6": "Showing top 6 {analyticsType} for the last 7 days"
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signInWithGoogle": "Sign In with Google",
+    "password": "Password",
+    "enterPassword": "Enter the password"
+  },
+  "notFound": {
+    "title": "We lost this page",
+    "description": "We searched high and low, but could not find what you are looking for. Let us find a better place for you to go.",
+    "home": "Home",
+    "projectsLabel": "Projects",
+    "exploreProjects": "Start Exploring Projects",
+    "exploreProjectsDescription": "Dive into our projects to see our latest projects, and get inspired.",
+    "blogLabel": "Our Blog",
+    "readPosts": "Read the latest posts",
+    "readPostsDescription": "Read the latest posts on our blog.",
+    "contactLabel": "Chat with Us",
+    "chatWithUs": "Chat with our team",
+    "chatWithUsDescription": "Can not find what you are looking for? Chat to our team."
+  },
+  "actions": {
+    "deleteButton": "Delete {type}",
+    "deleteConfirmation": "Are you sure you want to delete this {type}?",
+    "updatedSuccessfully": "Done Updating successfully",
+    "updatedFailed": "Failed to update or no changes were made",
+    "Unauthorized": "Unauthorized to do this action",
+    "500error": "An unexpected error occurred"
+  }
+}

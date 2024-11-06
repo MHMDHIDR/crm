@@ -1,4 +1,5 @@
 import { CheckIcon, ClipboardList, Users } from 'lucide-react'
+import { setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import { auth } from '@/auth'
 import Footer from '@/components/custom/footer'
@@ -13,8 +14,12 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { UserSession } from '@/db/schema'
+import type { Locale } from '@/i18n/request'
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: Locale }> }) {
+  const locale = (await params).locale
+  setRequestLocale(locale)
+
   const session = await auth()
   const user = session?.user as UserSession
 

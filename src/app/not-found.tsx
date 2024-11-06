@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { NotFoundIcon } from '@/components/custom/icons'
 import { Button } from '@/components/ui/button'
 
-export default function NotFound() {
+export default function RootNotFound() {
   return (
     <section className={`p-4 py-20`}>
       <div className='container flex flex-col justify-center items-center px-6 py-20 mx-auto w-full min-h-screen'>
