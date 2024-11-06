@@ -8,37 +8,37 @@ import { userPreferences } from '@/db/schema'
 import type { UserPreferences, UserSession } from '@/db/schema'
 
 /**
- * Get user theme preference
- * @param userId  ID of the user to get theme preference for
- * @returns {Promise<UserPreferences['theme']>} A promise that contains an array of user preferences 'light' | 'dark'
+ * Get user language preference
+ * @param userId  ID of the user to get language preference for
+ * @returns {Promise<UserPreferences['language']>} A promise that contains an array of user preferences 'light' | 'dark'
  */
-export async function getUserTheme(): Promise<UserPreferences['theme']> {
+export async function getUserLanguage(): Promise<UserPreferences['language']> {
   try {
     const session = await auth()
     const user = session?.user as UserSession
 
     if (!user?.id) {
-      return 'light'
+      return 'en'
     }
 
     const preferences = await database.query.userPreferences.findFirst({
       where: eq(userPreferences.userId, user.id)
     })
 
-    return preferences?.theme || 'light'
+    return preferences?.language || 'en'
   } catch (error) {
-    console.error('Error getting user theme:', error)
-    return 'light'
+    console.error('Error getting user language:', error)
+    return 'en'
   }
 }
 
 /**
- * Update user theme preference
- * @param theme   Theme to update to  (light | dark)
+ * Update user language preference
+ * @param language   Language to update to  (en | ar)
  * @returns      Promise<{ success: boolean, message: string }>
  */
-export async function updateUserTheme(
-  theme: UserPreferences['theme']
+export async function updateUserLanguage(
+  language: UserPreferences['language']
 ): Promise<{ success: boolean; message: string }> {
   try {
     const session = await auth()
@@ -49,19 +49,19 @@ export async function updateUserTheme(
     // First try to update existing preferences
     const [updatedPreferences] = await database
       .update(userPreferences)
-      .set({ theme })
+      .set({ language })
       .where(eq(userPreferences.userId, session.user.id))
       .returning()
 
     // If no preferences were updated, insert new preferences
     if (!updatedPreferences) {
-      await database.insert(userPreferences).values({ userId: session.user.id, theme })
+      await database.insert(userPreferences).values({ userId: session.user.id, language })
     }
 
     revalidatePath('/')
-    return { success: true, message: 'Theme updated successfully 🎉' }
+    return { success: true, message: 'Language updated successfully 🎉' }
   } catch (error) {
-    console.error('Error updating theme:', error)
-    return { success: false, message: 'Error updating theme!' }
+    console.error('Error updating language:', error)
+    return { success: false, message: 'Error updating language!' }
   }
 }

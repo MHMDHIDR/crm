@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import LanguageSelector from './language-selector'
 import ThemeSwitch from './theme-switch'
 
 export default async function DashboardPreferencesPage() {
@@ -31,10 +32,10 @@ export default async function DashboardPreferencesPage() {
         </div>
       </header>
       <main className='container pb-10'>
-        <div className='p-4 shadow rounded-lg'>
-          <h2 className='text-lg font-bold mb-4'>Select your preferred theme 😎</h2>
-
+        <div className='p-4 shadow rounded-lg space-y-8'>
           <ThemeSwitch />
+
+          <LanguageSelector />
         </div>
       </main>
     </SidebarInset>

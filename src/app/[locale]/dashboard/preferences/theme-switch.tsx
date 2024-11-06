@@ -44,9 +44,13 @@ export default function ThemeSwitch() {
   }
 
   return (
-    <div className='flex items-center gap-x-2'>
-      <Switch checked={newTheme === 'dark'} onCheckedChange={toggleTheme} disabled={isUpdating} />
-      <Label>{newTheme === 'dark' ? 'Dark' : 'Light'} Theme</Label>
+    <div>
+      <h2 className='text-lg font-bold mb-4'>Select your preferred theme 😎</h2>
+
+      <div className='flex items-center gap-x-2'>
+        <Switch checked={newTheme === 'dark'} onCheckedChange={toggleTheme} disabled={isUpdating} />
+        <Label>{newTheme === 'dark' ? 'Dark' : 'Light'} Theme</Label>
+      </div>
     </div>
   )
 }

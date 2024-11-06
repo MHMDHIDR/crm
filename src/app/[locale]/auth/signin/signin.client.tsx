@@ -5,7 +5,7 @@ import { Loader2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { authenticate } from '@/actions/auth/auth'
@@ -33,7 +33,7 @@ const signInSchema = userSchema.pick({ email: true, password: true }).extend({
 
 type SignInData = z.infer<typeof signInSchema>
 
-export default function SignInClientPage({ user }: { user: UserSession | undefined }) {
+export default function SignInClientPage() {
   const toast = useToast()
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()

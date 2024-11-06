@@ -61,7 +61,7 @@ export const userPreferences = pgTable('user_preferences', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   theme: themeEnum('theme').default('light'),
-  language: languageEnum('language').default('en')
+  language: languageEnum('language').notNull().default('en')
 })
 
 export const sessions = pgTable('sessions', {
