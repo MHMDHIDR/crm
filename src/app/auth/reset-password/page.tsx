@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import ResetPasswordClientPage from '@/app/[locale]/auth/reset-password/reset-password.client'
+import ResetPasswordClientPage from '@/app/auth/reset-password/reset-password.client'
 import { auth } from '@/auth'
 
 export default async function ResetPasswordPage() {

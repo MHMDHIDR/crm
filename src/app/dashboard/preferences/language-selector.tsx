@@ -1,7 +1,7 @@
 'use client'
 
 import { Languages } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+// import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { getUserLanguage, updateUserLanguage } from '@/actions/users/user-language'
 import { Label } from '@/components/ui/label'
@@ -22,7 +22,7 @@ export default function LanguageSelector() {
     useState<UserPreferences['language']>(storedLanguage)
   const [isUpdating, setIsUpdating] = useState(false)
   const toast = useToast()
-  const navTranslations = useTranslations('Nav.LanguageSwitcher')
+  // const navTranslations = useTranslations('Nav.LanguageSwitcher')
 
   // Fetch user's language preference on component mount
   useEffect(() => {
@@ -54,7 +54,7 @@ export default function LanguageSelector() {
       <h2 className='text-lg font-bold mb-4'>Language</h2>
       <div className='flex items-center gap-x-2'>
         <Languages className='h-4 w-4' />
-        <Label>{navTranslations('ariaLabel')}</Label>
+        <Label>Language{/*{navTranslations('ariaLabel')}*/}</Label>
         <Select value={currentLanguage} onValueChange={handleLanguageChange} disabled={isUpdating}>
           <SelectTrigger className='w-32'>
             <SelectValue placeholder='Select language' />
