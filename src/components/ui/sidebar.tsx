@@ -85,11 +85,9 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
+    const [_open, _setOpen] = React.useState(defaultOpen) // Initialize with defaultOpen for SSR
 
-    // Initialize with defaultOpen for SSR
-    const [_open, _setOpen] = React.useState(defaultOpen)
-
-    // Effect to initialize client-side state
+    // Initialize with cookie value if exists
     React.useEffect(() => {
       const cookieValue = getCookieValue(SIDEBAR_COOKIE_NAME)
       if (cookieValue !== null && cookieValue !== String(defaultOpen)) {
@@ -119,12 +117,23 @@ const SidebarProvider = React.forwardRef<
     }, [isMobile, setOpen])
 
     React.useEffect(() => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+      function handleKeyDown(event: KeyboardEvent) {
+        if (
+          event.key.toLowerCase() === SIDEBAR_KEYBOARD_SHORTCUT &&
+          (event.altKey || event.metaKey) &&
+          !event.ctrlKey &&
+          !event.shiftKey
+        ) {
           event.preventDefault()
+          event.stopPropagation()
           toggleSidebar()
         }
       }
+
+      window.addEventListener('keydown', handleKeyDown)
+
+      // Cleanup function to remove event listener
+      return () => window.removeEventListener('keydown', handleKeyDown)
     }, [toggleSidebar])
 
     const state = open ? 'expanded' : 'collapsed'

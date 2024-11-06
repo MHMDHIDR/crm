@@ -108,7 +108,7 @@ export function DashboardSidebar({
       },
       {
         title: 'Settings',
-        url: open ? '' : '/dashboard/settings',
+        url: open ? '' : '/dashboard/account',
         icon: Settings2,
         items: [
           {
