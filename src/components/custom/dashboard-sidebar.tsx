@@ -23,7 +23,8 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail
+  SidebarRail,
+  useSidebar
 } from '@/components/ui/sidebar'
 import { UserSession } from '@/db/schema'
 
@@ -31,6 +32,8 @@ export function DashboardSidebar({
   user,
   ...props
 }: React.ComponentProps<typeof Sidebar> & { user: UserSession }) {
+  const { open } = useSidebar()
+
   const sidebarItems = {
     teams: [
       {
@@ -52,7 +55,7 @@ export function DashboardSidebar({
         ? [
             {
               title: 'Users',
-              url: '#',
+              url: open ? '' : '/dashboard/users',
               icon: Users2,
               items: [
                 {
@@ -71,7 +74,7 @@ export function DashboardSidebar({
         : []),
       {
         title: 'Projects',
-        url: '#',
+        url: open ? '' : '/dashboard/projects',
         icon: ShoppingBagIcon,
         items: [
           {
@@ -88,7 +91,7 @@ export function DashboardSidebar({
       },
       {
         title: 'Clients',
-        url: '#',
+        url: open ? '' : '/dashboard/clients',
         icon: FileUser,
         items: [
           {
@@ -105,7 +108,7 @@ export function DashboardSidebar({
       },
       {
         title: 'Settings',
-        url: '#',
+        url: open ? '' : '/dashboard/settings',
         icon: Settings2,
         items: [
           {

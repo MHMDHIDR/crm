@@ -3,6 +3,7 @@
 import { Slot } from '@radix-ui/react-slot'
 import { cva, VariantProps } from 'class-variance-authority'
 import { PanelLeft } from 'lucide-react'
+import Link from 'next/link'
 import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -595,6 +596,68 @@ const SidebarMenuButton = React.forwardRef<
 )
 SidebarMenuButton.displayName = 'SidebarMenuButton'
 
+const SidebarMenuLink = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<'button'> & {
+    asChild?: boolean
+    isActive?: boolean
+    tooltip?: string | React.ComponentProps<typeof TooltipContent>
+    href?: string
+  } & VariantProps<typeof sidebarMenuButtonVariants>
+>(
+  (
+    {
+      asChild = false,
+      isActive = false,
+      variant = 'default',
+      size = 'default',
+      tooltip,
+      href,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const { isMobile, state } = useSidebar()
+
+    const button = (
+      <button
+        ref={ref}
+        data-sidebar='menu-button'
+        data-size={size}
+        data-active={isActive}
+        className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+        {...props}
+      />
+    )
+
+    const content = href && href !== '' && href !== '#' ? <Link href={href}>{button}</Link> : button
+
+    if (!tooltip) {
+      return content
+    }
+
+    if (typeof tooltip === 'string') {
+      tooltip = {
+        children: tooltip
+      }
+    }
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent
+          side='right'
+          align='center'
+          hidden={state !== 'collapsed' || isMobile}
+          {...tooltip}
+        />
+      </Tooltip>
+    )
+  }
+)
+SidebarMenuLink.displayName = 'SidebarMenuLink'
+
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'> & {
@@ -745,6 +808,7 @@ export {
   SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuButton,
+  SidebarMenuLink,
   SidebarMenuItem,
   SidebarMenuSkeleton,
   SidebarMenuSub,

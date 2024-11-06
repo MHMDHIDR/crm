@@ -1,15 +1,7 @@
 'use client'
 
-import { PinRightIcon } from '@radix-ui/react-icons'
-import {
-  Folder,
-  Forward,
-  LucidePin,
-  MoreHorizontal,
-  PinIcon,
-  PinOffIcon,
-  Trash2
-} from 'lucide-react'
+import { Folder, Forward, MoreHorizontal, PinIcon, Trash2 } from 'lucide-react'
+import Link from 'next/link'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,10 +41,10 @@ export function NavPinned({
         {pinned.map(item => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <Link href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
