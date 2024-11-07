@@ -287,7 +287,7 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
       }
     }
     initializeTasks()
-  }, [])
+  }, [projectId])
 
   return (
     <div className='p-6'>
