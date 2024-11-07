@@ -53,9 +53,10 @@ export type ExtendedProject = Project & {
 
 // Task Types
 export type Task = typeof tasks.$inferSelect
-export type TaskWithRelations = Task & {
-  project: Project | null
-  assignedEmployee: User | null
+export type TasksByStatus = {
+  pending: Task[]
+  'in-progress': Task[]
+  completed: Task[]
 }
 
 // Auth Tables with corrected column names for NextAuth
