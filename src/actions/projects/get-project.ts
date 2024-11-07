@@ -1,6 +1,6 @@
 'use server'
 
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { clients, projects, users } from '@/db/schema'
@@ -15,7 +15,7 @@ type ProjectWithRelations = Project & {
  * Fetch all projects from the database
  * @returns Promise<{ success: boolean; data?: ExtendedProject[]; error?: string }>
  */
-export async function getProjects(): Promise<{
+export async function getProjects(projectId?: Project['id']): Promise<{
   success: boolean
   data?: ExtendedProject[]
   error?: string
@@ -31,16 +31,26 @@ export async function getProjects(): Promise<{
     let projectsWithRelations: ProjectWithRelations[] = []
 
     if (role === 'Admin') {
-      projectsWithRelations = await database.query.projects.findMany({
-        with: { assignedEmployee: true, client: true },
-        orderBy: (projects, { desc }) => [desc(projects.updatedAt)]
-      })
+      projectId
+        ? (projectsWithRelations = await database.query.projects.findMany({
+            with: { assignedEmployee: true, client: true },
+            where: eq(projects.id, projectId)
+          }))
+        : (projectsWithRelations = await database.query.projects.findMany({
+            with: { assignedEmployee: true, client: true },
+            orderBy: (projects, { desc }) => [desc(projects.updatedAt)]
+          }))
     } else {
-      projectsWithRelations = await database.query.projects.findMany({
-        with: { assignedEmployee: true, client: true },
-        orderBy: (projects, { desc }) => [desc(projects.updatedAt)],
-        where: eq(projects.assignedEmployeeId, session.user.id)
-      })
+      projectId
+        ? (projectsWithRelations = await database.query.projects.findMany({
+            with: { assignedEmployee: true, client: true },
+            where: and(eq(projects.id, projectId), eq(projects.assignedEmployeeId, session.user.id))
+          }))
+        : (projectsWithRelations = await database.query.projects.findMany({
+            with: { assignedEmployee: true, client: true },
+            orderBy: (projects, { desc }) => [desc(projects.updatedAt)],
+            where: eq(projects.assignedEmployeeId, session.user.id)
+          }))
     }
 
     // Transform the data to match ExtendedProject type

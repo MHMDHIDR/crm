@@ -14,10 +14,21 @@ export const projectStatusEnum = pgEnum('project_status', [
   projectStatus.ACTIVE,
   projectStatus.DEACTIVE
 ])
-export const taskStatusEnum = pgEnum('task_status', ['pending', 'in-progress', 'completed'])
+
+export const TaskStatus = {
+  PENDING: 'pending',
+  IN_PROGRESS: 'in-progress',
+  COMPLETED: 'completed'
+} as const
+export const taskStatusEnum = pgEnum('task_status', [
+  TaskStatus.PENDING,
+  TaskStatus.IN_PROGRESS,
+  TaskStatus.COMPLETED
+])
 export const themeEnum = pgEnum('theme', ['light', 'dark'])
 export const languageEnum = pgEnum('language', ['en', 'ar'])
 
+// User Types
 export type User = typeof users.$inferSelect
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
 export type UserSession = {
@@ -30,12 +41,21 @@ export type UserSession = {
 } & Partial<UserPreferences>
 export type UserPreferences = typeof userPreferences.$inferSelect
 
+// Client Types
 export type Client = typeof clients.$inferSelect
-export type Project = typeof projects.$inferSelect
 
+// Project Types
+export type Project = typeof projects.$inferSelect
 export type ExtendedProject = Project & {
   assignedEmployeeName: User['name']
   clientName: Client['name']
+}
+
+// Task Types
+export type Task = typeof tasks.$inferSelect
+export type TaskWithRelations = Task & {
+  project: Project | null
+  assignedEmployee: User | null
 }
 
 // Auth Tables with corrected column names for NextAuth
