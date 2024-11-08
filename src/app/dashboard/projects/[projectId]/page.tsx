@@ -42,7 +42,7 @@ type ColumnComponentProps = {
   onViewDetails: (task: Task) => void
 }
 
-const TaskCard = ({
+function TaskCard({
   task,
   onViewDetails,
   className
@@ -50,79 +50,83 @@ const TaskCard = ({
   task: Task
   onViewDetails: (task: Task) => void
   className?: string
-}) => (
-  <Card
-    className={cn(
-      'rounded-lg cursor-pointer dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md',
-      className
-    )}
-  >
-    <CardContent onClick={() => onViewDetails(task)} className='p-2'>
-      <h3 className='text-lg font-semibold'>{task.title}</h3>
-      <p className='mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
-        {task.description}
-      </p>
-      <div className='mt-4'>
-        <span className='text-sm text-gray-500'>
-          Due: {formatDate(String(task.dueDate), false)}
-        </span>
-      </div>
-    </CardContent>
-  </Card>
-)
+}) {
+  return (
+    <Card
+      className={cn(
+        'rounded-lg cursor-pointer dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md',
+        className
+      )}
+    >
+      <CardContent onClick={() => onViewDetails(task)} className='p-2'>
+        <h3 className='text-lg font-semibold'>{task.title}</h3>
+        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
+          {task.description}
+        </p>
+        <div className='mt-4'>
+          <span className='text-sm text-gray-500'>
+            Due: {formatDate(String(task.dueDate), false)}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
-const Column = ({ title, tasks, status, onViewDetails }: ColumnComponentProps) => (
-  <Card className='bg-slate-50 dark:bg-slate-950 max-h-fit'>
-    <CardHeader className='px-4 pb-1'>
-      <CardTitle>
-        {title}
-        <Badge
-          className='ml-2 rounded-full'
-          variant={
-            status === 'pending' ? 'outline' : status === 'in-progress' ? 'warning' : 'success'
-          }
+function Column({ title, tasks, status, onViewDetails }: ColumnComponentProps) {
+  return (
+    <Card className='bg-slate-50 dark:bg-slate-950 max-h-fit'>
+      <CardHeader className='px-4 pb-1'>
+        <CardTitle>
+          {title}
+          <Badge
+            className='ml-2 rounded-full'
+            variant={
+              status === 'pending' ? 'outline' : status === 'in-progress' ? 'warning' : 'success'
+            }
+          >
+            {tasks.length}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className='p-2.5'>
+        <Droppable
+          droppableId={status}
+          isDropDisabled={false}
+          isCombineEnabled={false}
+          ignoreContainerClipping={false}
         >
-          {tasks.length}
-        </Badge>
-      </CardTitle>
-    </CardHeader>
-    <CardContent className='p-2.5'>
-      <Droppable
-        droppableId={status}
-        isDropDisabled={false}
-        isCombineEnabled={false}
-        ignoreContainerClipping={false}
-      >
-        {provided => (
-          <div ref={provided.innerRef} {...provided.droppableProps} className='space-y-2'>
-            {tasks.length === 0 && (
-              //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
-              <div className='text-sm text-gray-400 text-center'>No tasks</div>
-            )}
-            {tasks.map((task, index) => (
-              <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                {provided => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <TaskCard
-                      task={task}
-                      onViewDetails={onViewDetails}
-                      className='dark:bg-slate-900'
-                    />
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </CardContent>
-  </Card>
-)
+          {provided => (
+            <div ref={provided.innerRef} {...provided.droppableProps} className='space-y-2'>
+              {tasks.length === 0 && (
+                //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
+                <div className='text-sm text-gray-400 text-center'>No tasks</div>
+              )}
+              {tasks.map((task, index) => (
+                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                  {provided => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <TaskCard
+                        task={task}
+                        onViewDetails={onViewDetails}
+                        className='dark:bg-slate-900'
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function ProjectTasksPage({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = use(params)
