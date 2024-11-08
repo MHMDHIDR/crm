@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { createTask } from '@/actions/tasks/create-task'
 import { getTasksByStatus } from '@/actions/tasks/get-task'
 import { updateTask, updateTaskStatus } from '@/actions/tasks/update-task'
+import { LoadingCard } from '@/components/custom/loading'
 import { TaskForm } from '@/components/custom/task-form'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -39,6 +40,7 @@ type ColumnComponentProps = {
   title: string
   tasks: Task[]
   status: ColumnType
+  isLoading: boolean
   onViewDetails: (task: Task) => void
 }
 
@@ -73,7 +75,7 @@ function TaskCard({
   )
 }
 
-function Column({ title, tasks, status, onViewDetails }: ColumnComponentProps) {
+function Column({ title, tasks, status, isLoading, onViewDetails }: ColumnComponentProps) {
   return (
     <Card className='bg-slate-50 dark:bg-slate-950 max-h-fit'>
       <CardHeader className='px-4 pb-1'>
@@ -98,9 +100,14 @@ function Column({ title, tasks, status, onViewDetails }: ColumnComponentProps) {
         >
           {provided => (
             <div ref={provided.innerRef} {...provided.droppableProps} className='space-y-2'>
-              {tasks.length === 0 && (
-                //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
-                <div className='text-sm text-gray-400 text-center'>No tasks</div>
+              {isLoading ? (
+                <LoadingCard renderedSkeletons={2} className='min-w-[21rem] h-28' />
+              ) : (
+                !isLoading &&
+                tasks.length === 0 && (
+                  //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
+                  <div className='text-sm text-gray-400 text-center'>No tasks</div>
+                )
               )}
               {tasks.map((task, index) => (
                 <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
@@ -133,6 +140,7 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
 
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [tasks, setTasks] = useState<TasksByStatus>({
     pending: [],
     'in-progress': [],
@@ -202,10 +210,13 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
   }
 
   useEffect(() => {
+    setIsLoading(true)
     const initializeTasks = async () => {
       const result = await getTasksByStatus({ projectId })
       if (result?.data) {
         setTasks(result.data)
+
+        setIsLoading(false)
       }
     }
     initializeTasks()
@@ -257,24 +268,27 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
         <div className='w-full overflow-x-auto'>
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className='flex justify-start min-w-max'>
-              <div className='grid grid-cols-3 gap-6 mt-6'>
+              <div className='grid grid-cols-3 gap-6 mt-5 mb-3'>
                 <Column
                   title='Pending'
                   tasks={tasks.pending}
                   status='pending'
                   onViewDetails={handleViewDetails}
+                  isLoading={isLoading}
                 />
                 <Column
                   title='In Progress'
                   tasks={tasks['in-progress']}
                   status='in-progress'
                   onViewDetails={handleViewDetails}
+                  isLoading={isLoading}
                 />
                 <Column
                   title='Completed'
                   tasks={tasks.completed}
                   status='completed'
                   onViewDetails={handleViewDetails}
+                  isLoading={isLoading}
                 />
               </div>
             </div>
