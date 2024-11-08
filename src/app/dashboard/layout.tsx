@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <h1 className='relative z-20 py-2 mx-auto my-6 text-2xl font-semibold text-center bg-clip-text bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 dark:from-neutral-800 dark:via-white dark:to-white'>
           Welcome, {session.user.name}
         </h1>
-        <section className='mx-auto max-w-screen-lg'>{children}</section>
+        <section className='mx-auto max-w-screen-xl'>{children}</section>
       </main>
     </SidebarProvider>
   )

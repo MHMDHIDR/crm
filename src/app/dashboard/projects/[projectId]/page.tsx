@@ -241,8 +241,6 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
             <Button>Add New Project</Button>
           </Link>
         </div>
-      </header>
-      <main>
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Button>{selectedTask ? 'Update Task' : 'Create Task'}</Button>
@@ -265,36 +263,39 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
             />
           </SheetContent>
         </Sheet>
-        <div className='w-full overflow-x-auto'>
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <div className='flex justify-start min-w-max'>
-              <div className='grid grid-cols-3 gap-6 mt-5 mb-3'>
-                <Column
-                  title='Pending'
-                  tasks={tasks.pending}
-                  status='pending'
-                  onViewDetails={handleViewDetails}
-                  isLoading={isLoading}
-                />
-                <Column
-                  title='In Progress'
-                  tasks={tasks['in-progress']}
-                  status='in-progress'
-                  onViewDetails={handleViewDetails}
-                  isLoading={isLoading}
-                />
-                <Column
-                  title='Completed'
-                  tasks={tasks.completed}
-                  status='completed'
-                  onViewDetails={handleViewDetails}
-                  isLoading={isLoading}
-                />
-              </div>
+      </header>
+
+      <main className='w-full overflow-x-auto'>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <div className='flex justify-start min-w-max'>
+            <div className='grid grid-cols-3 gap-6 mt-5 mb-10'>
+              <Column
+                title='Pending'
+                tasks={tasks.pending}
+                status='pending'
+                onViewDetails={handleViewDetails}
+                isLoading={isLoading}
+              />
+              <Column
+                title='In Progress'
+                tasks={tasks['in-progress']}
+                status='in-progress'
+                onViewDetails={handleViewDetails}
+                isLoading={isLoading}
+              />
+              <Column
+                title='Completed'
+                tasks={tasks.completed}
+                status='completed'
+                onViewDetails={handleViewDetails}
+                isLoading={isLoading}
+              />
             </div>
-          </DragDropContext>
-        </div>
+          </div>
+        </DragDropContext>
       </main>
+      <div className='absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-neutral-950 to-transparent pointer-events-none' />
+      <div className='absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-neutral-950 to-transparent pointer-events-none' />
     </SidebarInset>
   )
 }
