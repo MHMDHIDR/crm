@@ -28,8 +28,8 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
       <div className='flex flex-col min-h-screen'>
         <main className='flex-1'>
           <section className='w-full py-12 md:py-24 lg:py-32 xl:py-48'>
-            <div className='container mx-auto px-4 md:px-6'>
-              <div className='flex flex-col items-center space-y-4 text-center'>
+            <div className='container px-4 mx-auto md:px-6'>
+              <div className='flex flex-col items-center text-center space-y-4'>
                 <div className='space-y-2'>
                   <h1 className='text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none'>
                     Streamline Your Business with CRM Pro
@@ -48,10 +48,10 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
 
           <section
             id='features'
-            className='w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-neutral-800 dark:text-white'
+            className='w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-neutral-800 dark:text-white'
           >
-            <div className='container mx-auto px-4 md:px-6'>
-              <h2 className='text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12'>
+            <div className='container px-4 mx-auto md:px-6'>
+              <h2 className='mb-12 text-3xl font-bold tracking-tighter text-center sm:text-5xl'>
                 Key Features
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
@@ -93,13 +93,13 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
           </section>
 
           <section className='w-full py-12 md:py-24 lg:py-32'>
-            <div className='container mx-auto px-4 md:px-6'>
-              <h2 className='text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12'>
+            <div className='container px-4 mx-auto md:px-6'>
+              <h2 className='mb-12 text-3xl font-bold tracking-tighter text-center sm:text-5xl'>
                 Why Choose CRM Pro?
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div className='flex items-start space-x-4'>
-                  <CheckIcon className='w-6 h-6 text-green-500 flex-shrink-0' />
+                  <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
                     <h3 className='font-bold'>Increased Productivity</h3>
                     <p className='text-gray-500 dark:text-gray-400'>
@@ -108,7 +108,7 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
                   </div>
                 </div>
                 <div className='flex items-start space-x-4'>
-                  <CheckIcon className='w-6 h-6 text-green-500 flex-shrink-0' />
+                  <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
                     <h3 className='font-bold'>Better Customer Relationships</h3>
                     <p className='text-gray-500 dark:text-gray-400'>
@@ -117,7 +117,7 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
                   </div>
                 </div>
                 <div className='flex items-start space-x-4'>
-                  <CheckIcon className='w-6 h-6 text-green-500 flex-shrink-0' />
+                  <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
                     <h3 className='font-bold'>Data-Driven Decisions</h3>
                     <p className='text-gray-500 dark:text-gray-400'>
@@ -126,7 +126,7 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
                   </div>
                 </div>
                 <div className='flex items-start space-x-4'>
-                  <CheckIcon className='w-6 h-6 text-green-500 flex-shrink-0' />
+                  <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
                     <h3 className='font-bold'>Scalable Solution</h3>
                     <p className='text-gray-500 dark:text-gray-400'>
@@ -140,10 +140,10 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
 
           <section
             id='pricing'
-            className='w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-neutral-800 dark:text-white'
+            className='w-full py-12 bg-gray-100 md:py-24 lg:py-32 dark:bg-neutral-800 dark:text-white'
           >
-            <div className='container mx-auto px-4 md:px-6'>
-              <h2 className='text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12'>
+            <div className='container px-4 mx-auto md:px-6'>
+              <h2 className='mb-12 text-3xl font-bold tracking-tighter text-center sm:text-5xl'>
                 Simple, Transparent Pricing
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>

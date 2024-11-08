@@ -84,9 +84,9 @@ export default function CreateProjectPage() {
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-        <div className='flex gap-2 items-center'>
+        <div className='flex items-center gap-2'>
           <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2 h-4' />
+          <Separator orientation='vertical' className='h-4 mr-2' />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
@@ -135,7 +135,7 @@ export default function CreateProjectPage() {
                 )}
               />
 
-              <div className='flex gap-3 flex-wrap'>
+              <div className='flex flex-wrap gap-3'>
                 <FormField
                   control={form.control}
                   name='startDate'
@@ -157,7 +157,7 @@ export default function CreateProjectPage() {
                               ) : (
                                 <span>Pick a date</span>
                               )}
-                              <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                              <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
@@ -202,7 +202,7 @@ export default function CreateProjectPage() {
                               ) : (
                                 <span>Pick a date</span>
                               )}
-                              <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                              <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>

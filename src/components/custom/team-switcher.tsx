@@ -40,7 +40,7 @@ export function TeamSwitcher({
               size='lg'
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
-              <div className='flex justify-center items-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground'>
+              <div className='flex items-center justify-center rounded-lg aspect-square size-8 bg-sidebar-primary text-sidebar-primary-foreground'>
                 <Image
                   src={activeTeam.logo}
                   alt={activeTeam.name}
@@ -49,7 +49,7 @@ export function TeamSwitcher({
                   className='size-4'
                 />
               </div>
-              <div className='grid flex-1 text-sm leading-tight text-left'>
+              <div className='flex-1 text-sm leading-tight text-left grid'>
                 <span className='font-semibold truncate'>{activeTeam.name}</span>
                 <span className='text-xs truncate'>{activeTeam.plan}</span>
               </div>
@@ -67,9 +67,9 @@ export function TeamSwitcher({
               <DropdownMenuItem
                 key={team.name}
                 onClick={() => setActiveTeam(team)}
-                className='gap-2 p-2'
+                className='p-2 gap-2'
               >
-                <div className='flex justify-center items-center rounded-sm border size-6'>
+                <div className='flex items-center justify-center border rounded-sm size-6'>
                   <Image
                     src={activeTeam.logo}
                     alt={activeTeam.name}
@@ -83,8 +83,8 @@ export function TeamSwitcher({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='gap-2 p-2'>
-              <div className='flex justify-center items-center rounded-md border size-6 bg-background'>
+            <DropdownMenuItem className='p-2 gap-2'>
+              <div className='flex items-center justify-center border rounded-md size-6 bg-background'>
                 <Plus className='size-4' />
               </div>
               <div className='font-medium text-muted-foreground'>Add team</div>

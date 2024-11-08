@@ -104,7 +104,7 @@ export function TaskForm({
                       )}
                     >
                       {field.value ? formatDate(String(field.value)) : <span>Pick a date</span>}
-                      <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                      <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -146,7 +146,7 @@ export function TaskForm({
           )}
         />
 
-        <div className='mt-4 flex justify-end'>
+        <div className='flex justify-end mt-4'>
           <Button type='submit' disabled={form.formState.isSubmitting}>
             {submitButtonText}
           </Button>

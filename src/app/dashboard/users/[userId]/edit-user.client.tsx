@@ -88,9 +88,9 @@ export default function EditUserPageClient({ user }: { user: User }) {
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-        <div className='flex gap-2 items-center'>
+        <div className='flex items-center gap-2'>
           <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2 h-4' />
+          <Separator orientation='vertical' className='h-4 mr-2' />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
@@ -176,7 +176,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
                   control={form.control}
                   name='isTwoFactorEnabled'
                   render={({ field }) => (
-                    <FormItem className='flex flex-row justify-between items-center p-3 rounded-lg border shadow-sm'>
+                    <FormItem className='flex flex-row items-center justify-between p-3 border rounded-lg shadow-sm'>
                       <div className='space-y-0.5'>
                         <FormLabel>Two Factor Authentication</FormLabel>
                       </div>

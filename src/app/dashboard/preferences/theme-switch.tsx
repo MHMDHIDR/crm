@@ -45,7 +45,7 @@ export default function ThemeSwitch() {
 
   return (
     <div>
-      <h2 className='text-lg font-bold mb-4'>Select your preferred theme 😎</h2>
+      <h2 className='mb-4 text-lg font-bold'>Select your preferred theme 😎</h2>
 
       <div className='flex items-center gap-x-2'>
         <Switch checked={newTheme === 'dark'} onCheckedChange={toggleTheme} disabled={isUpdating} />

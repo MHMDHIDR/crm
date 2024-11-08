@@ -57,8 +57,8 @@ export default function ResetPasswordClientPage() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center'>
-      <div className='w-full max-w-md space-y-8 rounded-lg p-8 shadow-lg dark:shadow-neutral-800 dark:border dark:border-neutral-800'>
+    <div className='flex items-center justify-center min-h-screen'>
+      <div className='w-full max-w-md p-8 rounded-lg shadow-lg space-y-8 dark:shadow-neutral-800 dark:border dark:border-neutral-800'>
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>Reset Password</h2>
         </div>

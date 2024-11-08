@@ -39,7 +39,7 @@ export function TableToolbar<TData>({
 
   return (
     <div className='flex items-center justify-between gap-x-2 py-2.5'>
-      <div className='flex items-center gap-x-2 w-full'>
+      <div className='flex items-center w-full gap-x-2'>
         <Input
           placeholder={searchPlaceholder}
           value={filtering}
@@ -50,7 +50,7 @@ export function TableToolbar<TData>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='outline'>
-                Bulk Actions <SettingsIcon className='ml-2 h-4 w-4' />
+                Bulk Actions <SettingsIcon className='w-4 h-4 ml-2' />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className='space-y-1'>
@@ -59,7 +59,7 @@ export function TableToolbar<TData>({
               {bulkActions.map((action, index) => (
                 <DropdownMenuItem key={index} asChild>
                   <Button
-                    className='cursor-pointer w-full'
+                    className='w-full cursor-pointer'
                     variant={action.variant || 'default'}
                     size='sm'
                     onClick={action.onClick}
@@ -75,7 +75,7 @@ export function TableToolbar<TData>({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>
-            Columns <ChevronDown className='ml-2 h-4 w-4' />
+            Columns <ChevronDown className='w-4 h-4 ml-2' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>

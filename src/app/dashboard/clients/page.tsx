@@ -151,9 +151,9 @@ export default function ClientsPage() {
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-        <div className='flex gap-2 items-center w-full'>
+        <div className='flex items-center w-full gap-2'>
           <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2 h-4' />
+          <Separator orientation='vertical' className='h-4 mr-2' />
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
@@ -178,7 +178,7 @@ export default function ClientsPage() {
           ]}
         />
 
-        <div className='rounded-md border'>
+        <div className='border rounded-md'>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map(headerGroup => (
@@ -221,7 +221,7 @@ export default function ClientsPage() {
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
                     <Link href='/dashboard/create-client'>
                       <EmptyState>
-                        <p className='mt-4 text-lg text-gray-500 dark:text-gray-400 select-none'>
+                        <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
                           Sorry we couldn&apos;t find any clients.
                         </p>
                         <Button>Add New Client</Button>

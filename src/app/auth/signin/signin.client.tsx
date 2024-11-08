@@ -82,8 +82,8 @@ export default function SignInClientPage() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center'>
-      <div className='w-full max-w-md space-y-8 rounded-lg p-8 shadow-lg dark:shadow-neutral-800 dark:border dark:border-neutral-800'>
+    <div className='flex items-center justify-center min-h-screen'>
+      <div className='w-full max-w-md p-8 rounded-lg shadow-lg space-y-8 dark:shadow-neutral-800 dark:border dark:border-neutral-800'>
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>{showTwoFactor ? 'Enter 2FA Code' : 'Sign In'}</h2>
           {showTwoFactor && (
@@ -147,7 +147,7 @@ export default function SignInClientPage() {
                 control={form.control}
                 name='code'
                 render={({ field }) => (
-                  <FormItem className='flex flex-col gap-5 items-center'>
+                  <FormItem className='flex flex-col items-center gap-5'>
                     <FormLabel>Verification Code</FormLabel>
                     <FormControl className='min-w-full'>
                       <InputOTP
@@ -178,7 +178,7 @@ export default function SignInClientPage() {
             <Button type='submit' className='w-full' disabled={isPending}>
               {isPending ? (
                 <>
-                  <Loader2Icon className='animate-spin h-5 w-5' />
+                  <Loader2Icon className='w-5 h-5 animate-spin' />
                   Signing Now...
                 </>
               ) : showTwoFactor ? (

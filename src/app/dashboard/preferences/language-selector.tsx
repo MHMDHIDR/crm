@@ -51,9 +51,9 @@ export default function LanguageSelector() {
 
   return (
     <div>
-      <h2 className='text-lg font-bold mb-4'>Language</h2>
+      <h2 className='mb-4 text-lg font-bold'>Language</h2>
       <div className='flex items-center gap-x-2'>
-        <Languages className='h-4 w-4' />
+        <Languages className='w-4 h-4' />
         <Label>Language{/*{navTranslations('ariaLabel')}*/}</Label>
         <Select value={currentLanguage} onValueChange={handleLanguageChange} disabled={isUpdating}>
           <SelectTrigger className='w-32'>

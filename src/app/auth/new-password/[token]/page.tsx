@@ -126,8 +126,8 @@ export default function NewPasswordClientPage({ params }: { params: Promise<{ to
   if (!token) return null
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-background px-4'>
-      <div className='w-full max-w-md space-y-8 rounded-lg p-8 shadow-lg dark:shadow-neutral-800 dark:border dark:border-neutral-800'>
+    <div className='flex items-center justify-center min-h-screen px-4 bg-background'>
+      <div className='w-full max-w-md p-8 rounded-lg shadow-lg space-y-8 dark:shadow-neutral-800 dark:border dark:border-neutral-800'>
         <div className='text-center'>
           <h2 className='text-2xl font-bold'>Create New Password</h2>
           <p className='mt-2 text-sm text-gray-600 dark:text-gray-300'>
@@ -160,9 +160,9 @@ export default function NewPasswordClientPage({ params }: { params: Promise<{ to
                         className='absolute right-3 top-1/2 -translate-y-1/2'
                       >
                         {showPassword ? (
-                          <EyeOffIcon className='h-4 w-4 text-gray-500' />
+                          <EyeOffIcon className='w-4 h-4 text-gray-500' />
                         ) : (
-                          <EyeIcon className='h-4 w-4 text-gray-500' />
+                          <EyeIcon className='w-4 h-4 text-gray-500' />
                         )}
                       </button>
                     </div>
@@ -197,9 +197,9 @@ export default function NewPasswordClientPage({ params }: { params: Promise<{ to
                         className='absolute right-3 top-1/2 -translate-y-1/2'
                       >
                         {showConfirmPassword ? (
-                          <EyeOffIcon className='h-4 w-4 text-gray-500' />
+                          <EyeOffIcon className='w-4 h-4 text-gray-500' />
                         ) : (
-                          <EyeIcon className='h-4 w-4 text-gray-500' />
+                          <EyeIcon className='w-4 h-4 text-gray-500' />
                         )}
                       </button>
                     </div>

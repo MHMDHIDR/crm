@@ -40,7 +40,7 @@ export function NavUser({ user }: { user: UserSession }) {
                   {fallbackUsername(user.name)}
                 </AvatarFallback>
               </Avatar>
-              <div className='grid flex-1 text-sm leading-tight text-left'>
+              <div className='flex-1 text-sm leading-tight text-left grid'>
                 <span className='font-semibold truncate'>{user.name}</span>
                 <span className='text-xs truncate'>{user.email}</span>
               </div>
@@ -53,7 +53,7 @@ export function NavUser({ user }: { user: UserSession }) {
             align='end'
             sideOffset={4}
           >
-            <DropdownMenuGroup className='flex items-center gap-2 p-1 text-left text-sm'>
+            <DropdownMenuGroup className='flex items-center p-1 text-sm text-left gap-2'>
               <DropdownMenuLink href={`/dashboard/users/${user.id}`}>
                 <Avatar className='w-8 h-8 rounded-lg'>
                   <AvatarImage src={user.image} alt={user.name} />
@@ -61,7 +61,7 @@ export function NavUser({ user }: { user: UserSession }) {
                     {fallbackUsername(user.name)}
                   </AvatarFallback>
                 </Avatar>
-                <div className='grid flex-1 text-sm leading-tight text-left'>
+                <div className='flex-1 text-sm leading-tight text-left grid'>
                   <span className='font-semibold truncate'>{user.name}</span>
                   <span className='text-xs truncate'>{user.email}</span>
                 </div>

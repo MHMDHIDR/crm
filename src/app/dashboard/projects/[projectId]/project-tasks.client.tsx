@@ -60,19 +60,15 @@ type ColumnType = 'pending' | 'in-progress' | 'completed'
 
 const TaskCard = ({ task, onViewDetails }: { task: Task; onViewDetails: (task: Task) => void }) => {
   const formattedDate = formatDate(String(task.dueDate))
-
   return (
-    <Card className='cursor-pointer'>
-      <CardContent className='p-2.5'>
-        <h3 className='font-semibold text-lg'>{task.title}</h3>
-        <p className='text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2'>
+    <Card className='rounded-lg cursor-pointer dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md'>
+      <CardContent onClick={() => onViewDetails(task)} className='p-2.5'>
+        <h3 className='text-lg font-semibold'>{task.title}</h3>
+        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
           {task.description}
         </p>
         <div className='mt-4'>
           <span className='text-sm text-gray-500'>Due: {formattedDate}</span>
-          <Button variant='outline' size='sm' onClick={() => onViewDetails(task)}>
-            View Details
-          </Button>
         </div>
       </CardContent>
     </Card>
@@ -187,7 +183,7 @@ const TaskCreateForm = ({
                       )}
                     >
                       {field.value ? formatDate(String(field.value)) : <span>Pick a date</span>}
-                      <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                      <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -232,7 +228,7 @@ const TaskCreateForm = ({
           )}
         />
 
-        <div className='mt-4 flex justify-end'>
+        <div className='flex justify-end mt-4'>
           <Button type='submit' disabled={form.formState.isSubmitting}>
             Create Task
           </Button>
@@ -326,9 +322,9 @@ export default function ProjectTasksClientPage({
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-        <div className='flex gap-2 items-center w-full'>
+        <div className='flex items-center w-full gap-2'>
           <SidebarTrigger className='-ml-1' />
-          <Separator orientation='vertical' className='mr-2 h-4' />
+          <Separator orientation='vertical' className='h-4 mr-2' />
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
