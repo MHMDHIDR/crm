@@ -26,21 +26,29 @@ import {
   SidebarRail,
   useSidebar
 } from '@/components/ui/sidebar'
-import { UserSession } from '@/db/schema'
+import { ExtendedProject, UserSession } from '@/db/schema'
 
 export function DashboardSidebar({
   user,
+  projects,
   ...props
-}: React.ComponentProps<typeof Sidebar> & { user: UserSession }) {
+}: React.ComponentProps<typeof Sidebar> & {
+  user: UserSession
+  projects: ExtendedProject[] | null
+}) {
   const { open } = useSidebar()
 
   const sidebarItems = {
     teams: [
-      {
-        name: `${user.name}`,
-        logo: '/images/logo.svg',
-        plan: 'Enterprise'
-      }
+      // If the user role === "Employee", Then show them their projects if they have any
+      ...(user.role === 'Employee' && projects && projects.length > 0
+        ? projects.map(project => ({
+            id: project.id,
+            name: project.name,
+            logo: '/images/logo.svg',
+            plan: `${project.clientName} | Project`
+          }))
+        : [])
     ],
     pinned: [
       {

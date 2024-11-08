@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { getProjectsByEmployeeId } from '@/actions/projects/get-project'
 import { auth } from '@/auth'
 import { DashboardSidebar } from '@/components/custom/dashboard-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
@@ -14,9 +15,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const sidebarState = cookieStore.get('sidebar:state')?.value
   const initialSidebarOpen = sidebarState === 'true'
 
+  // Get employee projects
+  const projects = await getProjectsByEmployeeId(session.user.id)
+
   return (
     <SidebarProvider defaultOpen={initialSidebarOpen}>
-      <DashboardSidebar user={session?.user as UserSession} />
+      <DashboardSidebar user={session?.user as UserSession} projects={projects} />
 
       <main className='flex-1 px-2.5 container w-full mx-auto'>
         <h1 className='relative z-20 py-2 mx-auto my-6 text-2xl font-semibold text-center bg-clip-text bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 dark:from-neutral-800 dark:via-white dark:to-white'>

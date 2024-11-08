@@ -56,7 +56,7 @@ function TaskCard({
   return (
     <Card
       className={cn(
-        'rounded-lg cursor-pointer dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md',
+        'rounded-lg cursor-grab dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md',
         className
       )}
     >
@@ -106,7 +106,7 @@ function Column({ title, tasks, status, isLoading, onViewDetails }: ColumnCompon
                 !isLoading &&
                 tasks.length === 0 && (
                   //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
-                  <div className='text-sm text-gray-400 text-center'>No tasks</div>
+                  <div className='text-sm text-gray-400 text-center min-w-[21rem]'>No Tasks</div>
                 )
               )}
               {tasks.map((task, index) => (
