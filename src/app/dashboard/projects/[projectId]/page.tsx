@@ -1,5 +1,6 @@
 'use client'
 
+import { Notebook, ShoppingBagIcon } from 'lucide-react'
 import Link from 'next/link'
 import { use, useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
@@ -237,13 +238,13 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
               <BreadcrumbItem>Tasks</BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <Link href='/dashboard/create-project'>
-            <Button>Add New Project</Button>
-          </Link>
         </div>
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <Button>{selectedTask ? 'Update Task' : 'Create Task'}</Button>
+            <Button className='font-bold'>
+              <Notebook className='w-5 h-5 mr-2' />
+              <span>{selectedTask ? 'Update Task' : 'Create Task'}</span>
+            </Button>
           </SheetTrigger>
           <SheetContent side='bottom'>
             <SheetHeader>
@@ -263,6 +264,13 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
             />
           </SheetContent>
         </Sheet>
+
+        <Link href='/dashboard/create-project'>
+          <Button>
+            <ShoppingBagIcon className='w-5 h-5 mr-2' />
+            <span>Add New Project</span>
+          </Button>
+        </Link>
       </header>
 
       <main className='w-full overflow-x-auto'>
