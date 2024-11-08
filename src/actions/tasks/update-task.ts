@@ -1,8 +1,10 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { z } from 'zod'
 import { database } from '@/db'
 import { tasks } from '@/db/schema'
+import { taskSchema } from '@/validators/task'
 
 interface UpdateTaskStatusParams {
   taskId: string
@@ -26,6 +28,44 @@ export async function updateTaskStatus({ taskId, status }: UpdateTaskStatusParam
     return {
       success: false,
       message: 'Failed to update task status'
+    }
+  }
+}
+
+interface UpdateTaskParams extends z.infer<typeof taskSchema> {
+  taskId: string
+}
+
+export async function updateTask({
+  taskId,
+  title,
+  description,
+  dueDate,
+  status
+}: UpdateTaskParams) {
+  try {
+    const [updatedTask] = await database
+      .update(tasks)
+      .set({
+        title,
+        description,
+        dueDate: new Date(dueDate),
+        status
+      })
+      .where(eq(tasks.id, taskId))
+      .returning()
+
+    return {
+      success: true,
+      message: `Task "${updatedTask.title}" updated successfully`,
+      data: updatedTask
+    }
+  } catch (error) {
+    console.error('Error updating task:', error)
+    return {
+      success: false,
+      message: 'Failed to update task',
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     }
   }
 }

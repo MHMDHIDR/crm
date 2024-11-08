@@ -9,7 +9,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
-    NEXT_PUBLIC_LOGO_URL: z.string().url(),
+    NEXT_PUBLIC_LOGO_URL: z.string(),
     NEXT_PUBLIC_ADMIN_EMAIL: z.string().email(),
     NEXT_PUBLIC_DEFAULT_REDIRECT: z.string()
   },

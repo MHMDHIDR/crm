@@ -187,9 +187,9 @@ export const tasks = pgTable('tasks', {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   title: text('title').notNull(),
-  description: text('description'),
-  dueDate: timestamp('due_date', { mode: 'date' }),
-  status: taskStatusEnum('status').default('pending'),
+  description: text('description').notNull(),
+  dueDate: timestamp('due_date', { mode: 'date' }).notNull(),
+  status: taskStatusEnum('status').default('pending').notNull(),
   projectId: text('project_id')
     .notNull()
     .references(() => projects.id, { onDelete: 'cascade' }),
