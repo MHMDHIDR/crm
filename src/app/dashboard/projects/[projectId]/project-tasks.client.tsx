@@ -1,16 +1,14 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { CalendarIcon } from 'lucide-react'
 import Link from 'next/link'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
-import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { createTask } from '@/actions/tasks/create-task'
 import { getTasksByStatus } from '@/actions/tasks/get-task'
 import { updateTask, updateTaskStatus } from '@/actions/tasks/update-task'
 import { TaskForm } from '@/components/custom/task-form'
+import { Badge } from '@/components/ui/badge'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,25 +17,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
@@ -48,32 +28,40 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import { Textarea } from '@/components/ui/textarea'
-import { TaskStatus } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
-import { getInitialProjectValues, taskSchema, TaskSchemaType } from '@/validators/task'
+import { taskSchema } from '@/validators/task'
 import type { Task, TasksByStatus } from '@/db/schema'
 
 type ColumnType = 'pending' | 'in-progress' | 'completed'
 
-const TaskCard = ({ task, onViewDetails }: { task: Task; onViewDetails: (task: Task) => void }) => {
-  const formattedDate = formatDate(String(task.dueDate))
-  return (
-    <Card className='rounded-lg cursor-pointer dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md'>
-      <CardContent onClick={() => onViewDetails(task)} className='p-2.5'>
-        <h3 className='text-lg font-semibold'>{task.title}</h3>
-        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
-          {task.description}
-        </p>
-        <div className='mt-4'>
-          <span className='text-sm text-gray-500'>Due: {formattedDate}</span>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+const TaskCard = ({
+  task,
+  onViewDetails,
+  className
+}: {
+  task: Task
+  onViewDetails: (task: Task) => void
+  className?: string
+}) => (
+  <Card
+    className={cn(
+      'rounded-lg cursor-pointer dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md',
+      className
+    )}
+  >
+    <CardContent onClick={() => onViewDetails(task)} className='p-2'>
+      <h3 className='text-lg font-semibold'>{task.title}</h3>
+      <p className='mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
+        {task.description}
+      </p>
+      <div className='mt-4'>
+        <span className='text-sm text-gray-500'>Due: {formatDate(String(task.dueDate))}</span>
+      </div>
+    </CardContent>
+  </Card>
+)
 
 const Column = ({
   title,
@@ -86,10 +74,13 @@ const Column = ({
   status: ColumnType
   onViewDetails: (task: Task) => void
 }) => (
-  <Card className='h-full'>
-    <CardHeader className='px-4'>
+  <Card className='bg-slate-50 dark:bg-slate-950 max-h-fit'>
+    <CardHeader className='px-4 pb-1'>
       <CardTitle>
-        {title} ({tasks.length})
+        {title}
+        <Badge className='ml-2 rounded-full' variant={tasks.length > 0 ? 'destructive' : 'success'}>
+          {tasks.length}
+        </Badge>
       </CardTitle>
     </CardHeader>
     <CardContent className='p-2.5'>
@@ -104,7 +95,11 @@ const Column = ({
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <TaskCard task={task} onViewDetails={onViewDetails} />
+                    <TaskCard
+                      task={task}
+                      onViewDetails={onViewDetails}
+                      className='dark:bg-slate-900'
+                    />
                   </div>
                 )}
               </Draggable>
@@ -116,127 +111,6 @@ const Column = ({
     </CardContent>
   </Card>
 )
-
-const TaskCreateForm = ({
-  onSubmit,
-  onSuccess
-}: {
-  onSubmit: (data: z.infer<typeof taskSchema>) => void
-  onSuccess?: () => void
-}) => {
-  const form = useForm<TaskSchemaType>({
-    resolver: zodResolver(taskSchema),
-    defaultValues: getInitialProjectValues()
-  })
-
-  const handleSubmit = async (data: z.infer<typeof taskSchema>) => {
-    onSubmit(data)
-    onSuccess?.()
-    form.reset()
-  }
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
-        <FormField
-          control={form.control}
-          name='title'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name='description'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name='dueDate'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Due Date</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild className='min-w-full'>
-                  <FormControl>
-                    <Button
-                      variant={'outline'}
-                      className={cn(
-                        'w-[240px] pl-3 text-left font-normal',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value ? formatDate(String(field.value)) : <span>Pick a date</span>}
-                      <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className='w-auto p-0' align='start'>
-                  <Calendar
-                    mode='single'
-                    selected={field.value ? new Date(field.value) : undefined}
-                    onSelect={field.onChange}
-                    disabled={date => {
-                      const dueDate = form.getValues('dueDate')
-                      return date < new Date() || (dueDate && date < new Date(dueDate))
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name='status'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select Task Status' />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value={TaskStatus.PENDING}>Pending</SelectItem>
-                  <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
-                  <SelectItem value={TaskStatus.COMPLETED}>Completed</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className='flex justify-end mt-4'>
-          <Button type='submit' disabled={form.formState.isSubmitting}>
-            Create Task
-          </Button>
-        </div>
-      </form>
-    </Form>
-  )
-}
 
 export default function ProjectTasksClientPage({
   projectId,
@@ -331,9 +205,7 @@ export default function ProjectTasksClientPage({
                 <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
-              <BreadcrumbItem>
-                <BreadcrumbLink href='/dashboard/projects'>Projects</BreadcrumbLink>
-              </BreadcrumbItem>
+              <BreadcrumbItem>Tasks</BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <Link href='/dashboard/create-project'>
@@ -341,7 +213,7 @@ export default function ProjectTasksClientPage({
           </Link>
         </div>
       </header>
-      <main className='w-full'>
+      <main>
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
             <Button>{selectedTask ? 'Update Task' : 'Create Task'}</Button>
@@ -364,28 +236,32 @@ export default function ProjectTasksClientPage({
             />
           </SheetContent>
         </Sheet>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className='grid grid-cols-3 gap-6 mt-6'>
-            <Column
-              title='Pending'
-              tasks={tasks.pending}
-              status='pending'
-              onViewDetails={handleViewDetails}
-            />
-            <Column
-              title='In Progress'
-              tasks={tasks['in-progress']}
-              status='in-progress'
-              onViewDetails={handleViewDetails}
-            />
-            <Column
-              title='Completed'
-              tasks={tasks.completed}
-              status='completed'
-              onViewDetails={handleViewDetails}
-            />
-          </div>
-        </DragDropContext>
+        <div className='w-full overflow-x-auto'>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className='flex justify-start min-w-max'>
+              <div className='grid grid-cols-3 gap-6 mt-6'>
+                <Column
+                  title='Pending'
+                  tasks={tasks.pending}
+                  status='pending'
+                  onViewDetails={handleViewDetails}
+                />
+                <Column
+                  title='In Progress'
+                  tasks={tasks['in-progress']}
+                  status='in-progress'
+                  onViewDetails={handleViewDetails}
+                />
+                <Column
+                  title='Completed'
+                  tasks={tasks.completed}
+                  status='completed'
+                  onViewDetails={handleViewDetails}
+                />
+              </div>
+            </div>
+          </DragDropContext>
+        </div>
       </main>
     </SidebarInset>
   )
