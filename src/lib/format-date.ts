@@ -18,10 +18,10 @@ export function formatDate(date: string, isNormalDate: boolean = true): string {
 
   const now = new Date().getTime()
   const givenDate = new Date(date).getTime()
-  const diff = now - givenDate
+  const diff = givenDate - now
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
 
-  const weeks = Math.floor(days / 7)
+  const weeks = Math.round(days / 7)
   const months = Math.floor(days / 30)
   const years = Math.floor(days / 365)
 
@@ -30,34 +30,37 @@ export function formatDate(date: string, isNormalDate: boolean = true): string {
       return 'Today'
 
     case days === 1:
-      return 'Yesterday'
+      return 'Tomorrow'
 
     case days >= 2 && days <= 5:
-      return `${days} days ago`
+      return `${days} days left`
 
-    case days >= 6 && days <= 12:
-      return `${weeks} weeks ago`
+    case days >= 6 && days <= 10:
+      return `${weeks} week left`
 
-    case days >= 13 && days <= 17:
-      return `${weeks} weeks ago`
+    case days >= 10 && days <= 14:
+      return `${weeks} weeks left`
+
+    case days >= 15 && days <= 17:
+      return `${weeks} weeks left`
 
     case weeks > 2 && weeks < 4:
-      return '3 weeks ago'
+      return '3 weeks left'
 
     case days >= 25 && days <= 35:
-      return '1 month ago'
+      return '1 month left'
 
     case months >= 2 && months <= 11:
-      return `${months} months ago`
+      return `${months} months left`
 
     case years === 1:
-      return '1 year ago'
+      return '1 year left'
 
     case years > 1:
-      return `${years} years ago`
+      return `${years} years left`
 
     default:
-      return `${days} days ago`
+      return `${days} days left`
   }
 }
 

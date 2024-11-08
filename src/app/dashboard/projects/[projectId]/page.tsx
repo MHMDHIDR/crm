@@ -63,7 +63,9 @@ const TaskCard = ({
         {task.description}
       </p>
       <div className='mt-4'>
-        <span className='text-sm text-gray-500'>Due: {formatDate(String(task.dueDate))}</span>
+        <span className='text-sm text-gray-500'>
+          Due: {formatDate(String(task.dueDate), false)}
+        </span>
       </div>
     </CardContent>
   </Card>
