@@ -1,10 +1,14 @@
 import Link from 'next/link'
+import { auth } from '@/auth'
 import { NotFoundIcon } from '@/components/custom/icons'
 import { Button } from '@/components/ui/button'
 
-export default function RootNotFound() {
+export default async function RootNotFound() {
+  const session = await auth()
+  const user = session?.user
+
   return (
-    <section className={`p-4 py-20`}>
+    <section>
       <div className='container flex flex-col items-center justify-center w-full min-h-screen px-6 py-20 mx-auto'>
         <div className='flex flex-col items-center max-w-lg mx-auto text-center'>
           <NotFoundIcon />
@@ -22,6 +26,13 @@ export default function RootNotFound() {
                 Go Back Home
               </Button>
             </Link>
+            {user && (
+              <Link href='/dashboard' className='w-full cursor-pointer'>
+                <Button type='button' variant={'pressable'}>
+                  Go to Dashboard
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
