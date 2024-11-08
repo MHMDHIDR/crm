@@ -6,7 +6,10 @@ export const taskSchema = z.object({
     .string()
     .min(2, 'Title must be at least 2 characters')
     .max(100, 'Title cannot exceed 100 characters'),
-  description: z.string().max(2000, 'Description cannot exceed 2000 characters').optional(),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters')
+    .max(2000, 'Description cannot exceed 2000 characters'),
   dueDate: z.coerce
     .date()
     .min(new Date('2000-01-01'), 'Due date too far in the past')

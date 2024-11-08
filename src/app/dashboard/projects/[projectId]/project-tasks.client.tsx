@@ -321,7 +321,7 @@ export default function ProjectTasksClientPage({
 
   useEffect(() => {
     setTasks(initialTasks)
-  }, [])
+  }, [initialTasks])
 
   return (
     <SidebarInset>
