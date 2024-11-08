@@ -1,5 +1,3 @@
-'use client'
-
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
