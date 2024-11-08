@@ -35,6 +35,12 @@ import { taskSchema } from '@/validators/task'
 import type { Task, TasksByStatus } from '@/db/schema'
 
 type ColumnType = 'pending' | 'in-progress' | 'completed'
+type ColumnComponentProps = {
+  title: string
+  tasks: Task[]
+  status: ColumnType
+  onViewDetails: (task: Task) => void
+}
 
 const TaskCard = ({
   task,
@@ -63,17 +69,7 @@ const TaskCard = ({
   </Card>
 )
 
-const Column = ({
-  title,
-  tasks,
-  status,
-  onViewDetails
-}: {
-  title: string
-  tasks: Task[]
-  status: ColumnType
-  onViewDetails: (task: Task) => void
-}) => (
+const Column = ({ title, tasks, status, onViewDetails }: ColumnComponentProps) => (
   <Card className='bg-slate-50 dark:bg-slate-950 max-h-fit'>
     <CardHeader className='px-4 pb-1'>
       <CardTitle>
@@ -96,9 +92,13 @@ const Column = ({
         ignoreContainerClipping={false}
       >
         {provided => (
-          <div ref={provided.innerRef} {...provided.droppableProps} className='space-y-4'>
-            {tasks.map((task: Task, index: number) => (
-              <Draggable key={task.id} draggableId={task.id} index={index}>
+          <div ref={provided.innerRef} {...provided.droppableProps} className='space-y-2'>
+            {tasks.length === 0 && (
+              //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
+              <div className='text-sm text-gray-400 text-center'>No tasks</div>
+            )}
+            {tasks.map((task, index) => (
+              <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
                 {provided => (
                   <div
                     ref={provided.innerRef}
