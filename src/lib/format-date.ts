@@ -19,7 +19,7 @@ export function formatDate(date: string, isNormalDate: boolean = true): string {
   const now = new Date().getTime()
   const givenDate = new Date(date).getTime()
   const diff = givenDate - now
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const days = Math.round(diff / (1000 * 60 * 60 * 24))
 
   const weeks = Math.round(days / 7)
   const months = Math.floor(days / 30)
