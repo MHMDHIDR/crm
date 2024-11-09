@@ -97,10 +97,15 @@ function Column({ title, tasks, status, isLoading, onViewDetails }: ColumnCompon
           droppableId={status}
           isDropDisabled={false}
           isCombineEnabled={false}
+          direction='vertical'
           ignoreContainerClipping={false}
         >
           {provided => (
-            <div ref={provided.innerRef} {...provided.droppableProps} className='space-y-2'>
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className='space-y-2 overflow-x-hidden'
+            >
               {isLoading ? (
                 <LoadingCard renderedSkeletons={2} className='min-w-[21rem] h-28' />
               ) : (
@@ -224,7 +229,7 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
   }, [projectId])
 
   return (
-    <SidebarInset>
+    <SidebarInset className='relative px-2'>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
         <div className='flex items-center w-full gap-2'>
           <SidebarTrigger className='-ml-1' />
@@ -302,8 +307,9 @@ export default function ProjectTasksPage({ params }: { params: Promise<{ project
           </div>
         </DragDropContext>
       </main>
-      <div className='absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-neutral-950 to-transparent pointer-events-none' />
-      <div className='absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-neutral-950 to-transparent pointer-events-none' />
+
+      <div className='absolute top-0 bottom-0 left-0 w-8 pointer-events-none bg-gradient-to-r from-white dark:from-neutral-950 to-transparent' />
+      <div className='absolute top-0 bottom-0 right-0 w-8 pointer-events-none bg-gradient-to-l from-white dark:from-neutral-950 to-transparent' />
     </SidebarInset>
   )
 }
