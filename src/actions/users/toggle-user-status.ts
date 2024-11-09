@@ -4,69 +4,63 @@ import { inArray } from 'drizzle-orm'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { users } from '@/db/schema'
+import type { User } from '@/db/schema'
+
+type UserStatus = 'suspend' | 'unsuspend'
 
 /**
- * Suspend one or multiple users in the database
- * @param userIds - Array of user IDs to suspend
+ * Toggle suspension status of one or multiple users in the database
+ * @param userIds - Array of user IDs to toggle
+ * @param status - Status to set ('suspend' or 'unsuspend')
  * @returns Promise<{ success: boolean; message?: string }> with success status and optional message
  */
-export async function suspendUsers(
-  userIds: string[]
+export async function toggleUserStatus(
+  userIds: string[],
+  status: UserStatus
 ): Promise<{ success: boolean; message?: string }> {
   try {
     // Validate input
     if (!userIds.length) {
-      return { success: false, message: 'No Users Selected For Suspension! Please Select users.' }
+      return {
+        success: false,
+        message: `No Users Selected For ${status === 'suspend' ? 'Suspension' : 'Unsuspension'}! Please Select users.`
+      }
     }
 
-    // Update users' suspendedAt field with current timestamp using new Date()
-    const [toggledUsersStatus] = await database
+    // Update users' suspendedAt field based on status
+    const toggledUser: User[] = await database
       .update(users)
-      .set({ suspendedAt: new Date() })
+      .set({ suspendedAt: status === 'suspend' ? new Date() : null })
       .where(inArray(users.id, userIds))
       .returning()
-    const addedEvent = await addEvent(`Suspended ${toggledUsersStatus.name} status`)
 
-    if (!toggledUsersStatus || !addedEvent.success) {
-      return { success: false, message: 'Failed to suspend users' }
+    if (!toggledUser.length) {
+      return {
+        success: false,
+        message: `Failed to ${status === 'suspend' ? 'suspend' : 'unsuspend'} users`
+      }
     }
 
-    return { success: true, message: 'Users suspended successfully' }
+    // Create event entries for all updated projects
+    const eventPromises = toggledUser.map(user =>
+      addEvent(`${user.name} ${status === 'suspend' ? 'Suspended' : 'Unsuspended'}!`)
+    )
+    // Wait for all events to be added, Add event for the status change
+    const eventResults = await Promise.all(eventPromises)
+    // Check if any events failed to be added
+    if (eventResults.some(result => !result.success)) {
+      console.warn('Some events failed to be recorded: ', eventResults)
+    }
+
+    return {
+      success: true,
+      message: `Users ${status === 'suspend' ? 'suspended' : 'unsuspended'} successfully`
+    }
   } catch (error) {
-    console.error('Error suspending users:', error)
-    return { success: false, message: 'Failed to suspend users. Please try again.' }
-  }
-}
-
-/**
- * Unsuspend one or multiple users in the database
- * @param userIds - Array of user IDs to unsuspend
- * @returns Promise<{ success: boolean; message?: string }> with success status and optional message
- */
-export async function unsuspendUsers(
-  userIds: string[]
-): Promise<{ success: boolean; message?: string }> {
-  try {
-    // Validate input
-    if (!userIds.length) {
-      return { success: false, message: 'No Users Selected For Unsuspension! Please Select users.' }
+    console.error(`Error ${status === 'suspend' ? 'suspending' : 'unsuspending'} users:`, error)
+    return {
+      success: false,
+      message: `Failed to ${status === 'suspend' ? 'suspend' : 'unsuspend'} users. Please try again.`
     }
-
-    // Set suspendedAt to null to unsuspend users
-    const [toggledUsersStatus] = await database
-      .update(users)
-      .set({ suspendedAt: null })
-      .where(inArray(users.id, userIds))
-      .returning()
-    const addedEvent = await addEvent(`Unsuspended ${toggledUsersStatus.name} status`)
-
-    if (!toggledUsersStatus || !addedEvent.success) {
-      return { success: false, message: 'Failed to unsuspend users' }
-    }
-
-    return { success: true, message: 'Users unsuspended successfully' }
-  } catch (error) {
-    console.error('Error unsuspending users:', error)
-    return { success: false, message: 'Failed to unsuspend users. Please try again.' }
   }
 }

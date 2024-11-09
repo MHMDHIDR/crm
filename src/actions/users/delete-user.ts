@@ -20,11 +20,21 @@ export async function deleteUsers(
     }
 
     // Delete users from the database
-    const deletedUser = await database.delete(users).where(inArray(users.id, userIds))
-    const addedEvent = await addEvent(`Deleted ${deletedUser.length} users`)
+    const deletedUsers = await database.delete(users).where(inArray(users.id, userIds)).returning()
 
-    if (!deletedUser || !addedEvent.success) {
+    if (!deletedUsers.length) {
       return { success: false, message: 'Failed to delete users' }
+    }
+
+    // Create event entries for all updated projects
+    const eventPromises = deletedUsers.map(user =>
+      addEvent(`Deleted ${user.name} [${user.email}] from the Records!`)
+    )
+    // Wait for all events to be added
+    const eventResults = await Promise.all(eventPromises)
+    // Check if any events failed to be added
+    if (eventResults.some(result => !result.success)) {
+      console.warn('Some events failed to be recorded: ', eventResults)
     }
 
     return { success: true, message: 'Users deleted successfully' }

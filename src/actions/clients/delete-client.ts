@@ -20,14 +20,24 @@ export async function deleteClients(
     }
 
     // Delete clients from the database
-    const deletedClients = await database.delete(clients).where(inArray(clients.id, userIds))
-    const addedEvent = await addEvent(`Deleted ${deletedClients.length} Clients.`)
+    const deletedClients = await database
+      .delete(clients)
+      .where(inArray(clients.id, userIds))
+      .returning()
 
-    if (!deletedClients || !addedEvent.success) {
-      return {
-        success: false,
-        message: 'Failed to delete clients. Please try again.'
-      }
+    if (!deletedClients.length) {
+      return { success: false, message: 'Failed to delete clients. Please try again.' }
+    }
+
+    // Create event entries for all updated projects
+    const eventPromises = deletedClients.map(client =>
+      addEvent(`Deleted ${client.name} [${client.email}] from the Records!`)
+    )
+    // Wait for all events to be added
+    const eventResults = await Promise.all(eventPromises)
+    // Check if any events failed to be added
+    if (eventResults.some(result => !result.success)) {
+      console.warn('Some events failed to be recorded: ', eventResults)
     }
 
     return { success: true, message: 'Clients deleted successfully' }

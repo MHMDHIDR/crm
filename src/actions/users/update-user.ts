@@ -20,6 +20,11 @@ type ExtendedSettingsInput = {
   isTwoFactorEnabled?: boolean | null
 }
 
+/**
+ * Update a Single User settings in the database
+ * @param values <ExtendedSettingsInput> - User settings to update
+ * @returns Promise<{ success: string } | { error: string }> with success message or error
+ */
 export const updateUser = async (values: ExtendedSettingsInput) => {
   const session = await auth()
   if (!session?.user) {

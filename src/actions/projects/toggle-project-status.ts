@@ -27,26 +27,34 @@ export async function toggleProjectStatus(
     }
 
     // Update projects' status and updatedAt field
-    const [toggledProjectStatus]: Project[] = await database
+    const toggledProjects: Project[] = await database
       .update(projects)
       .set({ status, updatedAt: new Date() })
       .where(inArray(projects.id, projectIds))
       .returning()
 
-    const addedEvent = await addEvent(
-      `${toggledProjectStatus.name} ${status === 'active' ? 'Activated' : 'Deactivated'}!`
-    )
-
-    if (!toggledProjectStatus || !addedEvent.success) {
+    // Check if we got any results
+    if (!toggledProjects.length) {
       return {
         success: false,
         message: `Failed to ${status === 'active' ? 'activate' : 'deactivate'} projects`
       }
     }
 
+    // Create event entries for all updated projects
+    const eventPromises = toggledProjects.map(project =>
+      addEvent(`${project.name} ${status === 'active' ? 'Activated' : 'Deactivated'}!`)
+    )
+    // Wait for all events to be added
+    const eventResults = await Promise.all(eventPromises)
+    // Check if any events failed to be added, Add event for the status change
+    if (eventResults.some(result => !result.success)) {
+      console.warn('Some events failed to be recorded: ', eventResults)
+    }
+
     return {
       success: true,
-      message: `Projects ${status === 'active' ? 'activated' : 'deactivated'} successfully`
+      message: `${toggledProjects.length} project${toggledProjects.length > 1 ? 's' : ''} ${status === 'active' ? 'activated' : 'deactivated'} successfully`
     }
   } catch (error) {
     console.error(`Error ${status === 'active' ? 'activating' : 'deactivating'} projects:`, error)

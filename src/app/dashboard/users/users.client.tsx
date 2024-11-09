@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteUsers } from '@/actions/users/delete-user'
 import { getUsers } from '@/actions/users/get-users'
-import { suspendUsers, unsuspendUsers } from '@/actions/users/toggle-user-status'
+import { toggleUserStatus } from '@/actions/users/toggle-user-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
@@ -161,7 +161,11 @@ export default function UsersClientPage() {
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    const actions = { delete: deleteUsers, suspend: suspendUsers, unsuspend: unsuspendUsers }
+    const actions = {
+      delete: deleteUsers,
+      suspend: (userIds: string[]) => toggleUserStatus(userIds, 'suspend'),
+      unsuspend: (userIds: string[]) => toggleUserStatus(userIds, 'unsuspend')
+    }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
 

@@ -20,11 +20,24 @@ export async function deleteProjects(
     }
 
     // Delete projects from the database
-    const deletedProject = await database.delete(projects).where(inArray(projects.id, projectIds))
-    const addedEvent = await addEvent(`Deleted ${deletedProject.length} Projects`)
+    const deletedProject = await database
+      .delete(projects)
+      .where(inArray(projects.id, projectIds))
+      .returning()
 
-    if (!deletedProject || !addedEvent.success) {
+    if (!deletedProject.length) {
       return { success: false, message: 'Failed to delete projects. Please try again.' }
+    }
+
+    // Create event entries for all updated projects
+    const eventPromises = deletedProject.map(project =>
+      addEvent(`Deleted ${project.name} Project!`)
+    )
+    // Wait for all events to be added
+    const eventResults = await Promise.all(eventPromises)
+    // Check if any events failed to be added
+    if (eventResults.some(result => !result.success)) {
+      console.warn('Some events failed to be recorded: ', eventResults)
     }
 
     return { success: true, message: 'Projects deleted successfully' }

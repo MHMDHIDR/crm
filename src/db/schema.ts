@@ -258,6 +258,11 @@ export const projectsRelations = relations(projects, ({ one }) => ({
   client: one(clients, { fields: [projects.clientId], references: [clients.id] })
 }))
 
+// Relation between tasks and projects
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  projectName: one(projects, { fields: [tasks.projectId], references: [projects.id] })
+}))
+
 export const eventsRelations = relations(events, ({ one }) => ({
   user: one(users, { fields: [events.userId], references: [users.id] })
 }))

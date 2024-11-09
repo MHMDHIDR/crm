@@ -1,9 +1,9 @@
 'use server'
 
-import { inArray } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
-import { tasks } from '@/db/schema'
+import { projects, tasks } from '@/db/schema'
 
 /**
  * Delete one or multiple tasks from the database
@@ -19,14 +19,37 @@ export async function deleteTasks(
       return { success: false, message: 'No tasks selected for deletion' }
     }
 
+    // First, get the task details with project names before deletion
+    const tasksWithProjects = await database
+      .select({ taskId: tasks.id, taskTitle: tasks.title, projectName: projects.name })
+      .from(tasks)
+      .leftJoin(projects, eq(tasks.projectId, projects.id))
+      .where(inArray(tasks.id, taskIds))
+
+    if (!tasksWithProjects.length) {
+      return { success: false, message: 'Tasks not found' }
+    }
+
     // Delete tasks from the database
     const deletedTasks = await database.delete(tasks).where(inArray(tasks.id, taskIds)).returning()
-    const addedEvent = await addEvent(
-      `Deleted ${deletedTasks.length} Task${deletedTasks.length > 1 ? 's' : ''}`
+
+    if (!deletedTasks.length) {
+      return { success: false, message: 'Failed to delete tasks. Please try again.' }
+    }
+
+    // Create event entries for all deleted tasks using the project names we fetched
+    const eventPromises = tasksWithProjects.map(task =>
+      addEvent(
+        `Deleted "${task.taskTitle}" From [${task.projectName || 'Unknown Project'}] from the Records!`
+      )
     )
 
-    if (!deletedTasks || !addedEvent.success) {
-      return { success: false, message: 'Failed to delete tasks. Please try again.' }
+    // Wait for all events to be added
+    const eventResults = await Promise.all(eventPromises)
+
+    // Check if any events failed to be added
+    if (eventResults.some(result => !result.success)) {
+      console.warn('Some events failed to be recorded: ', eventResults)
     }
 
     return {
