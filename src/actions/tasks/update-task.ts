@@ -6,7 +6,7 @@ import { database } from '@/db'
 import { tasks } from '@/db/schema'
 import { taskSchema } from '@/validators/task'
 
-interface UpdateTaskStatusParams {
+type UpdateTaskStatusParams = {
   taskId: string
   status: 'pending' | 'in-progress' | 'completed'
 }
@@ -32,7 +32,7 @@ export async function updateTaskStatus({ taskId, status }: UpdateTaskStatusParam
   }
 }
 
-interface UpdateTaskParams extends z.infer<typeof taskSchema> {
+type UpdateTaskParams = z.infer<typeof taskSchema> & {
   taskId: string
 }
 

@@ -62,6 +62,10 @@ type ProjectTasksClientPageProps = {
     completed: number
   }
 }
+type BaseResponse = {
+  success: boolean
+  message: string
+}
 
 function TaskCard({
   task,
@@ -203,61 +207,58 @@ export default function ProjectTasksClientPage({
     }
   }
 
-  async function handleCreateTask(data: z.infer<typeof taskSchema>) {
-    const result = await createTask({ ...data, projectId })
+  async function handleTaskOperation<TResponse extends BaseResponse>({
+    operation,
+    successMessage,
+    onSuccess
+  }: {
+    operation: () => Promise<TResponse>
+    successMessage?: string
+    onSuccess?: () => void
+  }) {
+    try {
+      const result = await operation()
 
-    if (result.success) {
-      toast.success(result.message)
-      const updatedTasks = await getTasksByStatus({ projectId })
-      if (updatedTasks?.data) {
-        setTasks(updatedTasks.data)
+      if (result.success) {
+        // Show success message
+        toast.success(successMessage || result.message)
+
+        // Fetch updated tasks
+        const updatedTasks = await getTasksByStatus({ projectId })
+        if (updatedTasks?.data) {
+          setTasks(updatedTasks.data)
+        }
+
+        // Reset UI state
+        setIsSheetOpen(false)
+        setSelectedTask(null)
+
+        // Execute additional success callback if provided
+        onSuccess?.()
+      } else {
+        toast.error(result.message)
       }
-      setIsSheetOpen(false)
-    } else {
-      toast.error(result.message)
+    } catch (error) {
+      console.error('Error in task operation:', error)
+      toast.error('Operation failed. Please try again!')
     }
+  }
+
+  // Simplified task handlers
+  async function handleCreateTask(data: z.infer<typeof taskSchema>) {
+    await handleTaskOperation({ operation: () => createTask({ ...data, projectId }) })
   }
 
   async function handleUpdateTask(data: z.infer<typeof taskSchema>) {
     if (!selectedTask) return
 
-    const result = await updateTask({ ...data, taskId: selectedTask.id })
-    if (result.success) {
-      setIsSheetOpen(false)
-      setSelectedTask(null)
-
-      toast.success(result.message)
-
-      const updatedTasks = await getTasksByStatus({ projectId })
-      if (updatedTasks?.data) {
-        setTasks(updatedTasks.data)
-      }
-    } else {
-      toast.error(result.message)
-    }
+    await handleTaskOperation({ operation: () => updateTask({ ...data, taskId: selectedTask.id }) })
   }
 
   async function handleDeleteTask(taskId: Task['id']) {
-    if (!selectedTask) return
+    if (!selectedTask || !taskId) return
 
-    try {
-      const result = await deleteTasks([taskId])
-
-      if (result.success) {
-        setIsSheetOpen(false)
-        setSelectedTask(null)
-
-        toast.success(result.message || 'Task deleted successfully')
-
-        const updatedTasks = await getTasksByStatus({ projectId })
-        if (updatedTasks?.data) {
-          setTasks(updatedTasks.data)
-        }
-      }
-    } catch (error) {
-      console.error('Error deleting task:', error)
-      toast.error('Failed to delete the task. Please try again!')
-    }
+    await handleTaskOperation({ operation: () => deleteTasks([taskId]) })
   }
 
   const handleDragEnd = async (result: DropResult) => {

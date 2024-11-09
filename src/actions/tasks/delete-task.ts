@@ -11,7 +11,7 @@ import { tasks } from '@/db/schema'
  */
 export async function deleteTasks(
   taskIds: string[]
-): Promise<{ success: boolean; message?: string }> {
+): Promise<{ success: boolean; message: string }> {
   try {
     // Validate input
     if (!taskIds.length) {
