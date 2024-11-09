@@ -24,7 +24,8 @@ export async function suspendUsers(
       .update(users)
       .set({ suspendedAt: new Date() })
       .where(inArray(users.id, userIds))
-    const addedEvent = await addEvent(`Suspended ${toggledUsersStatus} users`)
+      .returning()
+    const addedEvent = await addEvent(`Suspended ${toggledUsersStatus.name} status`)
 
     if (!toggledUsersStatus || !addedEvent.success) {
       return { success: false, message: 'Failed to suspend users' }
@@ -56,7 +57,8 @@ export async function unsuspendUsers(
       .update(users)
       .set({ suspendedAt: null })
       .where(inArray(users.id, userIds))
-    const addedEvent = await addEvent(`Unsuspended ${toggledUsersStatus} users`)
+      .returning()
+    const addedEvent = await addEvent(`Unsuspended ${toggledUsersStatus.name} status`)
 
     if (!toggledUsersStatus || !addedEvent.success) {
       return { success: false, message: 'Failed to unsuspend users' }

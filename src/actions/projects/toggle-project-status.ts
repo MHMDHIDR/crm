@@ -27,6 +27,7 @@ export async function activateProject(
       .update(projects)
       .set({ status: 'active', updatedAt: new Date() })
       .where(inArray(projects.id, projectIds))
+      .returning()
     const addedEvent = await addEvent(`${toggledProjectStatus.name} Activated!`)
 
     if (!toggledProjectStatus || !addedEvent.success) {
@@ -62,6 +63,7 @@ export async function deactivateProject(
       .update(projects)
       .set({ status: 'deactive', updatedAt: new Date() })
       .where(inArray(projects.id, projectIds))
+      .returning()
 
     const addedEvent = await addEvent(`${toggledProjectStatus.name} Deactivated!`)
 
