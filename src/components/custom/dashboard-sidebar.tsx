@@ -17,7 +17,7 @@ import {
 import { NavMain } from '@/components/custom/nav-main'
 import { NavPinned } from '@/components/custom/nav-pinned'
 import { NavUser } from '@/components/custom/nav-user'
-import { TeamSwitcher } from '@/components/custom/team-switcher'
+import { ProjectSwitcher } from '@/components/custom/project-switcher'
 import {
   Sidebar,
   SidebarContent,
@@ -39,7 +39,7 @@ export function DashboardSidebar({
   const { open } = useSidebar()
 
   const sidebarItems = {
-    teams: [
+    projects: [
       // If the user role === "Employee", Then show them their projects if they have any
       ...(user.role === 'Employee' && projects && projects.length > 0
         ? projects.map(project => ({
@@ -137,7 +137,7 @@ export function DashboardSidebar({
   return (
     <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={sidebarItems.teams} />
+        <ProjectSwitcher teams={sidebarItems.projects} />
       </SidebarHeader>
       <SidebarContent>
         <NavPinned pinned={sidebarItems.pinned} />

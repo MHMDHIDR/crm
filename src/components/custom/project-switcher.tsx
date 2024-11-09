@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/sidebar'
 import { useActiveProject } from '@/hooks/use-active-project'
 
-type TeamSwitcherProps = {
+type ProjectSwitcherProps = {
   teams: {
     id: string
     name: string
@@ -29,7 +29,7 @@ type TeamSwitcherProps = {
   }[]
 }
 
-export function TeamSwitcher({ teams }: TeamSwitcherProps) {
+export function ProjectSwitcher({ teams }: ProjectSwitcherProps) {
   const { isMobile } = useSidebar()
   const { activeProject, setActiveProject } = useActiveProject(teams)
 
@@ -66,7 +66,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+            className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg space-y-1'
             align='start'
             side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
@@ -78,7 +78,7 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               <DropdownMenuLink
                 key={team.id}
                 onClick={() => setActiveProject(team)}
-                className={`p-2 gap-2 ${activeProject?.id === team.id ? 'bg-accent' : ''}`}
+                className={`p-2 gap-2 hover:cursor-pointer ${activeProject?.id === team.id ? 'bg-accent' : ''}`}
                 href={`/dashboard/projects/${team.id}`}
               >
                 <div className='flex items-center justify-center border rounded-sm size-6'>
@@ -98,7 +98,12 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               <div className='flex items-center justify-center border rounded-md size-6 bg-background'>
                 <Plus className='size-4' />
               </div>
-              <div className='font-medium text-muted-foreground'>Add team</div>
+              <DropdownMenuLink
+                className='p-0 hover:cursor-pointer'
+                href={`/dashboard/create-project`}
+              >
+                Add Project
+              </DropdownMenuLink>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
