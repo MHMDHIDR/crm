@@ -1,6 +1,7 @@
 'use server'
 
 import * as z from 'zod'
+import { addEvent } from '@/actions/events/add-event'
 import { getUserByEmail } from '@/actions/users/get-users'
 import { sendPasswordResetEmail } from '@/lib/mail'
 import { generatePasswordResetToken } from '@/lib/tokens'
@@ -29,7 +30,19 @@ export async function resetPassword(
   }
 
   const passwordResetToken = await generatePasswordResetToken(email)
-  await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token)
+  const passwordResetTokenSentEmail = await sendPasswordResetEmail(
+    passwordResetToken.email,
+    passwordResetToken.token
+  )
+
+  const addedEvent = await addEvent(`Password Reset Email Sent to ${email}`)
+
+  if (passwordResetTokenSentEmail.error || !addedEvent.success) {
+    return {
+      success: false,
+      message: `Failed to send reset email! ${passwordResetTokenSentEmail.error?.message}`
+    }
+  }
 
   return {
     success: true,

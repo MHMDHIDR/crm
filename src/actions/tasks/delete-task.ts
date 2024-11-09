@@ -1,6 +1,7 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { tasks } from '@/db/schema'
 
@@ -20,6 +21,13 @@ export async function deleteTasks(
 
     // Delete tasks from the database
     const deletedTasks = await database.delete(tasks).where(inArray(tasks.id, taskIds)).returning()
+    const addedEvent = await addEvent(
+      `Deleted ${deletedTasks.length} Task${deletedTasks.length > 1 ? 's' : ''}`
+    )
+
+    if (!deletedTasks || !addedEvent.success) {
+      return { success: false, message: 'Failed to delete tasks. Please try again.' }
+    }
 
     return {
       success: true,

@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { Project, projects } from '@/db/schema'
@@ -32,8 +33,9 @@ export async function createProject(data: ProjectSchemaType): Promise<CreatProje
       .insert(projects)
       .values({ ...data, assignedEmployeeId: session.user.id })
       .returning()
+    const addedEvent = await addEvent(`Project ${newProject.name} created`)
 
-    if (!newProject) {
+    if (!newProject || !addedEvent.success) {
       return { success: false, message: 'Failed to create project' }
     }
 

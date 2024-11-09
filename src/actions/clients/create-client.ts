@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { Client, clients } from '@/db/schema'
@@ -38,8 +39,9 @@ export async function createClient(data: ClientSchemaType): Promise<CreateClient
         assignedEmployeeId: session.user.id
       })
       .returning()
+    const addedEvent = await addEvent(`Client ${newClient.name} created`)
 
-    if (!newClient) {
+    if (!newClient || !addedEvent.success) {
       return { success: false, message: 'Failed to create client' }
     }
 

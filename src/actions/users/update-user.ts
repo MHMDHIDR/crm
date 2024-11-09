@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { getUserById } from '@/actions/users/get-users'
 import { auth, update } from '@/auth'
 import { database } from '@/db'
@@ -8,9 +9,9 @@ import { users } from '@/db/schema'
 import { compareHashedStrings, hashedString } from '@/lib/crypt'
 
 const allowedRoles = ['Admin', 'Supervisor', 'Employee'] as const
-type UserRole = (typeof allowedRoles)[number]
 
-interface ExtendedSettingsInput {
+type UserRole = (typeof allowedRoles)[number]
+type ExtendedSettingsInput = {
   id?: string | null
   name?: string | null
   email?: string | null
@@ -21,13 +22,11 @@ interface ExtendedSettingsInput {
 
 export const updateUser = async (values: ExtendedSettingsInput) => {
   const session = await auth()
-
   if (!session?.user) {
     return { error: 'Unauthorized' }
   }
 
   const { data: dbUser } = await getUserById(values.id ?? session.user.id)
-
   if (!dbUser) {
     return { error: 'Unauthorized' }
   }
@@ -66,8 +65,9 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
     .set(filteredUpdates)
     .where(eq(users.id, dbUser.id))
     .returning()
+  const addedEvent = await addEvent(`Updated user ${updatedUser.name}.`)
 
-  if (!updatedUser) {
+  if (!updatedUser || !addedEvent.success) {
     return { error: 'Failed to update settings' }
   }
 

@@ -1,8 +1,9 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
-import { projects } from '@/db/schema'
+import { Project, projects } from '@/db/schema'
 
 /**
  * Activate one or multiple projects in the database
@@ -22,10 +23,15 @@ export async function activateProject(
     }
 
     // Update projects' updatedAt field with current timestamp using new Date()
-    await database
+    const [toggledProjectStatus]: Project[] = await database
       .update(projects)
       .set({ status: 'active', updatedAt: new Date() })
       .where(inArray(projects.id, projectIds))
+    const addedEvent = await addEvent(`${toggledProjectStatus.name} Activated!`)
+
+    if (!toggledProjectStatus || !addedEvent.success) {
+      return { success: false, message: 'Failed to activate projects' }
+    }
 
     return { success: true, message: 'Projects activated successfully' }
   } catch (error) {
@@ -52,10 +58,16 @@ export async function deactivateProject(
     }
 
     // Set updatedAt to null to deactivated projects
-    await database
+    const [toggledProjectStatus]: Project[] = await database
       .update(projects)
       .set({ status: 'deactive', updatedAt: new Date() })
       .where(inArray(projects.id, projectIds))
+
+    const addedEvent = await addEvent(`${toggledProjectStatus.name} Deactivated!`)
+
+    if (!toggledProjectStatus || !addedEvent.success) {
+      return { success: false, message: 'Failed to deactivate projects' }
+    }
 
     return { success: true, message: 'Projects deactivated successfully' }
   } catch (error) {

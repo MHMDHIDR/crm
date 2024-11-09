@@ -1,4 +1,4 @@
-import { Resend } from 'resend'
+import { CreateEmailResponse, Resend } from 'resend'
 import { env } from '@/env'
 
 const RESEND = new Resend(env.RESEND_API_KEY)
@@ -15,15 +15,20 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   })
 }
 
-export const sendPasswordResetEmail = async (email: string, token: string) => {
+export const sendPasswordResetEmail = async (
+  email: string,
+  token: string
+): Promise<CreateEmailResponse> => {
   const resetLink = `${DOMAIN}/auth/new-password/${token}`
 
-  await RESEND.emails.send({
+  const emailResponse = await RESEND.emails.send({
     from: env.NEXT_PUBLIC_ADMIN_EMAIL,
     to: email,
     subject: 'Reset your password',
     html: `<p>Click <a href="${resetLink}">here</a> to Reset Your Password.</p>`
   })
+
+  return emailResponse
 }
 
 export const sendTwoFactorTokenEmail = async (email: string, token: string) => {

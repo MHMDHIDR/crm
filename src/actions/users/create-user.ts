@@ -2,6 +2,7 @@
 
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { users } from '@/db/schema'
 import { hashedString } from '@/lib/crypt'
@@ -41,8 +42,9 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         hashedPassword
       })
       .returning()
+    const addedEvent = await addEvent(`User ${newUser.name} created`)
 
-    if (!newUser) {
+    if (!newUser || !addedEvent.success) {
       return { success: false, message: 'Failed to create user' }
     }
 

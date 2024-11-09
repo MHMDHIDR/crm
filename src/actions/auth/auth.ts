@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { AuthError } from 'next-auth'
 import { getTwoFactorConfirmationByUserId } from '@/actions/auth/two-factor-confirmation'
 import { getTwoFactorTokenByEmail } from '@/actions/auth/two-factor-token'
+import { addEvent } from '@/actions/events/add-event'
 import { getUserByEmail } from '@/actions/users/get-users'
 import { signIn } from '@/auth'
 import { database } from '@/db'
@@ -73,6 +74,14 @@ export async function authenticate(formData: FormData): Promise<AuthResult> {
     }
 
     await signIn('credentials', { email, password, redirect: false })
+
+    // Track the sign-in event with the user's details
+    await addEvent(`User signed in`, {
+      skipAuth: true, // Skip auth check since session isn't established yet
+      userId: existingUser.id,
+      userName: existingUser.name,
+      userRole: existingUser.role
+    })
 
     return { success: true, message: 'Successfully signed in' }
   } catch (error) {

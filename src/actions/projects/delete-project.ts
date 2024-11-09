@@ -1,6 +1,7 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { projects } from '@/db/schema'
 
@@ -19,7 +20,12 @@ export async function deleteProjects(
     }
 
     // Delete projects from the database
-    await database.delete(projects).where(inArray(projects.id, projectIds))
+    const deletedProject = await database.delete(projects).where(inArray(projects.id, projectIds))
+    const addedEvent = await addEvent(`Deleted ${deletedProject.length} Projects`)
+
+    if (!deletedProject || !addedEvent.success) {
+      return { success: false, message: 'Failed to delete projects. Please try again.' }
+    }
 
     return { success: true, message: 'Projects deleted successfully' }
   } catch (error) {

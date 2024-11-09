@@ -59,6 +59,8 @@ export type TasksByStatus = {
   completed: Task[]
 }
 
+export type Event = typeof events.$inferSelect
+
 // Auth Tables with corrected column names for NextAuth
 export const users = pgTable('users', {
   id: text('id')
@@ -67,7 +69,7 @@ export const users = pgTable('users', {
   name: text('name').notNull(),
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
-  role: userRoleEnum('role').default('Employee'),
+  role: userRoleEnum('role').notNull().default('Employee'),
   image: text('image').notNull(),
   isTwoFactorEnabled: boolean('is_two_factor_enabled').notNull().default(false),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
@@ -149,6 +151,19 @@ export const twoFactorConfirmations = pgTable(
     twoFactorConfirmationUserIdx: unique('two_factor_confirmation_user_idx').on(table.userId)
   })
 )
+
+export const events = pgTable('events', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  description: text('description').notNull(),
+  userName: text('user_name').notNull(),
+  userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  userRole: userRoleEnum('role').notNull().default('Employee'),
+  timestamp: timestamp('timestamp', { mode: 'date' })
+    .notNull()
+    .$defaultFn(() => new Date())
+})
 
 // Core Schema
 export const clients = pgTable('clients', {
@@ -233,11 +248,16 @@ export const userPreferencesRelations = relations(userPreferences, ({ one }) => 
  */
 export const usersRelations = relations(users, ({ many, one }) => ({
   twoFactorConfirmations: many(twoFactorConfirmations),
-  preferences: one(userPreferences)
+  preferences: one(userPreferences),
+  events: many(events)
 }))
 
 // Relation between projects and users
 export const projectsRelations = relations(projects, ({ one }) => ({
   assignedEmployee: one(users, { fields: [projects.assignedEmployeeId], references: [users.id] }),
   client: one(clients, { fields: [projects.clientId], references: [clients.id] })
+}))
+
+export const eventsRelations = relations(events, ({ one }) => ({
+  user: one(users, { fields: [events.userId], references: [users.id] })
 }))

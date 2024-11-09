@@ -1,5 +1,6 @@
 'use server'
 
+import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { Task, tasks } from '@/db/schema'
@@ -19,14 +20,11 @@ export async function createTask(
   try {
     const [newTask]: Task[] = await database
       .insert(tasks)
-      .values({
-        ...data,
-        projectId: data.projectId,
-        assignedEmployeeId: session.user.id
-      })
+      .values({ ...data, projectId: data.projectId, assignedEmployeeId: session.user.id })
       .returning()
+    const addedEvent = await addEvent(`Task ${newTask.title} created`)
 
-    if (!newTask) {
+    if (!newTask || !addedEvent.success) {
       return { success: false, message: 'Failed to create task' }
     }
 

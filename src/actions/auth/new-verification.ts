@@ -2,6 +2,7 @@
 
 import { eq } from 'drizzle-orm'
 import { getVerificationTokenByToken } from '@/actions/auth//verificiation-token'
+import { addEvent } from '@/actions/events/add-event'
 import { getUserByEmail } from '@/actions/users/get-users'
 import { database } from '@/db'
 import { users, VerificationToken } from '@/db/schema'
@@ -30,15 +31,19 @@ export async function newVerification(token: string): newVerificationResult {
     return { error: 'Email does not exist!', status: 404 }
   }
 
-  // const [updatedUser] =
-  await database
+  const [verifyUserEmail] = await database
     .update(users)
     .set({ emailVerified: new Date(), email: existingToken.email })
     .where(eq(users.id, existingUser.id))
-  // .returning()
+    .returning()
+  const addedEvent = await addEvent(`User ${verifyUserEmail.name} verified their email`)
 
   // Delete the verification token
   await database.delete(VerificationToken).where(eq(VerificationToken.id, existingToken.id))
+
+  if (!verifyUserEmail || !addedEvent.success) {
+    return { error: 'Failed to verify email!', status: 500 }
+  }
 
   return { success: 'Email verified Successfully!', status: 200 }
 }

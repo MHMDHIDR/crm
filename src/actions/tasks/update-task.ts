@@ -2,6 +2,7 @@
 
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { tasks } from '@/db/schema'
 import { taskSchema } from '@/validators/task'
@@ -18,6 +19,11 @@ export async function updateTaskStatus({ taskId, status }: UpdateTaskStatusParam
       .set({ status })
       .where(eq(tasks.id, taskId))
       .returning()
+    const addedEvent = await addEvent(`Task ${updatedTask.title} status updated to ${status}`)
+
+    if (!updatedTask || !addedEvent.success) {
+      return { success: false, message: 'Failed to update task status' }
+    }
 
     return {
       success: true,
@@ -54,6 +60,12 @@ export async function updateTask({
       })
       .where(eq(tasks.id, taskId))
       .returning()
+
+    const addedEvent = await addEvent(`Task "${updatedTask.title}" updated to ${status}`)
+
+    if (!updatedTask || !addedEvent.success) {
+      return { success: false, message: 'Failed to update task' }
+    }
 
     return {
       success: true,

@@ -1,14 +1,14 @@
 'use client'
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Paintbrush2 } from 'lucide-react'
+import { BadgeCheck, Bell, ChevronsUpDown, LogOut, Paintbrush2 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
+import { addEvent } from '@/actions/events/add-event'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuLink,
   DropdownMenuSeparator,
   DropdownMenuTrigger
@@ -24,6 +24,11 @@ import type { UserSession } from '@/db/schema'
 
 export function NavUser({ user }: { user: UserSession }) {
   const { isMobile } = useSidebar()
+
+  const handleSignout = async () => {
+    await addEvent(`${user?.name || user?.email} signed out`)
+    await signOut({ redirectTo: '/auth/signin' })
+  }
 
   return (
     <SidebarMenu>
@@ -83,7 +88,7 @@ export function NavUser({ user }: { user: UserSession }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={async () => await signOut({ redirectTo: '/auth/signin' })}>
+            <DropdownMenuItem onClick={handleSignout}>
               <LogOut />
               Sign out
             </DropdownMenuItem>

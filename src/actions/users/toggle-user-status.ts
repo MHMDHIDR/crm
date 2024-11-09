@@ -1,6 +1,7 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { users } from '@/db/schema'
 
@@ -19,7 +20,15 @@ export async function suspendUsers(
     }
 
     // Update users' suspendedAt field with current timestamp using new Date()
-    await database.update(users).set({ suspendedAt: new Date() }).where(inArray(users.id, userIds))
+    const [toggledUsersStatus] = await database
+      .update(users)
+      .set({ suspendedAt: new Date() })
+      .where(inArray(users.id, userIds))
+    const addedEvent = await addEvent(`Suspended ${toggledUsersStatus} users`)
+
+    if (!toggledUsersStatus || !addedEvent.success) {
+      return { success: false, message: 'Failed to suspend users' }
+    }
 
     return { success: true, message: 'Users suspended successfully' }
   } catch (error) {
@@ -43,7 +52,15 @@ export async function unsuspendUsers(
     }
 
     // Set suspendedAt to null to unsuspend users
-    await database.update(users).set({ suspendedAt: null }).where(inArray(users.id, userIds))
+    const [toggledUsersStatus] = await database
+      .update(users)
+      .set({ suspendedAt: null })
+      .where(inArray(users.id, userIds))
+    const addedEvent = await addEvent(`Unsuspended ${toggledUsersStatus} users`)
+
+    if (!toggledUsersStatus || !addedEvent.success) {
+      return { success: false, message: 'Failed to unsuspend users' }
+    }
 
     return { success: true, message: 'Users unsuspended successfully' }
   } catch (error) {

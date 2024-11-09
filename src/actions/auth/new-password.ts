@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import * as z from 'zod'
 import { getPasswordResetTokenByToken } from '@/actions/auth/password-reset-token'
+import { addEvent } from '@/actions/events/add-event'
 import { getUserByEmail } from '@/actions/users/get-users'
 import { database } from '@/db'
 import { PasswordResetToken, users } from '@/db/schema'
@@ -51,14 +52,19 @@ export async function newPassword(values: newPasswordData): newPasswordonResult 
 
   const hashedPassword = await bcrypt.hash(password, 10)
 
-  const [_updatedUser] = await database
+  const [updatedUser] = await database
     .update(users)
     .set({ hashedPassword })
     .where(eq(users.id, existingUser.id))
     .returning()
+  const addedEvent = await addEvent(`Password updated for ${updatedUser.name}`)
 
   // Delete used token
   await database.delete(PasswordResetToken).where(eq(PasswordResetToken.id, existingToken.id))
+
+  if (!updatedUser || !addedEvent.success) {
+    return { success: false, message: 'Failed to update password!' }
+  }
 
   return { success: true, message: 'Password updated!' }
 }

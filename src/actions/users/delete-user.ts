@@ -1,6 +1,7 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { users } from '@/db/schema'
 
@@ -19,14 +20,16 @@ export async function deleteUsers(
     }
 
     // Delete users from the database
-    await database.delete(users).where(inArray(users.id, userIds))
+    const deletedUser = await database.delete(users).where(inArray(users.id, userIds))
+    const addedEvent = await addEvent(`Deleted ${deletedUser.length} users`)
+
+    if (!deletedUser || !addedEvent.success) {
+      return { success: false, message: 'Failed to delete users' }
+    }
 
     return { success: true, message: 'Users deleted successfully' }
   } catch (error) {
     console.error('Error deleting users:', error)
-    return {
-      success: false,
-      message: 'Failed to delete users. Please try again.'
-    }
+    return { success: false, message: 'Failed to delete users. Please try again.' }
   }
 }
