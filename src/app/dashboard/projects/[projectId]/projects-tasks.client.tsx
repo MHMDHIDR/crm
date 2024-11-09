@@ -2,7 +2,7 @@
 
 import { Notebook, ShoppingBagIcon } from 'lucide-react'
 import Link from 'next/link'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { z } from 'zod'
 import { createTask } from '@/actions/tasks/create-task'
@@ -19,7 +19,14 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
@@ -67,20 +74,19 @@ function TaskCard({
   return (
     <Card
       className={cn(
-        'rounded-lg cursor-grab dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md',
+        'relative rounded-lg cursor-grab dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md min-w-80 max-w-[21rem] h-28 overflow-hidden',
         className
       )}
+      title={task.title}
     >
-      <CardContent onClick={() => onViewDetails(task)} className='p-2'>
-        <h3 className='text-lg font-semibold'>{task.title}</h3>
-        <p className='mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2'>
-          {task.description}
-        </p>
-        <div className='mt-4'>
-          <span className='text-sm text-gray-500'>
-            Due: {formatDate(String(task.dueDate), false)}
-          </span>
-        </div>
+      <CardContent onClick={() => onViewDetails(task)} className='flex flex-col p-2 gap-y-3'>
+        <CardTitle>{`${task.title.slice(0, 35)}...`}</CardTitle>
+        <CardDescription className='text-sm leading-6 text-gray-500 dark:text-gray-400 line-clamp-2'>
+          {`${task.description.slice(0, 70)}...`}
+        </CardDescription>
+        <CardFooter className='absolute inline-block p-0 text-sm text-gray-500 bottom-1'>
+          Due: {formatDate(String(task.dueDate), false)}
+        </CardFooter>
       </CardContent>
     </Card>
   )
@@ -139,7 +145,7 @@ function Column({
               {isLoading ? (
                 <LoadingCard
                   renderedSkeletons={getSkeletonCount()}
-                  className='min-w-[21rem] h-28'
+                  className='min-w-80 max-w-[21rem] h-28'
                 />
               ) : (
                 !isLoading &&

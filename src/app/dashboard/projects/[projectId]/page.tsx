@@ -10,9 +10,10 @@ export default async function ProjectTasksPage({
 
   const { data: tasksByStatus } = await getTasksByStatus({ projectId })
 
-  console.log(tasksByStatus)
-
-  // Calculate the count for each status
+  /**
+   * Calculating the count for each status to show the correct numbers of <LoadingCards />
+   * @returns Object with the number of tasks by status
+   */
   const tasksCount = {
     pending: tasksByStatus?.pending.length ?? 0,
     inProgress: tasksByStatus?.['in-progress'].length ?? 0,
