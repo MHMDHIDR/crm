@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { z } from 'zod'
 import { createTask } from '@/actions/tasks/create-task'
+import { deleteTasks } from '@/actions/tasks/delete-task'
 import { getTasksByStatus } from '@/actions/tasks/get-task'
 import { updateTask, updateTaskStatus } from '@/actions/tasks/update-task'
 import { LoadingCard } from '@/components/custom/loading'
@@ -195,7 +196,14 @@ export default function ProjectTasksClientPage({
 
   const toast = useToast()
 
-  const handleCreateTask = async (data: z.infer<typeof taskSchema>) => {
+  function handleSheetOpenChange(open: boolean) {
+    setIsSheetOpen(open)
+    if (!open) {
+      setSelectedTask(null)
+    }
+  }
+
+  async function handleCreateTask(data: z.infer<typeof taskSchema>) {
     const result = await createTask({ ...data, projectId })
 
     if (result.success) {
@@ -210,20 +218,45 @@ export default function ProjectTasksClientPage({
     }
   }
 
-  const handleUpdateTask = async (data: z.infer<typeof taskSchema>) => {
+  async function handleUpdateTask(data: z.infer<typeof taskSchema>) {
     if (!selectedTask) return
 
     const result = await updateTask({ ...data, taskId: selectedTask.id })
     if (result.success) {
+      setIsSheetOpen(false)
+      setSelectedTask(null)
+
       toast.success(result.message)
+
       const updatedTasks = await getTasksByStatus({ projectId })
       if (updatedTasks?.data) {
         setTasks(updatedTasks.data)
       }
-      setIsSheetOpen(false)
-      setSelectedTask(null)
     } else {
       toast.error(result.message)
+    }
+  }
+
+  async function handleDeleteTask(taskId: Task['id']) {
+    if (!selectedTask) return
+
+    try {
+      const result = await deleteTasks([taskId])
+
+      if (result.success) {
+        setIsSheetOpen(false)
+        setSelectedTask(null)
+
+        toast.success(result.message || 'Task deleted successfully')
+
+        const updatedTasks = await getTasksByStatus({ projectId })
+        if (updatedTasks?.data) {
+          setTasks(updatedTasks.data)
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting task:', error)
+      toast.error('Failed to delete the task. Please try again!')
     }
   }
 
@@ -284,11 +317,11 @@ export default function ProjectTasksClientPage({
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
           <SheetTrigger asChild>
-            <Button className='font-bold'>
+            <Button className='font-bold' onClick={() => setSelectedTask(null)}>
               <Notebook className='w-5 h-5 mr-2' />
-              <span>{selectedTask ? 'Update Task' : 'Create Task'}</span>
+              <span>Create Task</span>
             </Button>
           </SheetTrigger>
           <SheetContent side='bottom'>
@@ -302,7 +335,8 @@ export default function ProjectTasksClientPage({
             </SheetHeader>
             <TaskForm
               onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
-              onSuccess={() => setIsSheetOpen(false)}
+              onSuccess={() => handleSheetOpenChange(false)}
+              onDelete={handleDeleteTask}
               initialData={selectedTask || undefined}
               submitButtonText={selectedTask ? 'Update Task' : 'Create Task'}
               isEditing={!!selectedTask}

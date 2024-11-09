@@ -34,23 +34,23 @@ import type { Task } from '@/db/schema'
 
 type TaskFormProps = {
   onSubmit: (data: z.infer<typeof taskSchema>) => void
+  onDelete: (id: Task['id']) => void
   onSuccess?: () => void
   initialData?: Task
   submitButtonText?: string
   isEditing?: boolean
+  isDeleting?: boolean
 }
 
 export function TaskForm({
   onSubmit,
+  onDelete,
   onSuccess,
   initialData,
   submitButtonText = 'Create Task',
   isEditing = false
 }: TaskFormProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  const toast = useToast()
 
   const form = useForm<TaskSchemaType>({
     resolver: zodResolver(taskSchema),
@@ -68,20 +68,11 @@ export function TaskForm({
   async function handleDeleteConfirm() {
     if (!initialData?.id) return
 
-    setIsDeleting(true)
-    try {
-      const result = await deleteTasks([initialData.id])
+    form.reset()
+    onDelete(initialData?.id)
 
-      if (result.success) {
-        onSuccess?.()
-        toast.success(result.message || 'Task deleted successfully')
-
-        setIsDeleting(false)
-      }
-    } catch (error) {
-      console.error('Error deleting task:', error)
-      toast.error('Failed to delete the task. Please try again!')
-      setIsDeleting(false)
+    if (!isEditing) {
+      form.reset()
     }
   }
 
@@ -184,7 +175,6 @@ export function TaskForm({
                 variant='destructive'
                 type='button'
                 onClick={() => setIsDeleteDialogOpen(true)}
-                disabled={isDeleting}
               >
                 <Trash2Icon className='w-6 h-6' />
               </Button>
