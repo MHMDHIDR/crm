@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteProjects } from '@/actions/projects/delete-project'
 import { getProjects } from '@/actions/projects/get-project'
-import { activateProject, deactivateProject } from '@/actions/projects/toggle-project-status'
+import { toggleProjectStatus } from '@/actions/projects/toggle-project-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
@@ -161,8 +161,8 @@ export default function ProjectsPage() {
 
     const actions = {
       delete: deleteProjects,
-      activate: activateProject,
-      deactivate: deactivateProject
+      activate: (projectIds: string[]) => toggleProjectStatus(projectIds, 'active'),
+      deactivate: (projectIds: string[]) => toggleProjectStatus(projectIds, 'deactive')
     }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
