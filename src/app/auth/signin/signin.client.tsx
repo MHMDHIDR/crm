@@ -9,6 +9,7 @@ import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { authenticate } from '@/actions/auth/auth'
+import { getUserLanguage } from '@/actions/users/user-language'
 import { getUserTheme } from '@/actions/users/user-theme'
 import { Button } from '@/components/ui/button'
 import {

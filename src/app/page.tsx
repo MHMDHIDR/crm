@@ -1,4 +1,5 @@
 import { CheckIcon, ClipboardList, Users } from 'lucide-react'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Link from 'next/link'
 import { auth } from '@/auth'
 import Footer from '@/components/custom/footer'
@@ -13,14 +14,13 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { UserSession } from '@/db/schema'
+import { Locale } from '@/i18n/request'
 
-
-export default async function HomePage(/*{ params }: { params: Promise<{ locale: Locale }> }*/) {
-  // const locale = (await params).locale
-  // setRequestLocale(locale)
-
+export default async function HomePage() {
   const session = await auth()
   const user = session?.user as UserSession
+
+  const homeTranslations = await getTranslations('home')
 
   return (
     <>
@@ -32,15 +32,14 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
               <div className='flex flex-col items-center text-center space-y-4'>
                 <div className='space-y-2'>
                   <h1 className='text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none'>
-                    Streamline Your Business with CRM Pro
+                    {homeTranslations('hero.title')}
                   </h1>
                   <p className='mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400'>
-                    Manage clients, tasks, and teams effortlessly. Boost productivity and grow your
-                    business with our all-in-one CRM solution.
+                    {homeTranslations('hero.description')}
                   </p>
                 </div>
                 <Link href='#features'>
-                  <Button>Get Started</Button>
+                  <Button>{homeTranslations('hero.getStarted')}</Button>
                 </Link>
               </div>
             </div>
@@ -52,40 +51,36 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
           >
             <div className='container px-4 mx-auto md:px-6'>
               <h2 className='mb-12 text-3xl font-bold tracking-tighter text-center sm:text-5xl'>
-                Key Features
+                {homeTranslations('features.title')}
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                 <Card>
                   <CardHeader>
                     <Users className='w-10 h-10 mb-2' />
-                    <CardTitle>Client Management</CardTitle>
+                    <CardTitle>{homeTranslations('features.clientManagement.title')}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>
-                      Efficiently organize and track client information, interactions, and history.
-                    </p>
+                    <p>{homeTranslations('features.clientManagement.description')}</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader>
                     <ClipboardList className='w-10 h-10 mb-2' />
-                    <CardTitle>Task Management</CardTitle>
+                    <CardTitle>
+                      <p>{homeTranslations('features.taskManagement.title')}</p>
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>
-                      Create, assign, and monitor tasks to ensure timely completion of projects.
-                    </p>
+                    <p>{homeTranslations('features.taskManagement.description')}</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader>
                     <Users className='w-10 h-10 mb-2' />
-                    <CardTitle>Team Management</CardTitle>
+                    <CardTitle>{homeTranslations('features.teamManagement.title')}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p>
-                      Manage employees and supervisors, track performance, and optimize workflows.
-                    </p>
+                    <p>{homeTranslations('features.teamManagement.description')}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -95,42 +90,46 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
           <section className='w-full py-12 md:py-24 lg:py-32'>
             <div className='container px-4 mx-auto md:px-6'>
               <h2 className='mb-12 text-3xl font-bold tracking-tighter text-center sm:text-5xl'>
-                Why Choose CRM Pro?
+                {homeTranslations('whyChoose.title')}
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div className='flex items-start space-x-4'>
                   <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
-                    <h3 className='font-bold'>Increased Productivity</h3>
+                    <h3 className='font-bold'>
+                      {homeTranslations('whyChoose.productivity.title')}
+                    </h3>
                     <p className='text-gray-500 dark:text-gray-400'>
-                      Streamline workflows and automate repetitive tasks.
+                      {homeTranslations('whyChoose.productivity.description')}
                     </p>
                   </div>
                 </div>
                 <div className='flex items-start space-x-4'>
                   <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
-                    <h3 className='font-bold'>Better Customer Relationships</h3>
+                    <h3 className='font-bold'>
+                      {homeTranslations('whyChoose.relationships.title')}
+                    </h3>
                     <p className='text-gray-500 dark:text-gray-400'>
-                      Centralize client data for personalized interactions.
+                      {homeTranslations('whyChoose.relationships.description')}
                     </p>
                   </div>
                 </div>
                 <div className='flex items-start space-x-4'>
                   <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
-                    <h3 className='font-bold'>Data-Driven Decisions</h3>
+                    <h3 className='font-bold'>{homeTranslations('whyChoose.decisions.title')}</h3>
                     <p className='text-gray-500 dark:text-gray-400'>
-                      Gain insights with comprehensive reporting and analytics.
+                      {homeTranslations('whyChoose.decisions.description')}
                     </p>
                   </div>
                 </div>
                 <div className='flex items-start space-x-4'>
                   <CheckIcon className='flex-shrink-0 w-6 h-6 text-green-500' />
                   <div>
-                    <h3 className='font-bold'>Scalable Solution</h3>
+                    <h3 className='font-bold'>{homeTranslations('whyChoose.scalable.title')}</h3>
                     <p className='text-gray-500 dark:text-gray-400'>
-                      Grow your business with a CRM that adapts to your needs.
+                      {homeTranslations('whyChoose.scalable.description')}
                     </p>
                   </div>
                 </div>
@@ -144,76 +143,103 @@ export default async function HomePage(/*{ params }: { params: Promise<{ locale:
           >
             <div className='container px-4 mx-auto md:px-6'>
               <h2 className='mb-12 text-3xl font-bold tracking-tighter text-center sm:text-5xl'>
-                Simple, Transparent Pricing
+                {homeTranslations('pricing.title')}
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Starter</CardTitle>
-                    <CardDescription>For small teams getting started</CardDescription>
+                    <CardTitle>{homeTranslations('pricing.starter.title')}</CardTitle>
+                    <CardDescription>
+                      {homeTranslations('pricing.starter.description')}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className='text-4xl font-bold'>$29/mo</p>
+                    <p className='text-4xl font-bold'>
+                      {homeTranslations('pricing.starter.price')}
+                    </p>
                     <ul className='mt-4 space-y-2'>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Up to 5 users
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.starter.features.users')}
                       </li>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Basic reporting
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.starter.features.reporting')}
                       </li>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> 1GB storage
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />{' '}
+                        {homeTranslations('pricing.starter.features.storage')}
                       </li>
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className='w-full'>Get Started</Button>
+                    <Button className='w-full'>
+                      {homeTranslations('pricing.ctaButton.default')}
+                    </Button>
                   </CardFooter>
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Professional</CardTitle>
-                    <CardDescription>For growing businesses</CardDescription>
+                    <CardTitle>{homeTranslations('pricing.professional.title')}</CardTitle>
+                    <CardDescription>
+                      {homeTranslations('pricing.professional.description')}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className='text-4xl font-bold'>$79/mo</p>
+                    <p className='text-4xl font-bold'>
+                      {homeTranslations('pricing.professional.price')}
+                    </p>
                     <ul className='mt-4 space-y-2'>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Up to 20 users
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.professional.features.users')}
                       </li>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Advanced reporting
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.enterprise.features.reporting')}
                       </li>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> 10GB storage
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.professional.features.storage')}
                       </li>
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className='w-full'>Get Started</Button>
+                    <Button className='w-full'>
+                      {homeTranslations('pricing.ctaButton.default')}
+                    </Button>
                   </CardFooter>
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Enterprise</CardTitle>
-                    <CardDescription>For large-scale operations</CardDescription>
+                    <CardTitle>{homeTranslations('pricing.enterprise.title')}</CardTitle>
+                    <CardDescription>
+                      {homeTranslations('pricing.enterprise.description')}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className='text-4xl font-bold'>Custom</p>
+                    <p className='text-4xl font-bold'>
+                      {homeTranslations('pricing.enterprise.price')}
+                    </p>
                     <ul className='mt-4 space-y-2'>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Unlimited users
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.enterprise.features.users')}
                       </li>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Custom reporting
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.enterprise.features.reporting')}
                       </li>
                       <li className='flex items-center'>
-                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' /> Unlimited storage
+                        <CheckIcon className='w-4 h-4 mr-2 text-green-500' />
+                        {homeTranslations('pricing.enterprise.features.storage')}
                       </li>
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className='w-full'>Contact Sales</Button>
+                    <Button className='w-full'>
+                      {homeTranslations('pricing.ctaButton.enterprise')}
+                    </Button>
                   </CardFooter>
                 </Card>
               </div>

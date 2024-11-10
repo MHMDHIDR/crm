@@ -1,25 +1,28 @@
 import { Analytics } from '@vercel/analytics/react'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
+import { getUserLanguage } from '@/actions/users/user-language'
 import { Providers } from '@/providers'
 import './globals.css'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // const language = await getUserLanguage()
-  // const locale = language ?? (await params).locale
-  // if (!routing.locales.includes(locale as Locale)) { notFound() }
-  // setRequestLocale(locale)
-  // const messages = await getMessages()
+  const language = await getUserLanguage()
+  const locale = language ?? (await getLocale())
+  const messages = await getMessages({ locale })
 
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang={locale} dir={locale === 'en' ? 'ltr' : 'rtl'} suppressHydrationWarning>
       <head>
         <meta content='width=device-width, initial-scale=1 maximum-scale=1' name='viewport' />
         <link href='/images/logo.svg' rel='icon' type='image/svg+xml' />
       </head>
       <body className='min-h-screen bg-background' suppressHydrationWarning>
-        <Providers>
-          {children}
-          <Analytics />
-        </Providers>
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <Providers>
+            {children}
+            <Analytics />
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

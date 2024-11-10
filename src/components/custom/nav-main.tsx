@@ -47,7 +47,7 @@ export function NavMain({
                 <SidebarMenuLink tooltip={item.title} href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                  <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                  <ChevronRight className='ml-auto rtl:rotate-180 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
                 </SidebarMenuLink>
               </CollapsibleTrigger>
               <CollapsibleContent>

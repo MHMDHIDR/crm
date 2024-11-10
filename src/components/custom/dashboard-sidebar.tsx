@@ -14,6 +14,7 @@ import {
   UserPlus2,
   Users2
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { NavMain } from '@/components/custom/nav-main'
 import { NavPinned } from '@/components/custom/nav-pinned'
 import { NavUser } from '@/components/custom/nav-user'
@@ -27,16 +28,20 @@ import {
   useSidebar
 } from '@/components/ui/sidebar'
 import { ExtendedProject, UserSession } from '@/db/schema'
+import { Locale } from '@/i18n/request'
 
 export function DashboardSidebar({
   user,
   projects,
+  locale,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: UserSession
   projects: ExtendedProject[] | null
+  locale: Locale
 }) {
   const { open } = useSidebar()
+  const dashboardSidebarTranslations = useTranslations('DashboardSidebar')
 
   const sidebarItems = {
     projects: [
@@ -62,17 +67,17 @@ export function DashboardSidebar({
       ...(user.role === 'Admin'
         ? [
             {
-              title: 'Users',
+              title: dashboardSidebarTranslations('users.title'),
               url: open ? '' : '/dashboard/users',
               icon: Users2,
               items: [
                 {
-                  title: 'All Users',
+                  title: dashboardSidebarTranslations('users.title'),
                   url: '/dashboard/users',
                   icon: Group
                 },
                 {
-                  title: 'Create User',
+                  title: dashboardSidebarTranslations('users.createUser'),
                   url: '/dashboard/create-user',
                   icon: UserPlus2
                 }
@@ -81,51 +86,51 @@ export function DashboardSidebar({
           ]
         : []),
       {
-        title: 'Projects',
+        title: dashboardSidebarTranslations('projects.title'),
         url: open ? '' : '/dashboard/projects',
         icon: ShoppingBagIcon,
         items: [
           {
-            title: 'All Projects',
+            title: dashboardSidebarTranslations('projects.title'),
             url: '/dashboard/projects',
             icon: SquareDashedMousePointer
           },
           {
-            title: 'Create New project',
+            title: dashboardSidebarTranslations('projects.createProject'),
             url: '/dashboard/create-project',
             icon: PackagePlusIcon
           }
         ]
       },
       {
-        title: 'Clients',
+        title: dashboardSidebarTranslations('clients.title'),
         url: open ? '' : '/dashboard/clients',
         icon: FileUser,
         items: [
           {
-            title: 'All Clients',
+            title: dashboardSidebarTranslations('clients.title'),
             url: '/dashboard/clients',
             icon: Group
           },
           {
-            title: 'Create New Client',
+            title: dashboardSidebarTranslations('clients.createClient'),
             url: '/dashboard/create-client',
             icon: PersonStanding
           }
         ]
       },
       {
-        title: 'Settings',
+        title: dashboardSidebarTranslations('settings.title'),
         url: open ? '' : '/dashboard/account',
         icon: Settings2,
         items: [
           {
-            title: 'Account',
+            title: dashboardSidebarTranslations('settings.account'),
             url: '/dashboard/account',
             icon: UserCog
           },
           {
-            title: 'Preferences',
+            title: dashboardSidebarTranslations('settings.preferences'),
             url: '/dashboard/preferences',
             icon: Paintbrush2
           }
@@ -135,7 +140,7 @@ export function DashboardSidebar({
   }
 
   return (
-    <Sidebar collapsible='icon' {...props}>
+    <Sidebar collapsible='icon' {...props} side={locale === 'en' ? 'left' : 'right'}>
       <SidebarHeader>
         <ProjectSwitcher teams={sidebarItems.projects} />
       </SidebarHeader>

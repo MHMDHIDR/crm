@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { auth } from '@/auth'
 import { NotFoundIcon } from '@/components/custom/icons'
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button'
 export default async function RootNotFound() {
   const session = await auth()
   const user = session?.user
+  const notFoundTranslations = await getTranslations('notFound')
 
   return (
     <section>
@@ -14,22 +16,22 @@ export default async function RootNotFound() {
           <NotFoundIcon />
 
           <h1 className='mt-3 text-2xl font-semibold text-gray-800 dark:text-white md:text-3xl'>
-            Page Not Found
+            {notFoundTranslations('title')}
           </h1>
           <p className='mt-4 text-gray-500 dark:text-gray-400'>
-            Sorry, the page you are looking for does not exist or has been moved.
+            {notFoundTranslations('description')}
           </p>
 
           <div className='flex items-center w-full mt-6 gap-x-3 shrink-0 sm:w-auto'>
             <Link href='/' className='w-full cursor-pointer'>
               <Button type='button' variant={'pressable'}>
-                Go Back Home
+                {notFoundTranslations('buttons.home')}
               </Button>
             </Link>
             {user && (
               <Link href='/dashboard' className='w-full cursor-pointer'>
                 <Button type='button' variant={'pressable'}>
-                  Go to Dashboard
+                  {notFoundTranslations('buttons.dashboard')}
                 </Button>
               </Link>
             )}

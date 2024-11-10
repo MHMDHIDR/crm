@@ -1,0 +1,117 @@
+{
+  "home": {
+    "hero": {
+      "title": "Streamline Your Business with CRM Pro",
+      "description": "Manage clients, tasks, and teams effortlessly. Boost productivity and grow your business with our all-in-one CRM solution.",
+      "getStarted": "Get Started"
+    },
+    "features": {
+      "title": "Key Features",
+      "clientManagement": {
+        "title": "Client Management",
+        "description": "Efficiently organize and track client information, interactions, and history."
+      },
+      "taskManagement": {
+        "title": "Task Management",
+        "description": "Create, assign, and monitor tasks to ensure timely completion of projects."
+      },
+      "teamManagement": {
+        "title": "Team Management",
+        "description": "Manage employees and supervisors, track performance, and optimize workflows."
+      }
+    },
+    "whyChoose": {
+      "title": "Why Choose CRM Pro?",
+      "productivity": {
+        "title": "Increased Productivity",
+        "description": "Streamline workflows and automate repetitive tasks."
+      },
+      "relationships": {
+        "title": "Better Customer Relationships",
+        "description": "Centralize client data for personalized interactions."
+      },
+      "decisions": {
+        "title": "Data-Driven Decisions",
+        "description": "Gain insights with comprehensive reporting and analytics."
+      },
+      "scalable": {
+        "title": "Scalable Solution",
+        "description": "Grow your business with a CRM that adapts to your needs."
+      }
+    },
+    "pricing": {
+      "title": "Simple, Transparent Pricing",
+      "starter": {
+        "title": "Starter",
+        "description": "For small teams getting started",
+        "price": "$29/mo",
+        "features": {
+          "users": "Up to 5 users",
+          "reporting": "Basic reporting",
+          "storage": "1GB storage"
+        }
+      },
+      "professional": {
+        "title": "Professional",
+        "description": "For growing businesses",
+        "price": "$79/mo",
+        "features": {
+          "users": "Up to 20 users",
+          "reporting": "Advanced reporting",
+          "storage": "10GB storage"
+        }
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "description": "For large-scale operations",
+        "price": "Custom",
+        "features": {
+          "users": "Unlimited users",
+          "reporting": "Custom reporting",
+          "storage": "Unlimited storage"
+        }
+      },
+      "ctaButton": {
+        "default": "Get Started",
+        "enterprise": "Contact Sales"
+      }
+    }
+  },
+  "DashboardSidebar": {
+    "users": {
+      "title": "Users",
+      "allUsers": "All Users",
+      "createUser": "Create User"
+    },
+    "projects": {
+      "title": "Projects",
+      "allProjects": "All Projects",
+      "createProject": "Create New Project"
+    },
+    "clients": {
+      "title": "Clients",
+      "allClients": "All Clients",
+      "createClient": "Create New Client"
+    },
+    "settings": {
+      "title": "Settings",
+      "account": "Account",
+      "preferences": "Preferences"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist or has been moved.",
+    "buttons": {
+      "home": "Go Back Home",
+      "dashboard": "Go to Dashboard"
+    }
+  },
+  "dashboard": {
+    "languageSelect": {
+      "title": "Select Language",
+      "english": "🇬🇧 English",
+      "arabic": "🇸🇦 العربية"
+    }
+  }
+}
