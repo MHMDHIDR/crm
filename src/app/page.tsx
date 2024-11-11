@@ -1,7 +1,6 @@
 import { CheckIcon, ClipboardList, Users } from 'lucide-react'
-import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
-import { getUserLanguage } from '@/actions/users/user-language'
 import { auth } from '@/auth'
 import Footer from '@/components/custom/footer'
 import Nav from '@/components/custom/nav'
@@ -17,9 +16,6 @@ import {
 import { UserSession } from '@/db/schema'
 
 export default async function HomePage() {
-  const language = await getUserLanguage()
-  const locale = language ?? (await getLocale())
-  setRequestLocale(locale)
   const session = await auth()
   const user = session?.user as UserSession
 

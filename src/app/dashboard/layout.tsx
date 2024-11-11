@@ -20,8 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Get employee projects
   const projects = await getProjectsByEmployeeId(session.user.id)
 
-  const language = await getUserLanguage()
-  const locale = language ?? (await getLocale())
+  const locale = (await getUserLanguage()) ?? (await getLocale())
 
   return (
     <SidebarProvider defaultOpen={initialSidebarOpen}>

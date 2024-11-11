@@ -9,6 +9,7 @@ import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { authenticate } from '@/actions/auth/auth'
+import { getUserLanguage } from '@/actions/users/user-language'
 import { getUserTheme } from '@/actions/users/user-theme'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,6 +24,7 @@ import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
+import { useLocale } from '@/providers/locale-provider'
 import { userSchema } from '@/validators/user'
 
 // Create signin schema with optional 2FA code
@@ -37,6 +39,7 @@ export default function SignInClientPage() {
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()
   const { setTheme: setProviderTheme } = useTheme()
+  const { setLocale } = useLocale()
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
@@ -66,9 +69,11 @@ export default function SignInClientPage() {
           return
         }
 
-        // Fetch and set theme after successful authentication
-        const userTheme = await getUserTheme()
+        // Fetch and set theme and locale after successful authentication
+        const [userTheme, userLanguage] = await Promise.all([getUserTheme(), getUserLanguage()])
+
         setProviderTheme(userTheme || 'light')
+        setLocale(userLanguage || 'en')
 
         toast.success(result.message)
       } catch (error) {

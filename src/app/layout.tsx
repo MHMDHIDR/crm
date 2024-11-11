@@ -1,15 +1,13 @@
 import { Analytics } from '@vercel/analytics/react'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages, setRequestLocale } from 'next-intl/server'
+import { getLocale, getMessages } from 'next-intl/server'
 import { getUserLanguage } from '@/actions/users/user-language'
 import { Providers } from '@/providers'
 import './globals.css'
+import { LocaleProvider } from '@/providers/locale-provider'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const language = await getUserLanguage()
-  const locale = language ?? (await getLocale())
-  setRequestLocale(locale)
-
+  const locale = (await getUserLanguage()) ?? (await getLocale())
   const messages = await getMessages({ locale })
 
   return (
@@ -20,10 +18,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className='min-h-screen bg-background' suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
-          <Providers>
-            {children}
-            <Analytics />
-          </Providers>
+          <LocaleProvider initialLocale={locale}>
+            <Providers>
+              {children}
+              <Analytics />
+            </Providers>
+          </LocaleProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -28,7 +28,7 @@ import {
   useSidebar
 } from '@/components/ui/sidebar'
 import { ExtendedProject, UserSession } from '@/db/schema'
-import { Locale } from '@/i18n/request'
+import { Locale } from '@/i18n/config'
 
 export function DashboardSidebar({
   user,
