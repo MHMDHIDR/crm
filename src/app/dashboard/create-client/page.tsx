@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { createClient } from '@/actions/clients/create-client'
 import { PhoneInput } from '@/components/custom/phone-input'
@@ -39,6 +40,7 @@ import type { ClientSchemaType } from '@/validators/client'
 
 export default function CreateUserPage() {
   const toast = useToast()
+  const createUserTranslations = useTranslations('dashboard.createClient')
 
   const form = useForm<ClientSchemaType>({
     resolver: zodResolver(clientSchema),
@@ -75,11 +77,13 @@ export default function CreateUserPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {createUserTranslations('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Create Client</BreadcrumbPage>
+                <BreadcrumbPage>{createUserTranslations('breadcrumb.create')}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -87,7 +91,7 @@ export default function CreateUserPage() {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>Create New Client</h1>
+          <h1 className='text-2xl font-bold text-center'>{createUserTranslations('form.title')}</h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -97,9 +101,12 @@ export default function CreateUserPage() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{createUserTranslations('form.name.label')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter full name' {...field} />
+                      <Input
+                        placeholder={createUserTranslations('form.name.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,9 +118,13 @@ export default function CreateUserPage() {
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{createUserTranslations('form.email.label')}</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='Enter email address' {...field} />
+                      <Input
+                        type='email'
+                        placeholder={createUserTranslations('form.email.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -125,9 +136,14 @@ export default function CreateUserPage() {
                 name='phone'
                 render={({ field }) => (
                   <FormItem className='flex flex-col items-start'>
-                    <FormLabel className='text-left'>Phone Number</FormLabel>
+                    <FormLabel className='text-left'>
+                      {createUserTranslations('form.phone.label')}
+                    </FormLabel>
                     <FormControl className='w-full'>
-                      <PhoneInput placeholder='Enter a phone number' {...field} />
+                      <PhoneInput
+                        placeholder={createUserTranslations('form.phone.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -139,16 +155,22 @@ export default function CreateUserPage() {
                 name='status'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>{createUserTranslations('form.status.label')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select a Status' />
+                        <SelectTrigger className='rtl:rtl'>
+                          <SelectValue
+                            placeholder={createUserTranslations('form.status.placeholder')}
+                          />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value={clientStatus.ACTIVE}>Active</SelectItem>
-                        <SelectItem value={clientStatus.DEACTIVE}>Deactive</SelectItem>
+                      <SelectContent className='rtl:rtl'>
+                        <SelectItem value={clientStatus.ACTIVE}>
+                          {createUserTranslations('form.status.options.active')}
+                        </SelectItem>
+                        <SelectItem value={clientStatus.DEACTIVE}>
+                          {createUserTranslations('form.status.options.deactive')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -157,7 +179,7 @@ export default function CreateUserPage() {
               />
 
               <Button variant='pressable' className='w-full'>
-                Create Client
+                {createUserTranslations('form.submit')}
               </Button>
             </form>
           </Form>

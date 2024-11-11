@@ -112,6 +112,260 @@
       "title": "Select Language",
       "english": "🇬🇧 English",
       "arabic": "🇸🇦 العربية"
+    },
+    "account": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "settings": "Account Settings"
+      },
+      "settings": {
+        "title": "⚙️ Settings",
+        "fullName": {
+          "label": "Full Name",
+          "placeholder": "Enter full name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter email address"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "******"
+        },
+        "role": {
+          "label": "Role",
+          "placeholder": "Select a role",
+          "options": {
+            "admin": "Admin",
+            "supervisor": "Supervisor",
+            "employee": "Employee"
+          }
+        },
+        "twoFactor": {
+          "label": "Two Factor Authentication"
+        },
+        "saveButton": "Save"
+      }
+    },
+    "projects": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard"
+      },
+      "actions": {
+        "addNew": "Add New Project",
+        "search": "Look for a Project..."
+      },
+      "bulkActions": {
+        "deleteSelected": "Delete Selected",
+        "activateSelected": "Activate Selected",
+        "deactivateSelected": "Deactivate Selected"
+      },
+      "dialog": {
+        "delete": {
+          "title": "Delete Selected Projects",
+          "singleTitle": "Delete Project",
+          "description": "This action cannot be undone. This will permanently delete the selected projects and remove their data from our servers.",
+          "singleDescription": "This action cannot be undone. This will permanently delete this project and remove the data from our servers.",
+          "button": "Delete Projects",
+          "singleButton": "Delete Project"
+        },
+        "activate": {
+          "title": "Activate Selected Project",
+          "singleTitle": "Activate Project",
+          "description": "Are you sure you want to activate the selected project? They will not be able to access the system until deactivated.",
+          "singleDescription": "Are you sure you want to activate this project? They will not be able to access the system until deactivated.",
+          "button": "Activate Project"
+        },
+        "deactivate": {
+          "title": "Deactivate Selected Project",
+          "singleTitle": "Deactivate Project",
+          "description": "Are you sure you want to deactivate the selected project? They will regain access to the system.",
+          "singleDescription": "Are you sure you want to deactivate this project? They will regain access to the system.",
+          "button": "Deactivate Project"
+        }
+      },
+      "empty": {
+        "message": "Sorry we couldn't find any projects."
+      }
+    },
+    "clients": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard"
+      },
+      "actions": {
+        "addNew": "Add New Client",
+        "search": "Look for a Client..."
+      },
+      "bulkActions": {
+        "deleteSelected": "Delete Selected"
+      },
+      "dialog": {
+        "delete": {
+          "title": "Delete Selected Clients",
+          "singleTitle": "Delete Client",
+          "description": "This action cannot be undone. This will permanently delete the selected clients and remove their data from our servers.",
+          "singleDescription": "This action cannot be undone. This will permanently delete this client and remove their data from our servers.",
+          "button": "Delete Clients",
+          "singleButton": "Delete Client"
+        }
+      },
+      "empty": {
+        "message": "Sorry we couldn't find any clients."
+      }
+    },
+    "createClient": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "create": "Create Client"
+      },
+      "form": {
+        "title": "Create New Client",
+        "name": {
+          "label": "Name",
+          "placeholder": "Enter full name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter email address"
+        },
+        "phone": {
+          "label": "Phone Number",
+          "placeholder": "Enter a phone number"
+        },
+        "status": {
+          "label": "Status",
+          "placeholder": "Select a Status",
+          "options": {
+            "active": "Active",
+            "deactive": "Deactive"
+          }
+        },
+        "submit": "Create Client",
+        "toasts": {
+          "error": "An unexpected error occurred. Please try again."
+        }
+      }
+    },
+    "createProject": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "create": "Create Project"
+      },
+      "form": {
+        "title": "Create New Project",
+        "name": {
+          "label": "Project Name",
+          "placeholder": "Please Enter Project Name"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Description of This Project"
+        },
+        "dates": {
+          "start": {
+            "label": "Starting Date",
+            "placeholder": "Pick a date"
+          },
+          "end": {
+            "label": "Ending Date",
+            "placeholder": "Pick a date"
+          }
+        },
+        "client": {
+          "label": "Select A Client",
+          "placeholder": "Which Client is this project for? ..."
+        },
+        "status": {
+          "label": "Status",
+          "placeholder": "Select a Status",
+          "options": {
+            "active": "Active",
+            "deactive": "Deactive"
+          }
+        },
+        "submit": "Create Project"
+      }
+    },
+    "createUser": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "create": "Create User"
+      },
+      "form": {
+        "title": "Create New User",
+        "name": {
+          "label": "Name",
+          "placeholder": "Enter full name"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter email address"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter password"
+        },
+        "role": {
+          "label": "Role",
+          "placeholder": "Select a Role",
+          "options": {
+            "admin": "Admin",
+            "supervisor": "Supervisor",
+            "employee": "Employee"
+          }
+        },
+        "submit": "Create User"
+      }
+    },
+    "dataTable": {
+      "columns": {
+        "select": {
+          "aria": "Select all",
+          "rowAria": "Select row"
+        },
+        "headers": {
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "verifiedStatus": "Verified Status",
+          "suspendedStatus": "Suspended Status",
+          "status": "Status",
+          "clientName": "Client Name",
+          "assignedEmployee": "Assigned Employee",
+          "description": "Description",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "action": "Action"
+        },
+        "status": {
+          "verified": "Verified",
+          "pending": "Pending",
+          "active": "Active",
+          "deactive": "Deactive"
+        },
+        "actions": {
+          "label": "Actions",
+          "viewEdit": {
+            "user": "View / Edit User",
+            "client": "View / Edit Client",
+            "project": "View / Edit Project"
+          },
+          "suspend": {
+            "suspend": "Suspend User",
+            "unsuspend": "Unsuspend User"
+          },
+          "delete": {
+            "user": "Delete User",
+            "client": "Delete Client",
+            "project": "Delete Project"
+          }
+        },
+        "roles": {
+          "admin": "Admin",
+          "supervisor": "Supervisor",
+          "employee": "Employee"
+        }
+      }
     }
   }
 }

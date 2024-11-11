@@ -53,7 +53,7 @@ PhoneInput.displayName = 'PhoneInput'
 
 const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => (
-    <Input className={cn('rounded-e-lg rounded-s-none', className)} {...props} ref={ref} />
+    <Input className={cn('rounded-e-lg rounded-s-none rtl:rtl', className)} {...props} ref={ref} />
   )
 )
 InputComponent.displayName = 'InputComponent'
@@ -141,54 +141,3 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
 FlagComponent.displayName = 'FlagComponent'
 
 export { PhoneInput }
-
-// 'use client'
-
-// import React from 'react'
-// import { Input } from '@/components/ui/input'
-
-// const PhoneInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-//   (props, ref) => {
-//     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//       let value = e.target.value.replace(/\D/g, '') // Remove non-digits
-
-//       // Format the phone number as user types
-//       if (value.length > 0) {
-//         if (value.length <= 3) {
-//           value = value
-//         } else if (value.length <= 6) {
-//           value = `${value.slice(0, 3)}-${value.slice(3)}`
-//         } else {
-//           value = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6, 10)}`
-//         }
-//       }
-
-//       // Create a new synthetic event with the formatted value
-//       const syntheticEvent = {
-//         ...e,
-//         target: {
-//           ...e.target,
-//           value
-//         }
-//       }
-
-//       // Call the original onChange handler if it exists
-//       props.onChange?.(syntheticEvent as React.ChangeEvent<HTMLInputElement>)
-//     }
-
-//     return (
-//       <Input
-//         {...props}
-//         ref={ref}
-//         type='tel'
-//         onChange={handleChange}
-//         maxLength={12} // 3-3-4 format plus two hyphens
-//         placeholder={props.placeholder || '123-456-7890'}
-//       />
-//     )
-//   }
-// )
-
-// PhoneInput.displayName = 'PhoneInput'
-
-// export { PhoneInput }

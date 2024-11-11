@@ -1,5 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown, Ban, MoreHorizontal, Pencil, Trash } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -47,6 +48,8 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
   entityType: 'users' | 'clients' | 'project',
   actions: TableActions
 ): ColumnDef<T>[] {
+  const dashboardDataTableTranslations = useTranslations('dashboard.dataTable.columns')
+
   const baseColumns: ColumnDef<T>[] = [
     {
       id: 'select',
@@ -57,14 +60,14 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
             (table.getIsSomePageRowsSelected() && 'indeterminate')
           }
           onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Select all'
+          aria-label={dashboardDataTableTranslations('select.aria')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={value => row.toggleSelected(!!value)}
-          aria-label='Select row'
+          aria-label={dashboardDataTableTranslations('select.rowAria')}
         />
       ),
       enableSorting: false,
@@ -77,7 +80,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Name
+          {dashboardDataTableTranslations('headers.name')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       )
@@ -93,7 +96,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          {dashboardDataTableTranslations('headers.email')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -110,7 +113,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Role
+          {dashboardDataTableTranslations('headers.role')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -136,7 +139,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Verified Status
+          {dashboardDataTableTranslations('headers.verifiedStatus')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -161,7 +164,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Suspended Status
+          {dashboardDataTableTranslations('headers.suspendedStatus')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -190,7 +193,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          {dashboardDataTableTranslations('headers.email')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -207,7 +210,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Status
+          {dashboardDataTableTranslations('headers.status')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -236,7 +239,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Status
+          {dashboardDataTableTranslations('headers.status')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -261,7 +264,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Client Name
+          {dashboardDataTableTranslations('headers.clientName')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -277,7 +280,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Assigned Employee
+          {dashboardDataTableTranslations('headers.assignedEmployee')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -288,7 +291,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
     },
     {
       accessorKey: 'description',
-      header: 'Description',
+      header: dashboardDataTableTranslations('headers.description'),
       cell: ({ row }) => {
         const description = (row.original as ExtendedProject).description
         return <span className='truncate'>{description}</span>
@@ -301,7 +304,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Start Date
+          {dashboardDataTableTranslations('headers.startDate')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -317,7 +320,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          End Date
+          {dashboardDataTableTranslations('headers.endDate')}
           <ArrowUpDown className='w-4 h-4 ml-2' />
         </Button>
       ),
@@ -331,7 +334,7 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
   // Actions column
   const actionsColumn: ColumnDef<T> = {
     id: 'actions',
-    header: 'Action',
+    header: dashboardDataTableTranslations('headers.action'),
     cell: ({ row }) => {
       const entity = row.original
 
@@ -339,12 +342,14 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='ghost' className='w-8 h-8 p-0'>
-              <span className='sr-only'>Open menu</span>
+              <span className='sr-only'>{dashboardDataTableTranslations('actions.label')}</span>
               <MoreHorizontal className='w-4 h-4' />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
-            <DropdownMenuLabel className='select-none'>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel className='select-none'>
+              {dashboardDataTableTranslations('actions.label')}
+            </DropdownMenuLabel>
             <DropdownMenuItem asChild>
               <Link href={`${actions.basePath}/${entity.id}`}>
                 <Pencil className='mr-0.5 h-4 w-4' />

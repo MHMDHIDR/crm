@@ -1,6 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { updateUser } from '@/actions/users/update-user'
@@ -40,6 +41,7 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
   const { update } = useSession()
   const [isPending, startTransition] = useTransition()
   const toast = useToast()
+  const dashboardAccountTranslation = useTranslations('dashboard.account')
 
   // State to hold the user data
   const [userData, setUserData] = useState(user)
@@ -94,11 +96,15 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {dashboardAccountTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Account Settings</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {dashboardAccountTranslation('breadcrumb.settings')}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -106,7 +112,9 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>⚙️ Settings</h1>
+          <h1 className='text-2xl font-bold text-center'>
+            {dashboardAccountTranslation('settings.title')}
+          </h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -117,9 +125,15 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                   name='name'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>
+                        {dashboardAccountTranslation('settings.fullName.label')}
+                      </FormLabel>
                       <FormControl>
-                        <Input {...field} disabled={isPending} placeholder='Enter full name' />
+                        <Input
+                          {...field}
+                          disabled={isPending}
+                          placeholder={dashboardAccountTranslation('settings.fullName.placeholder')}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -131,13 +145,13 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                   name='email'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{dashboardAccountTranslation('settings.email.label')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           disabled={isPending}
                           type='email'
-                          placeholder='Enter email address'
+                          placeholder={dashboardAccountTranslation('settings.email.placeholder')}
                         />
                       </FormControl>
                       <FormMessage />
@@ -150,11 +164,13 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                   name='password'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>
+                        {dashboardAccountTranslation('settings.password.label')}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder='******'
+                          placeholder={dashboardAccountTranslation('settings.password.placeholder')}
                           type='password'
                           disabled={isPending}
                         />
@@ -169,20 +185,28 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                   name='role'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Role</FormLabel>
+                      <FormLabel>{dashboardAccountTranslation('settings.role.label')}</FormLabel>
                       <FormControl>
                         <Select
                           disabled={isPending}
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select a role' />
+                          <SelectTrigger className='rtl:rtl'>
+                            <SelectValue
+                              placeholder={dashboardAccountTranslation('settings.role.placeholder')}
+                            />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                            <SelectItem value={UserRole.SUPERVISOR}>Supervisor</SelectItem>
-                            <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
+                          <SelectContent className='rtl:rtl'>
+                            <SelectItem value={UserRole.ADMIN}>
+                              {dashboardAccountTranslation('settings.role.options.admin')}
+                            </SelectItem>
+                            <SelectItem value={UserRole.SUPERVISOR}>
+                              {dashboardAccountTranslation('settings.role.options.supervisor')}
+                            </SelectItem>
+                            <SelectItem value={UserRole.EMPLOYEE}>
+                              {dashboardAccountTranslation('settings.role.options.employee')}
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -197,7 +221,9 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                   render={({ field }) => (
                     <FormItem className='flex flex-row items-center justify-between p-3 border rounded-lg shadow-sm'>
                       <div className='space-y-0.5'>
-                        <FormLabel>Two Factor Authentication</FormLabel>
+                        <FormLabel>
+                          {dashboardAccountTranslation('settings.twoFactor.label')}
+                        </FormLabel>
                       </div>
                       <FormControl>
                         <Switch
@@ -211,9 +237,8 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                 />
               </div>
 
-              {/* Save Button */}
               <Button disabled={isPending} variant='pressable' className='w-full'>
-                Save
+                {dashboardAccountTranslation('settings.saveButton')}
               </Button>
             </form>
           </Form>

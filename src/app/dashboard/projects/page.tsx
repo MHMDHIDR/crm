@@ -11,6 +11,7 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteProjects } from '@/actions/projects/delete-project'
@@ -51,6 +52,8 @@ export default function ProjectsPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [filtering, setFiltering] = useState('') // This will add global filtering state, which will help us filter the table data
+
+  const dashboardProjectTranslation = useTranslations('dashboard.projects')
 
   /** Handling Dialogs states (Pefect for Reusable Modals): */
   const [dialogProps, setDialogProps] = useState({
@@ -254,12 +257,14 @@ export default function ProjectsPage() {
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {dashboardProjectTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <Link href='/dashboard/create-project'>
-            <Button>Add New Project</Button>
+            <Button>{dashboardProjectTranslation('actions.addNew')}</Button>
           </Link>
         </div>
       </header>
@@ -269,7 +274,7 @@ export default function ProjectsPage() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          searchPlaceholder='Look for a Project...'
+          searchPlaceholder={dashboardProjectTranslation('actions.search')}
           bulkActions={getBulkActions()}
         />
 
@@ -320,9 +325,9 @@ export default function ProjectsPage() {
                     <Link href='/dashboard/create-project'>
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
-                          Sorry we couldn&apos;t find any projects.
+                          {dashboardProjectTranslation('empty.message')}
                         </p>
-                        <Button>Add New Project</Button>
+                        <Button>{dashboardProjectTranslation('actions.addNew')}</Button>
                       </EmptyState>
                     </Link>
                   </TableCell>

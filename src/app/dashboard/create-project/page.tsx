@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { getClients } from '@/actions/clients/get-clients'
@@ -49,6 +50,7 @@ export default function CreateProjectPage() {
   const toast = useToast()
   const [clients, setClients] = useState<Client[]>([])
   const [_item, setItem] = useState<Client['name']>('')
+  const dashboardClientTranslation = useTranslations('dashboard.createProject')
 
   const form = useForm<ProjectSchemaType>({
     resolver: zodResolver(projectSchema),
@@ -90,11 +92,13 @@ export default function CreateProjectPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {dashboardClientTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Create Project</BreadcrumbPage>
+                <BreadcrumbPage>{dashboardClientTranslation('breadcrumb.create')}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -102,7 +106,9 @@ export default function CreateProjectPage() {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>Create New Project</h1>
+          <h1 className='text-2xl font-bold text-center'>
+            {dashboardClientTranslation('form.title')}
+          </h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -112,9 +118,12 @@ export default function CreateProjectPage() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project Name</FormLabel>
+                    <FormLabel>{dashboardClientTranslation('form.name.label')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Please Enter Project Name' {...field} />
+                      <Input
+                        placeholder={dashboardClientTranslation('form.name.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,9 +135,12 @@ export default function CreateProjectPage() {
                 name='description'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{dashboardClientTranslation('form.description.label')}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder='Description of This Project' {...field} />
+                      <Textarea
+                        placeholder={dashboardClientTranslation('form.description.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,7 +153,7 @@ export default function CreateProjectPage() {
                   name='startDate'
                   render={({ field }) => (
                     <FormItem className='flex flex-col flex-1'>
-                      <FormLabel>Starting Date</FormLabel>
+                      <FormLabel>{dashboardClientTranslation('form.dates.start.label')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild className='min-w-full'>
                           <FormControl>
@@ -155,7 +167,9 @@ export default function CreateProjectPage() {
                               {field.value ? (
                                 formatDate(String(field.value))
                               ) : (
-                                <span>Pick a date</span>
+                                <span>
+                                  {dashboardClientTranslation('form.dates.start.placeholder')}
+                                </span>
                               )}
                               <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                             </Button>
@@ -186,7 +200,7 @@ export default function CreateProjectPage() {
                   name='endDate'
                   render={({ field }) => (
                     <FormItem className='flex flex-col flex-1'>
-                      <FormLabel>Ending Date</FormLabel>
+                      <FormLabel>{dashboardClientTranslation('form.dates.end.label')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild className='min-w-full'>
                           <FormControl>
@@ -200,7 +214,9 @@ export default function CreateProjectPage() {
                               {field.value ? (
                                 formatDate(String(field.value))
                               ) : (
-                                <span>Pick a date</span>
+                                <span>
+                                  {dashboardClientTranslation('form.dates.end.placeholder')}
+                                </span>
                               )}
                               <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                             </Button>
@@ -234,7 +250,7 @@ export default function CreateProjectPage() {
                 name='clientId'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select A Client</FormLabel>
+                    <FormLabel>{dashboardClientTranslation('form.client.label')}</FormLabel>
                     <SearchableSelectItem
                       searchableItems={clients.map(client => {
                         return { value: client.id, label: client.name }
@@ -245,7 +261,7 @@ export default function CreateProjectPage() {
                         field.onChange(value)
                         setItem(selectedClient?.name || '')
                       }}
-                      placeholder='Which Client is this project for? ...'
+                      placeholder={dashboardClientTranslation('form.client.placeholder')}
                       className='w-full px-4 py-2'
                     />
                     <FormMessage />
@@ -258,16 +274,22 @@ export default function CreateProjectPage() {
                 name='status'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>{dashboardClientTranslation('form.status.label')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select a Status' />
+                        <SelectTrigger className='rtl:rtl'>
+                          <SelectValue
+                            placeholder={dashboardClientTranslation('form.status.placeholder')}
+                          />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value={clientStatus.ACTIVE}>Active</SelectItem>
-                        <SelectItem value={clientStatus.DEACTIVE}>Deactive</SelectItem>
+                      <SelectContent className='rtl:rtl'>
+                        <SelectItem value={clientStatus.ACTIVE}>
+                          {dashboardClientTranslation('form.status.options.active')}
+                        </SelectItem>
+                        <SelectItem value={clientStatus.DEACTIVE}>
+                          {dashboardClientTranslation('form.status.options.deactive')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -276,7 +298,7 @@ export default function CreateProjectPage() {
               />
 
               <Button variant='pressable' className='w-full'>
-                Create Project
+                {dashboardClientTranslation('form.submit')}
               </Button>
             </form>
           </Form>

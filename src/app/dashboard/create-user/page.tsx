@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { createUser } from '@/actions/users/create-user'
 import {
@@ -36,6 +37,7 @@ import { useToast } from '@/hooks/use-toast'
 
 export default function CreateUserPage() {
   const toast = useToast()
+  const dashboardUserTranslation = useTranslations('dashboard.createUser')
 
   const form = useForm<UserSession & { password: string }>({
     defaultValues: {
@@ -72,11 +74,13 @@ export default function CreateUserPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {dashboardUserTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Create User</BreadcrumbPage>
+                <BreadcrumbPage>{dashboardUserTranslation('breadcrumb.create')}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -84,7 +88,9 @@ export default function CreateUserPage() {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>Create New User</h1>
+          <h1 className='text-2xl font-bold text-center'>
+            {dashboardUserTranslation('form.title')}
+          </h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -94,9 +100,12 @@ export default function CreateUserPage() {
                 name='name'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{dashboardUserTranslation('form.name.label')}</FormLabel>
                     <FormControl>
-                      <Input placeholder='Enter full name' {...field} />
+                      <Input
+                        placeholder={dashboardUserTranslation('form.name.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -108,9 +117,13 @@ export default function CreateUserPage() {
                 name='email'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{dashboardUserTranslation('form.email.label')}</FormLabel>
                     <FormControl>
-                      <Input type='email' placeholder='Enter email address' {...field} />
+                      <Input
+                        type='email'
+                        placeholder={dashboardUserTranslation('form.email.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,9 +135,13 @@ export default function CreateUserPage() {
                 name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{dashboardUserTranslation('form.password.label')}</FormLabel>
                     <FormControl>
-                      <Input type='password' placeholder='Enter password' {...field} />
+                      <Input
+                        type='password'
+                        placeholder={dashboardUserTranslation('form.password.placeholder')}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -136,17 +153,25 @@ export default function CreateUserPage() {
                 name='role'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>{dashboardUserTranslation('form.role.label')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Select a Role' />
+                        <SelectTrigger className='rtl:rtl'>
+                          <SelectValue
+                            placeholder={dashboardUserTranslation('form.role.placeholder')}
+                          />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                        <SelectItem value={UserRole.SUPERVISOR}>Supervisor</SelectItem>
-                        <SelectItem value={UserRole.EMPLOYEE}>Employee</SelectItem>
+                      <SelectContent className='rtl:rtl'>
+                        <SelectItem value={UserRole.ADMIN}>
+                          {dashboardUserTranslation('form.role.options.admin')}
+                        </SelectItem>
+                        <SelectItem value={UserRole.SUPERVISOR}>
+                          {dashboardUserTranslation('form.role.options.supervisor')}
+                        </SelectItem>
+                        <SelectItem value={UserRole.EMPLOYEE}>
+                          {dashboardUserTranslation('form.role.options.employee')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -155,7 +180,7 @@ export default function CreateUserPage() {
               />
 
               <Button variant='pressable' className='w-full'>
-                Create User
+                {dashboardUserTranslation('form.submit')}
               </Button>
             </form>
           </Form>

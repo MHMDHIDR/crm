@@ -11,6 +11,7 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteClients } from '@/actions/clients/delete-client'
@@ -50,6 +51,8 @@ export default function ClientsPage() {
   const [rowSelection, setRowSelection] = useState({})
   const [filtering, setFiltering] = useState('') // This will add global filtering state, which will help us filter the table data
 
+  const dashboardClientsTranslation = useTranslations('dashboard.clients')
+
   /** Handling Dialogs states (Pefect for Reusable Modals): */
   const [dialogProps, setDialogProps] = useState({
     open: false,
@@ -78,10 +81,9 @@ export default function ClientsPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Selected Clients',
-      description:
-        'This action cannot be undone. This will permanently delete the selected clients and remove their data from our servers.',
-      buttonText: 'Delete Clients',
+      title: dashboardClientsTranslation('dialog.delete.title'),
+      description: dashboardClientsTranslation('dialog.delete.description'),
+      buttonText: dashboardClientsTranslation('dialog.delete.button'),
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
@@ -91,10 +93,9 @@ export default function ClientsPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Client',
-      description:
-        'This action cannot be undone. This will permanently delete this user and remove their data from our servers.',
-      buttonText: 'Delete Client',
+      title: dashboardClientsTranslation('dialog.delete.singleTitle'),
+      description: dashboardClientsTranslation('dialog.delete.singleDescription'),
+      buttonText: dashboardClientsTranslation('dialog.delete.singleButton'),
       buttonClass: 'bg-red-600',
       selectedIds: [clientId]
     })
@@ -157,12 +158,14 @@ export default function ClientsPage() {
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {dashboardClientsTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <Link href='/dashboard/create-client'>
-            <Button>Add New Client</Button>
+            <Button>{dashboardClientsTranslation('actions.addNew')}</Button>
           </Link>
         </div>
       </header>
@@ -172,9 +175,13 @@ export default function ClientsPage() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          searchPlaceholder='Look for a Client...'
+          searchPlaceholder={dashboardClientsTranslation('actions.search')}
           bulkActions={[
-            { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
+            {
+              label: dashboardClientsTranslation('bulkActions.deleteSelected'),
+              onClick: handleDeleteSelected,
+              variant: 'destructive'
+            }
           ]}
         />
 
@@ -222,9 +229,9 @@ export default function ClientsPage() {
                     <Link href='/dashboard/create-client'>
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
-                          Sorry we couldn&apos;t find any clients.
+                          {dashboardClientsTranslation('empty.message')}
                         </p>
-                        <Button>Add New Client</Button>
+                        <Button>{dashboardClientsTranslation('actions.addNew')}</Button>
                       </EmptyState>
                     </Link>
                   </TableCell>
