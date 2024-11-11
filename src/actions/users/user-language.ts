@@ -21,11 +21,11 @@ export async function getUserLanguage(): Promise<UserPreferences['language']> {
       return 'en'
     }
 
-    const preferences = await database.query.userPreferences.findFirst({
+    const preferences = (await database.query.userPreferences.findFirst({
       where: eq(userPreferences.userId, user.id)
-    })
+    })) as UserPreferences
 
-    return preferences?.language || 'en'
+    return preferences.language
   } catch (error) {
     console.error('Error getting user language:', error)
     return 'en'

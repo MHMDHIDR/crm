@@ -9,7 +9,6 @@ import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { authenticate } from '@/actions/auth/auth'
-import { getUserLanguage } from '@/actions/users/user-language'
 import { getUserTheme } from '@/actions/users/user-theme'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,7 +21,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
-import { UserSession } from '@/db/schema'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
 import { userSchema } from '@/validators/user'
@@ -57,14 +55,14 @@ export default function SignInClientPage() {
 
         const result = await authenticate(formData)
 
-        if (result.twoFactor) {
-          setShowTwoFactor(true)
-          toast.success('2FA code has been sent to your email')
+        if (!result.success) {
+          toast.error(result.message)
           return
         }
 
-        if (!result.success) {
-          toast.error(result.message)
+        if (result.twoFactor) {
+          setShowTwoFactor(true)
+          toast.success('2FA code has been sent to your email')
           return
         }
 
