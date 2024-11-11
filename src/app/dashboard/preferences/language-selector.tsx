@@ -14,15 +14,15 @@ import {
 } from '@/components/ui/select'
 import { UserPreferences } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
+import { useLocale } from '@/providers/locale-provider'
 
 export default function LanguageSelector() {
-  const storedLanguage = localStorage.getItem('language') as UserPreferences['language']
-
-  const [currentLanguage, setCurrentLanguage] =
-    useState<UserPreferences['language']>(storedLanguage)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const toast = useToast()
+  const { setLocale, locale } = useLocale()
   const languageSelectTranslations = useTranslations('dashboard.languageSelect')
+  const toast = useToast()
+
+  const [currentLanguage, setCurrentLanguage] = useState<UserPreferences['language']>(locale)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   // Fetch user's language preference on component mount
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function LanguageSelector() {
       setCurrentLanguage(language)
       toast.success(message)
 
-      localStorage.setItem('language', language)
+      setLocale(language || 'en')
     } else {
       console.error(message)
       toast.error(message)

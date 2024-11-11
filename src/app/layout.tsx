@@ -3,8 +3,8 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { getUserLanguage } from '@/actions/users/user-language'
 import { Providers } from '@/providers'
-import './globals.css'
 import { LocaleProvider } from '@/providers/locale-provider'
+import './globals.css'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = (await getUserLanguage()) ?? (await getLocale())

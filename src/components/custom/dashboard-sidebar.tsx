@@ -28,19 +28,18 @@ import {
   useSidebar
 } from '@/components/ui/sidebar'
 import { ExtendedProject, UserSession } from '@/db/schema'
-import { Locale } from '@/i18n/config'
+import { useLocale } from '@/providers/locale-provider'
 
 export function DashboardSidebar({
   user,
   projects,
-  locale,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: UserSession
   projects: ExtendedProject[] | null
-  locale: Locale
 }) {
   const { open } = useSidebar()
+  const { locale } = useLocale()
   const dashboardSidebarTranslations = useTranslations('DashboardSidebar')
 
   const sidebarItems = {
