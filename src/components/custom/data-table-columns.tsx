@@ -50,6 +50,18 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
 ): ColumnDef<T>[] {
   const dashboardDataTableTranslations = useTranslations('dashboard.dataTable.columns')
 
+  function getViewEditLabel(entityType: 'users' | 'clients' | 'project'): string {
+    return dashboardDataTableTranslations(
+      `actions.viewEdit.${entityType === 'users' ? 'user' : entityType === 'clients' ? 'client' : 'project'}`
+    )
+  }
+
+  function getDeleteLabel(entityType: 'users' | 'clients' | 'project'): string {
+    return dashboardDataTableTranslations(
+      `actions.delete.${entityType === 'users' ? 'user' : entityType === 'clients' ? 'client' : 'project'}`
+    )
+  }
+
   const baseColumns: ColumnDef<T>[] = [
     {
       id: 'select',
@@ -152,7 +164,9 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
               'text-red-600 bg-red-100': emailVerified === null
             })}
           >
-            {emailVerified ? 'Verified' : 'Pending'}
+            {emailVerified
+              ? dashboardDataTableTranslations('status.verified')
+              : dashboardDataTableTranslations('status.pending')}
           </span>
         )
       }
@@ -177,7 +191,9 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
               'text-red-600 bg-red-100': suspendedAt !== null
             })}
           >
-            {suspendedAt ? formatDate(String(suspendedAt)) : 'Active'}
+            {suspendedAt
+              ? formatDate(String(suspendedAt))
+              : dashboardDataTableTranslations('status.active')}
           </span>
         )
       }
@@ -223,7 +239,9 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
               'text-red-600 bg-red-100': status === 'deactive'
             })}
           >
-            {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
+            {dashboardDataTableTranslations(
+              status === 'active' ? 'status.active' : 'status.deactive'
+            )}
           </span>
         )
       }
@@ -252,7 +270,9 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
               'text-red-600 bg-red-100': status === 'deactive'
             })}
           >
-            {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
+            {dashboardDataTableTranslations(
+              status === 'active' ? 'status.active' : 'status.deactive'
+            )}
           </span>
         )
       }
@@ -346,14 +366,14 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
               <MoreHorizontal className='w-4 h-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
+          <DropdownMenuContent align='end' className='rtl:rtl'>
             <DropdownMenuLabel className='select-none'>
               {dashboardDataTableTranslations('actions.label')}
             </DropdownMenuLabel>
             <DropdownMenuItem asChild>
               <Link href={`${actions.basePath}/${entity.id}`}>
                 <Pencil className='mr-0.5 h-4 w-4' />
-                {`View / Edit ${entityType === 'users' ? 'User' : entityType === 'clients' ? 'Client' : 'Project'}`}
+                {getViewEditLabel(entityType)}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -370,12 +390,14 @@ export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
                 }
               >
                 <Ban className='mr-0.5 h-4 w-4' />
-                {(row.original as unknown as User).suspendedAt ? 'Unsuspend User' : 'Suspend User'}
+                {(row.original as unknown as User).suspendedAt
+                  ? dashboardDataTableTranslations('actions.suspend.unsuspend')
+                  : dashboardDataTableTranslations('actions.suspend.suspend')}
               </DropdownMenuItem>
             )}
             <DropdownMenuItem className='text-red-600' onClick={() => actions.onDelete(entity.id)}>
               <Trash className='mr-0.5 h-4 w-4' />
-              {`Delete ${entityType === 'users' ? 'User' : entityType === 'clients' ? 'Client' : 'Project'}`}
+              {getDeleteLabel(entityType)}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

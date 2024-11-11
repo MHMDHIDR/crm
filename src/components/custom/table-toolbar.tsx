@@ -1,5 +1,6 @@
 import { Table } from '@tanstack/react-table'
 import { ChevronDown, SettingsIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -37,11 +38,13 @@ export function TableToolbar<TData>({
 }: TableToolbarProps<TData>) {
   const hasBulkActions = bulkActions.length > 0
 
+  const dashboardDatatableTranslation = useTranslations('dashboard.dataTable.tableToolbar')
+
   return (
     <div className='flex items-center justify-between gap-x-2 py-2.5'>
       <div className='flex items-center w-full gap-x-2'>
         <Input
-          placeholder={searchPlaceholder}
+          placeholder={searchPlaceholder || dashboardDatatableTranslation('search')}
           value={filtering}
           onChange={event => setFiltering(event.target.value)}
           className='max-w-md'
@@ -50,11 +53,14 @@ export function TableToolbar<TData>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='outline'>
-                Bulk Actions <SettingsIcon className='w-4 h-4 ml-2' />
+                {dashboardDatatableTranslation('bulkActions')}
+                <SettingsIcon className='w-4 h-4 ml-2' />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className='space-y-1'>
-              <DropdownMenuLabel className='text-center'>Bulk Actions</DropdownMenuLabel>
+              <DropdownMenuLabel className='text-center'>
+                {dashboardDatatableTranslation('bulkActions')}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {bulkActions.map((action, index) => (
                 <DropdownMenuItem key={index} asChild>
@@ -75,7 +81,7 @@ export function TableToolbar<TData>({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>
-            Columns <ChevronDown className='w-4 h-4 ml-2' />
+            {dashboardDatatableTranslation('columns')} <ChevronDown className='w-4 h-4 ml-2' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>

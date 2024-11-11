@@ -1,4 +1,5 @@
 import { Table } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 interface TablePaginationProps<TData> {
@@ -7,10 +8,15 @@ interface TablePaginationProps<TData> {
 }
 
 export function TablePagination<TData>({ table, selectedRows }: TablePaginationProps<TData>) {
+  const dashboardDatatableTranslation = useTranslations('dashboard.dataTable.tablePagination')
+
   return (
-    <div className='flex items-center justify-end py-4 space-x-2'>
+    <div className='flex items-center justify-end py-4 gap-x-2'>
       <div className='text-sm text-muted-foreground'>
-        {selectedRows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+        {dashboardDatatableTranslation('selected', {
+          count: selectedRows.length,
+          total: table.getFilteredRowModel().rows.length
+        })}
       </div>
       <Button
         variant='outline'
@@ -18,7 +24,7 @@ export function TablePagination<TData>({ table, selectedRows }: TablePaginationP
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
       >
-        Previous
+        {dashboardDatatableTranslation('previous')}
       </Button>
       <Button
         variant='outline'
@@ -26,7 +32,7 @@ export function TablePagination<TData>({ table, selectedRows }: TablePaginationP
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
       >
-        Next
+        {dashboardDatatableTranslation('next')}
       </Button>
     </div>
   )

@@ -213,6 +213,51 @@
         "message": "Sorry we couldn't find any clients."
       }
     },
+    "users": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "users": "Users"
+      },
+      "actions": {
+        "addNew": "Add New User",
+        "search": "Look for a User..."
+      },
+      "bulkActions": {
+        "deleteSelected": "Delete Selected",
+        "suspendSelected": "Suspend Selected",
+        "unsuspendSelected": "Unsuspend Selected"
+      },
+      "dialog": {
+        "delete": {
+          "title": "Delete Selected Users",
+          "singleTitle": "Delete User",
+          "description": "This action cannot be undone. This will permanently delete the selected users and remove their data from our servers.",
+          "singleDescription": "This action cannot be undone. This will permanently delete this user and remove the data from our servers.",
+          "button": "Delete Users",
+          "singleButton": "Delete User"
+        },
+        "suspend": {
+          "title": "Suspend Selected Users",
+          "singleTitle": "Suspend User",
+          "description": "Are you sure you want to suspend the selected users? They will not be able to access the system until unsuspended.",
+          "singleDescription": "Are you sure you want to suspend this user? They will not be able to access the system until unsuspended.",
+          "button": "Suspend Users",
+          "singleButton": "Suspend User"
+        },
+        "unsuspend": {
+          "title": "Unsuspend Selected Users",
+          "singleTitle": "Unsuspend User",
+          "description": "Are you sure you want to unsuspend the selected users? They will regain access to the system.",
+          "singleDescription": "Are you sure you want to unsuspend this user? They will regain access to the system.",
+          "button": "Unsuspend Users",
+          "singleButton": "Unsuspend User"
+        }
+      },
+      "empty": {
+        "message": "Sorry we couldn't find any users.",
+        "addNew": "Add New User"
+      }
+    },
     "createClient": {
       "breadcrumb": {
         "dashboard": "Main Dashboard",
@@ -365,6 +410,19 @@
           "supervisor": "Supervisor",
           "employee": "Employee"
         }
+      },
+      "tableToolbar": {
+        "search": "Search...",
+        "bulkActions": "Bulk Actions",
+        "columns": "Columns"
+      },
+      "ConfirmationDialog": {
+        "cancel": "Cancel"
+      },
+      "tablePagination": {
+        "selected": "{count} of {total} row(s) selected",
+        "previous": "Previous",
+        "next": "Next"
       }
     }
   }

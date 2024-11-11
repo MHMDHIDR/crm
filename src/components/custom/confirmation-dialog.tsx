@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,15 +29,17 @@ export function ConfirmationDialog({
   buttonClass,
   onConfirm
 }: ConfirmationDialogProps) {
+  const dashboardDatatableTranslation = useTranslations('dashboard.dataTable.ConfirmationDialog')
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className='rtl:text-right'>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle className='rtl:text-right'>{title}</AlertDialogTitle>
+          <AlertDialogDescription className='rtl:text-right'>{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogFooter className='flex gap-x-3 rtl:flex-row-reverse'>
+          <AlertDialogCancel>{dashboardDatatableTranslation('cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} className={buttonClass}>
             {buttonText}
           </AlertDialogAction>

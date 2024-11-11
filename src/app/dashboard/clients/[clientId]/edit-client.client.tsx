@@ -1,7 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
+import { useForm } from 'react-hook-form'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,9 +11,27 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { Switch } from '@/components/ui/switch'
 import { Client } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 
@@ -24,46 +43,41 @@ export default function EditClientPageClient({ client }: { client: Client }) {
   // State to hold the client data
   const [clientData, setClientData] = useState(client)
 
-  // const form = useForm({
-  //   defaultValues: {
-  //     id: userData.id,
-  //     name: userData.name || '',
-  //     email: userData.email || '',
-  //     password: '',
-  //     role: userData.role || 'Employee',
-  //     isTwoFactorEnabled: userData.isTwoFactorEnabled || false
-  //   }
-  // })
+  const form = useForm({
+    defaultValues: {
+      id: clientData.id,
+      name: clientData.name || '',
+      email: clientData.email || '',
+      password: ''
+    }
+  })
 
-  // // Update form values if userData changes
-  // useEffect(() => {
-  //   form.reset({
-  //     name: userData.name,
-  //     email: userData.email,
-  //     password: '',
-  //     role: userData.role ?? 'Employee',
-  //     isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false
-  //   })
-  // }, [userData, form])
+  // Update form values if clientData changes
+  useEffect(() => {
+    form.reset({
+      name: clientData.name,
+      email: clientData.email,
+      password: ''
+    })
+  }, [clientData, form])
 
-  // const onSubmit = (values: any) => {
-  //   startTransition(async () => {
-  //     try {
-  //       const data = await updateClient({ id: userData.id, ...values })
-
-  //       if (data.error) {
-  //         toast.error(data.error)
-  //       } else if (data.success) {
-  //         toast.success(data.success)
-  //         // Update local state with new data
-  //         setClientData({ ...userData, ...values })
-  //         router.refresh() // Refreshes the page
-  //       }
-  //     } catch (error) {
-  //       toast.error('An error occurred')
-  //     }
-  //   })
-  // }
+  const onSubmit = (values: any) => {
+    // startTransition(async () => {
+    //   try {
+    //     const data = await updateClient({ id: clientData.id, ...values })
+    //     if (data.error) {
+    //       toast.error(data.error)
+    //     } else if (data.success) {
+    //       toast.success(data.success)
+    //       // Update local state with new data
+    //       setClientData({ ...clientData, ...values })
+    //       router.refresh() // Refreshes the page
+    //     }
+    //   } catch (error) {
+    //     toast.error('An error occurred')
+    //   }
+    // })
+  }
 
   return (
     <SidebarInset>
@@ -89,8 +103,7 @@ export default function EditClientPageClient({ client }: { client: Client }) {
           <h1 className='text-2xl font-bold text-center'>👤 Edit Client</h1>
         </CardHeader>
         <CardContent>
-          {/**
-           * <Form {...form}>
+          <Form {...form}>
             <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
               <div className='space-y-2'>
                 <FormField
@@ -125,52 +138,6 @@ export default function EditClientPageClient({ client }: { client: Client }) {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name='role'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <FormControl>
-                        <Select
-                          disabled={isPending}
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select a role' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={ClientRole.ADMIN}>Admin</SelectItem>
-                            <SelectItem value={ClientRole.SUPERVISOR}>Supervisor</SelectItem>
-                            <SelectItem value={ClientRole.EMPLOYEE}>Employee</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='isTwoFactorEnabled'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-row items-center justify-between p-3 border rounded-lg shadow-sm'>
-                      <div className='space-y-0.5'>
-                        <FormLabel>Two Factor Authentication</FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          disabled={isPending}
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <Button disabled={isPending} variant='pressable' className='w-full'>
@@ -178,7 +145,6 @@ export default function EditClientPageClient({ client }: { client: Client }) {
               </Button>
             </form>
           </Form>
-           */}
         </CardContent>
       </Card>
     </SidebarInset>

@@ -83,10 +83,9 @@ export default function ProjectsPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Selected Projects',
-      description:
-        'This action cannot be undone. This will permanently delete the selected projects and remove their data from our servers.',
-      buttonText: 'Delete Projects',
+      title: dashboardProjectTranslation('dialog.delete.title'),
+      description: dashboardProjectTranslation('dialog.delete.description'),
+      buttonText: dashboardProjectTranslation('dialog.delete.button'),
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
@@ -96,10 +95,9 @@ export default function ProjectsPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Project',
-      description:
-        'This action cannot be undone. This will permanently delete this project and remove the data from our servers.',
-      buttonText: 'Delete Project',
+      title: dashboardProjectTranslation('dialog.delete.singleTitle'),
+      description: dashboardProjectTranslation('dialog.delete.singleDescription'),
+      buttonText: dashboardProjectTranslation('dialog.delete.singleTitle'),
       buttonClass: 'bg-red-600',
       selectedIds: [projectId]
     })
@@ -110,10 +108,9 @@ export default function ProjectsPage() {
     setDialogProps({
       open: true,
       action: 'activate',
-      title: 'Activate Selected Project',
-      description:
-        'Are you sure you want to activate the selected project? They will not be able to access the system until deactivated.',
-      buttonText: 'Activate Project',
+      title: dashboardProjectTranslation('dialog.activate.title'),
+      description: dashboardProjectTranslation('dialog.activate.description'),
+      buttonText: dashboardProjectTranslation('dialog.activate.button'),
       buttonClass: 'bg-green-600',
       selectedIds: ids
     })
@@ -124,10 +121,9 @@ export default function ProjectsPage() {
     setDialogProps({
       open: true,
       action: 'deactivate',
-      title: 'Deactivate Selected Project',
-      description:
-        'Are you sure you want to deactivate the selected project? They will regain access to the system.',
-      buttonText: 'Deactivate Project',
+      title: dashboardProjectTranslation('dialog.deactivate.title'),
+      description: dashboardProjectTranslation('dialog.deactivate.description'),
+      buttonText: dashboardProjectTranslation('dialog.deactivate.button'),
       buttonClass: 'bg-yellow-600',
       selectedIds: ids
     })
@@ -137,10 +133,9 @@ export default function ProjectsPage() {
     setDialogProps({
       open: true,
       action: 'activate',
-      title: 'Activate Project',
-      description:
-        'Are you sure you want to activate this project? They will not be able to access the system until deactivated.',
-      buttonText: 'Activate Project',
+      title: dashboardProjectTranslation('dialog.activate.singleTitle'),
+      description: dashboardProjectTranslation('dialog.activate.singleDescription'),
+      buttonText: dashboardProjectTranslation('dialog.activate.button'),
       buttonClass: 'bg-green-600',
       selectedIds: [projectId]
     })
@@ -181,7 +176,11 @@ export default function ProjectsPage() {
 
   const getBulkActions = () => {
     const actions: BulkAction[] = [
-      { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
+      {
+        label: dashboardProjectTranslation('bulkActions.deleteSelected'),
+        onClick: handleDeleteSelected,
+        variant: 'destructive'
+      }
     ]
 
     // Only proceed if there are selected rows
@@ -195,7 +194,7 @@ export default function ProjectsPage() {
       // Add Activate button if there are any deactive projects
       if (hasDeactiveProjects) {
         actions.push({
-          label: 'Activate Selected',
+          label: dashboardProjectTranslation('bulkActions.activateSelected'),
           onClick: handleActivateSelected,
           variant: 'success'
         })
@@ -204,7 +203,7 @@ export default function ProjectsPage() {
       // Add Deactivate button if there are any active projects
       if (hasActiveProjects) {
         actions.push({
-          label: 'Deactivate Selected',
+          label: dashboardProjectTranslation('bulkActions.deactivateSelected'),
           onClick: handleDeactivateSelected,
           variant: 'warning'
         })

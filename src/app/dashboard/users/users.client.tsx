@@ -11,6 +11,7 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteUsers } from '@/actions/users/delete-user'
@@ -64,6 +65,7 @@ export default function UsersClientPage() {
   })
 
   const toast = useToast()
+  const dashboardUsersTranslation = useTranslations('dashboard.users')
 
   // Fetch users
   const fetchUsers = useCallback(async () => {
@@ -80,10 +82,9 @@ export default function UsersClientPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete Selected Users',
-      description:
-        'This action cannot be undone. This will permanently delete the selected users and remove their data from our servers.',
-      buttonText: 'Delete Users',
+      title: dashboardUsersTranslation('dialog.delete.title'),
+      description: dashboardUsersTranslation('dialog.delete.description'),
+      buttonText: dashboardUsersTranslation('dialog.delete.button'),
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
@@ -95,10 +96,9 @@ export default function UsersClientPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: 'Delete User',
-      description:
-        'This action cannot be undone. This will permanently delete this user and remove their data from our servers.',
-      buttonText: 'Delete User',
+      title: dashboardUsersTranslation('dialog.delete.singleTitle'),
+      description: dashboardUsersTranslation('dialog.delete.singleDescription'),
+      buttonText: dashboardUsersTranslation('dialog.delete.singleButton'),
       buttonClass: 'bg-red-600',
       selectedIds: [userId]
     })
@@ -109,10 +109,9 @@ export default function UsersClientPage() {
     setDialogProps({
       open: true,
       action: 'suspend',
-      title: 'Suspend Selected Users',
-      description:
-        'Are you sure you want to suspend the selected users? They will not be able to access the system until unsuspended.',
-      buttonText: 'Suspend Users',
+      title: dashboardUsersTranslation('dialog.suspend.title'),
+      description: dashboardUsersTranslation('dialog.suspend.description'),
+      buttonText: dashboardUsersTranslation('dialog.suspend.button'),
       buttonClass: 'bg-yellow-600',
       selectedIds: ids
     })
@@ -123,10 +122,9 @@ export default function UsersClientPage() {
     setDialogProps({
       open: true,
       action: 'unsuspend',
-      title: 'Unsuspend Selected Users',
-      description:
-        'Are you sure you want to unsuspend the selected users? They will regain access to the system.',
-      buttonText: 'Unsuspend Users',
+      title: dashboardUsersTranslation('dialog.unsuspend.title'),
+      description: dashboardUsersTranslation('dialog.unsuspend.description'),
+      buttonText: dashboardUsersTranslation('dialog.unsuspend.button'),
       buttonClass: 'bg-green-600',
       selectedIds: ids
     })
@@ -136,10 +134,9 @@ export default function UsersClientPage() {
     setDialogProps({
       open: true,
       action: 'suspend',
-      title: 'Suspend User',
-      description:
-        'Are you sure you want to suspend this user? They will not be able to access the system until unsuspended.',
-      buttonText: 'Suspend User',
+      title: dashboardUsersTranslation('dialog.suspend.singleTitle'),
+      description: dashboardUsersTranslation('dialog.suspend.singleDescription'),
+      buttonText: dashboardUsersTranslation('dialog.suspend.singleButton'),
       buttonClass: 'bg-yellow-600',
       selectedIds: [userId]
     })
@@ -149,10 +146,9 @@ export default function UsersClientPage() {
     setDialogProps({
       open: true,
       action: 'unsuspend',
-      title: 'Unsuspend User',
-      description:
-        'Are you sure you want to unsuspend this user? They will regain access to the system.',
-      buttonText: 'Unsuspend User',
+      title: dashboardUsersTranslation('dialog.unsuspend.singleTitle'),
+      description: dashboardUsersTranslation('dialog.unsuspend.singleDescription'),
+      buttonText: dashboardUsersTranslation('dialog.unsuspend.singleButton'),
       buttonClass: 'bg-green-600',
       selectedIds: [userId]
     })
@@ -181,7 +177,11 @@ export default function UsersClientPage() {
   const getBulkActions = () => {
     // Always include Delete Selected action
     const actions: BulkAction[] = [
-      { label: 'Delete Selected', onClick: handleDeleteSelected, variant: 'destructive' }
+      {
+        label: dashboardUsersTranslation('bulkActions.deleteSelected'),
+        onClick: handleDeleteSelected,
+        variant: 'destructive'
+      }
     ]
 
     // Only proceed if there are selected rows
@@ -195,7 +195,7 @@ export default function UsersClientPage() {
       // Add Suspend button if there are any active users
       if (hasActiveUsers) {
         actions.push({
-          label: 'Suspend Selected',
+          label: dashboardUsersTranslation('bulkActions.suspendSelected'),
           onClick: handleSuspendSelected,
           variant: 'warning'
         })
@@ -204,7 +204,7 @@ export default function UsersClientPage() {
       // Add Unsuspend button if there are any suspended users
       if (hasSuspendedUsers) {
         actions.push({
-          label: 'Unsuspend Selected',
+          label: dashboardUsersTranslation('bulkActions.unsuspendSelected'),
           onClick: handleUnsuspendSelected,
           variant: 'success'
         })
@@ -257,12 +257,14 @@ export default function UsersClientPage() {
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {dashboardUsersTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <Link href='/dashboard/create-user'>
-            <Button>Add New User</Button>
+            <Button>{dashboardUsersTranslation('actions.addNew')}</Button>
           </Link>
         </div>
       </header>
@@ -272,7 +274,7 @@ export default function UsersClientPage() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          searchPlaceholder='Look for a User...'
+          searchPlaceholder={dashboardUsersTranslation('actions.search')}
           bulkActions={getBulkActions()}
         />
 
@@ -323,7 +325,7 @@ export default function UsersClientPage() {
                     <Link href='/dashboard/create-user'>
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
-                          Sorry we couldn&apos;t find any users.
+                          {dashboardUsersTranslation('empty.message')}
                         </p>
                         <Button>Add New User</Button>
                       </EmptyState>
