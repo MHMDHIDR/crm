@@ -18,7 +18,6 @@ import { deleteUsers } from '@/actions/users/delete-user'
 import { getUsers } from '@/actions/users/get-users'
 import { toggleUserStatus } from '@/actions/users/toggle-user-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
-import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
@@ -40,6 +39,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { useSharedColumns } from '@/hooks/use-shared-columns'
 import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
 import type { User } from '@/db/schema'
@@ -214,11 +214,14 @@ export default function UsersClientPage() {
     return actions
   }
 
-  const columns = getSharedColumns<User>('users', {
-    onDelete: handleDeleteSingleUser,
-    onSuspend: handleSuspendSingleUser,
-    onUnsuspend: handleUnsuspendSingleUser,
-    basePath: '/dashboard/users'
+  const columns = useSharedColumns<User>({
+    entityType: 'users',
+    actions: {
+      basePath: '/dashboard/users',
+      onDelete: handleDeleteSingleUser,
+      onSuspend: handleSuspendSingleUser,
+      onUnsuspend: handleUnsuspendSingleUser
+    }
   })
 
   const table = useReactTable({

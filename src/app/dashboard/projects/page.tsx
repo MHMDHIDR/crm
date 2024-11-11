@@ -18,7 +18,6 @@ import { deleteProjects } from '@/actions/projects/delete-project'
 import { getProjects } from '@/actions/projects/get-project'
 import { toggleProjectStatus } from '@/actions/projects/toggle-project-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
-import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
@@ -40,6 +39,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { useSharedColumns } from '@/hooks/use-shared-columns'
 import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
 import type { ExtendedProject } from '@/db/schema'
@@ -213,11 +213,14 @@ export default function ProjectsPage() {
     return actions
   }
 
-  const columns = getSharedColumns<ExtendedProject>('project', {
-    onDelete: handleDeleteSingleProject,
-    onActivate: handleActivateSingleProject,
-    onDeactivate: handleDeactivateSingleProject,
-    basePath: '/dashboard/projects'
+  const columns = useSharedColumns<ExtendedProject>({
+    entityType: 'project',
+    actions: {
+      onDelete: handleDeleteSingleProject,
+      onActivate: handleActivateSingleProject,
+      onDeactivate: handleDeactivateSingleProject,
+      basePath: '/dashboard/projects'
+    }
   })
 
   const table = useReactTable({

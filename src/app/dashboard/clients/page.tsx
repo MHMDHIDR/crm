@@ -17,7 +17,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { deleteClients } from '@/actions/clients/delete-client'
 import { getClients } from '@/actions/clients/get-clients'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
-import { getSharedColumns } from '@/components/custom/data-table-columns'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
@@ -39,6 +38,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { useSharedColumns } from '@/hooks/use-shared-columns'
 import { useToast } from '@/hooks/use-toast'
 import type { Client } from '@/db/schema'
 
@@ -117,9 +117,12 @@ export default function ClientsPage() {
     }
   }
 
-  const columns = getSharedColumns<Client>('clients', {
-    onDelete: handleDeleteSingleClient,
-    basePath: '/dashboard/clients'
+  const columns = useSharedColumns<Client>({
+    entityType: 'clients',
+    actions: {
+      onDelete: handleDeleteSingleClient,
+      basePath: '/dashboard/clients'
+    }
   })
 
   const table = useReactTable({

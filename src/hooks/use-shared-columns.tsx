@@ -41,13 +41,18 @@ type TableActions = {
   onUnsuspend?: (id: string) => void
   onActivate?: (id: string) => void
   onDeactivate?: (id: string) => void
-  basePath: string // e.g., '/dashboard/users' or '/dashboard/clients' or '/dashboard/projects'
+  basePath: string
 }
 
-export function getSharedColumns<T extends BaseEntity | ExtendedProject>(
-  entityType: 'users' | 'clients' | 'project',
+type SharedColumnsProps<T extends BaseEntity | ExtendedProject> = {
+  entityType: 'users' | 'clients' | 'project'
   actions: TableActions
-): ColumnDef<T>[] {
+}
+
+export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
+  entityType,
+  actions
+}: SharedColumnsProps<T>): ColumnDef<T>[] {
   const dashboardDataTableTranslations = useTranslations('dashboard.dataTable.columns')
 
   function getViewEditLabel(entityType: 'users' | 'clients' | 'project'): string {
