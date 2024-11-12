@@ -217,10 +217,10 @@ export default function UsersClientPage() {
   const columns = useSharedColumns<User>({
     entityType: 'users',
     actions: {
-      basePath: '/dashboard/users',
       onDelete: handleDeleteSingleUser,
       onSuspend: handleSuspendSingleUser,
-      onUnsuspend: handleUnsuspendSingleUser
+      onUnsuspend: handleUnsuspendSingleUser,
+      basePath: '/users'
     }
   })
 

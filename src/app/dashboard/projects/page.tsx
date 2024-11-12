@@ -219,7 +219,7 @@ export default function ProjectsPage() {
       onDelete: handleDeleteSingleProject,
       onActivate: handleActivateSingleProject,
       onDeactivate: handleDeactivateSingleProject,
-      basePath: '/dashboard/projects'
+      basePath: '/projects'
     }
   })
 

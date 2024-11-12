@@ -41,7 +41,7 @@ type TableActions = {
   onUnsuspend?: (id: string) => void
   onActivate?: (id: string) => void
   onDeactivate?: (id: string) => void
-  basePath: string
+  basePath: '/projects' | '/users' | '/clients'
 }
 
 type SharedColumnsProps<T extends BaseEntity | ExtendedProject> = {
@@ -376,7 +376,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
               {dashboardDataTableTranslations('actions.label')}
             </DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`${actions.basePath}/${entity.id}`}>
+              <Link href={`/dashboard${actions.basePath}/${entity.id}`}>
                 <Pencil className='mr-0.5 h-4 w-4' />
                 {getViewEditLabel(entityType)}
               </Link>

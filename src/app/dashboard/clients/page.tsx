@@ -121,7 +121,7 @@ export default function ClientsPage() {
     entityType: 'clients',
     actions: {
       onDelete: handleDeleteSingleClient,
-      basePath: '/dashboard/clients'
+      basePath: '/clients'
     }
   })
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { Notebook, ShoppingBagIcon } from 'lucide-react'
+import { Notebook, SettingsIcon, ShoppingBagIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
@@ -28,6 +29,15 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuLink,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
@@ -197,6 +207,7 @@ export default function ProjectTasksClientPage({
     'in-progress': [],
     completed: []
   })
+  const dashboardProjectsTranslation = useTranslations('dashboard.dataTable.tableToolbar')
 
   const toast = useToast()
 
@@ -318,39 +329,54 @@ export default function ProjectTasksClientPage({
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
-          <SheetTrigger asChild>
-            <Button className='font-bold' onClick={() => setSelectedTask(null)}>
-              <Notebook className='w-5 h-5 mr-2' />
-              <span>Create Task</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side='bottom'>
-            <SheetHeader>
-              <SheetTitle>{selectedTask ? 'Update Task' : 'Create Task'}</SheetTitle>
-              <SheetDescription>
-                {selectedTask
-                  ? 'Update the task details.'
-                  : 'Fill in the details for your new task.'}
-              </SheetDescription>
-            </SheetHeader>
-            <TaskForm
-              onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
-              onSuccess={() => handleSheetOpenChange(false)}
-              onDelete={handleDeleteTask}
-              initialData={selectedTask || undefined}
-              submitButtonText={selectedTask ? 'Update Task' : 'Create Task'}
-              isEditing={!!selectedTask}
-            />
-          </SheetContent>
-        </Sheet>
 
-        <Link href='/dashboard/create-project'>
-          <Button>
-            <ShoppingBagIcon className='w-5 h-5 mr-2' />
-            <span>Add New Project</span>
-          </Button>
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='outline'>
+              {dashboardProjectsTranslation('bulkActions')}
+              <SettingsIcon className='w-4 h-4 ml-2' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className='flex flex-col'>
+            <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
+              <SheetTrigger asChild>
+                <Button
+                  className='text-green-50 bg-green-700'
+                  onClick={() => setSelectedTask(null)}
+                  size='sm'
+                >
+                  <Notebook className='w-5 h-5' />
+                  <strong>Create Task</strong>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side='bottom'>
+                <SheetHeader>
+                  <SheetTitle>{selectedTask ? 'Update Task' : 'Create Task'}</SheetTitle>
+                  <SheetDescription>
+                    {selectedTask
+                      ? 'Update the task details.'
+                      : 'Fill in the details for your new task.'}
+                  </SheetDescription>
+                </SheetHeader>
+                <TaskForm
+                  onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
+                  onSuccess={() => handleSheetOpenChange(false)}
+                  onDelete={handleDeleteTask}
+                  initialData={selectedTask || undefined}
+                  submitButtonText={selectedTask ? 'Update Task' : 'Create Task'}
+                  isEditing={!!selectedTask}
+                />
+              </SheetContent>
+            </Sheet>
+
+            <DropdownMenuLink href='/dashboard/create-project' className='px-0'>
+              <Button className='flex-1' size='sm'>
+                <ShoppingBagIcon className='w-5 h-5' />
+                <span>Add New Project</span>
+              </Button>
+            </DropdownMenuLink>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <main className='w-full overflow-x-auto'>
