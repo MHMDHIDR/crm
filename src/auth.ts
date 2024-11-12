@@ -87,6 +87,7 @@ export const {
             sessionToken,
             userId: user.id,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            createdAt: new Date(),
             role: user.role as UserRole
           })
           .returning()

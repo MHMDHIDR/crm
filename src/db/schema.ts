@@ -1,7 +1,6 @@
 import { relations } from 'drizzle-orm'
 import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
-// Enums using pgEnum for type safety and validation
 export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
 export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
 export const clientStatus = { ACTIVE: 'active', DEACTIVE: 'deactive' } as const
@@ -28,7 +27,6 @@ export const taskStatusEnum = pgEnum('task_status', [
 export const themeEnum = pgEnum('theme', ['light', 'dark'])
 export const languageEnum = pgEnum('language', ['en', 'ar'])
 
-// User Types
 export type User = typeof users.$inferSelect
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
 export type UserSession = {
@@ -41,17 +39,14 @@ export type UserSession = {
 } & Partial<UserPreferences>
 export type UserPreferences = typeof userPreferences.$inferSelect
 
-// Client Types
 export type Client = typeof clients.$inferSelect
 
-// Project Types
 export type Project = typeof projects.$inferSelect
 export type ExtendedProject = Project & {
   assignedEmployeeName: User['name']
   clientName: Client['name']
 }
 
-// Task Types
 export type Task = typeof tasks.$inferSelect
 export type TasksByStatus = {
   pending: Task[]
@@ -61,7 +56,6 @@ export type TasksByStatus = {
 
 export type Event = typeof events.$inferSelect
 
-// Auth Tables with corrected column names for NextAuth
 export const users = pgTable('users', {
   id: text('id')
     .primaryKey()
@@ -93,6 +87,7 @@ export const sessions = pgTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   expires: timestamp('expires', { mode: 'date' }).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }),
   role: userRoleEnum('role').default('Employee')
 })
 
@@ -165,7 +160,6 @@ export const events = pgTable('events', {
     .$defaultFn(() => new Date())
 })
 
-// Core Schema
 export const clients = pgTable('clients', {
   id: text('id')
     .primaryKey()
@@ -213,13 +207,6 @@ export const tasks = pgTable('tasks', {
     .references(() => users.id, { onDelete: 'set null' })
 })
 
-/**
- * Define relations for the twoFactorConfirmations table
- * @example
- * ```ts
- * const twoFactorWithUser = await db.query.twoFactorConfirmations.findFirst({
- *  with: { user: true }})
- */
 export const twoFactorConfirmationsRelations = relations(twoFactorConfirmations, ({ one }) => ({
   user: one(users, {
     fields: [twoFactorConfirmations.userId],
@@ -227,38 +214,21 @@ export const twoFactorConfirmationsRelations = relations(twoFactorConfirmations,
   })
 }))
 
-/**
- * Define relations for the userPreferences table
- * @example
- * ```ts
- * const userPreferencesWithUser = await db.query.userPreferences.findFirst({
- *  with: { user: true }})
- */
 export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
   user: one(users, { fields: [userPreferences.userId], references: [users.id] })
 }))
 
-/**
- * Define relations for the users table with twoFactorConfirmations and userPreferences
- * @example
- * ```ts
- * const userWithTwoFactor = await db.query.users.findFirst({
- *  with: { twoFactorConfirmations: true,  preferences: true }
- * })
- */
 export const usersRelations = relations(users, ({ many, one }) => ({
   twoFactorConfirmations: many(twoFactorConfirmations),
   preferences: one(userPreferences),
   events: many(events)
 }))
 
-// Relation between projects and users
 export const projectsRelations = relations(projects, ({ one }) => ({
   assignedEmployee: one(users, { fields: [projects.assignedEmployeeId], references: [users.id] }),
   client: one(clients, { fields: [projects.clientId], references: [clients.id] })
 }))
 
-// Relation between tasks and projects
 export const tasksRelations = relations(tasks, ({ one }) => ({
   projectName: one(projects, { fields: [tasks.projectId], references: [projects.id] })
 }))
