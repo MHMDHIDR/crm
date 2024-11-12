@@ -1,6 +1,6 @@
 'use server'
 
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { clients } from '@/db/schema'
@@ -79,16 +79,21 @@ export async function getClientById(
  */
 export async function getClientsByEmployeeId(
   employeeId: Client['assignedEmployeeId']
-): Promise<Client[] | null> {
+): Promise<{ clientsByEmployeeId: Client[] | null; count: number }> {
   try {
-    if (employeeId === null) return null
+    if (employeeId === null) return { clientsByEmployeeId: null, count: 0 }
 
     const clientsByEmployeeId = await database.query.clients.findMany({
       where: eq(clients.assignedEmployeeId, employeeId)
     })
 
-    return clientsByEmployeeId
+    const [{ count }] = await database
+      .select({ count: sql`count(*)` })
+      .from(clients)
+      .where(eq(clients.assignedEmployeeId, employeeId))
+
+    return { clientsByEmployeeId, count: Number(count) }
   } catch {
-    return null
+    return { clientsByEmployeeId: null, count: 0 }
   }
 }

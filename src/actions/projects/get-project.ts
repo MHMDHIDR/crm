@@ -1,6 +1,6 @@
 'use server'
 
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { clients, projects, users } from '@/db/schema'
@@ -106,9 +106,9 @@ export async function getProjectById(
  */
 export async function getProjectsByEmployeeId(
   employeeId: Project['assignedEmployeeId']
-): Promise<ExtendedProject[] | null> {
+): Promise<{ projectsByEmployeeId: ExtendedProject[] | null; count: number }> {
   try {
-    if (!employeeId) return null
+    if (!employeeId) return { projectsByEmployeeId: null, count: 0 }
 
     const projectsWithRelations = await database.query.projects.findMany({
       where: eq(projects.assignedEmployeeId, employeeId),
@@ -124,8 +124,13 @@ export async function getProjectsByEmployeeId(
       clientName: project.client?.name ?? 'No Client'
     }))
 
-    return extendedProjects
+    const [{ count }] = await database
+      .select({ count: sql`count(*)` })
+      .from(projects)
+      .where(eq(projects.assignedEmployeeId, employeeId))
+
+    return { projectsByEmployeeId: extendedProjects, count: Number(count) }
   } catch {
-    return null
+    return { projectsByEmployeeId: null, count: 0 }
   }
 }
