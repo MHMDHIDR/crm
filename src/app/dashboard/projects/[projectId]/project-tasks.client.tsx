@@ -1,11 +1,12 @@
 'use client'
 
-import { Notebook, SettingsIcon, ShoppingBagIcon } from 'lucide-react'
+import { Notebook, PenBoxIcon, SettingsIcon, ShoppingBagIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { z } from 'zod'
+import { getProjectById } from '@/actions/projects/get-project'
+import { updateProject } from '@/actions/projects/update-project'
 import { createTask } from '@/actions/tasks/create-task'
 import { deleteTasks } from '@/actions/tasks/delete-task'
 import { getTasksByStatus } from '@/actions/tasks/get-task'
@@ -30,12 +31,17 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuLink,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
@@ -51,8 +57,10 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
+import { ProjectSchemaType } from '@/validators/project'
 import { taskSchema } from '@/validators/task'
-import type { Task, TasksByStatus } from '@/db/schema'
+import { ProjectEdit } from './project-edit'
+import type { ExtendedProject, Task, TasksByStatus } from '@/db/schema'
 
 type ColumnType = 'pending' | 'in-progress' | 'completed'
 type ColumnComponentProps = {
@@ -64,8 +72,8 @@ type ColumnComponentProps = {
   onViewDetails: (task: Task) => void
 }
 type ProjectTasksClientPageProps = {
-  projectId: string
-  /** Used to Render the correct Loading Cards inside the column, to get a sense of the correct layout */
+  projectId: ExtendedProject['id']
+  initialProject: ExtendedProject | undefined
   initialTasksCount: {
     pending: number
     inProgress: number
@@ -197,9 +205,13 @@ function Column({
 
 export default function ProjectTasksClientPage({
   projectId,
+  initialProject,
   initialTasksCount
 }: ProjectTasksClientPageProps) {
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const [project, setProject] = useState<ExtendedProject | undefined>(initialProject)
+
+  const [isUpdateTaskSheetOpen, setIsUpdateTaskSheetOpen] = useState(false)
+  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [tasks, setTasks] = useState<TasksByStatus>({
@@ -207,12 +219,12 @@ export default function ProjectTasksClientPage({
     'in-progress': [],
     completed: []
   })
-  const dashboardProjectsTranslation = useTranslations('dashboard.dataTable.tableToolbar')
 
+  const dashboardProjectsTranslation = useTranslations('dashboard.dataTable.tableToolbar')
   const toast = useToast()
 
   function handleSheetOpenChange(open: boolean) {
-    setIsSheetOpen(open)
+    setIsUpdateTaskSheetOpen(open)
     if (!open) {
       setSelectedTask(null)
     }
@@ -241,7 +253,7 @@ export default function ProjectTasksClientPage({
         }
 
         // Reset UI state
-        setIsSheetOpen(false)
+        setIsUpdateTaskSheetOpen(false)
         setSelectedTask(null)
 
         // Execute additional success callback if provided
@@ -297,7 +309,7 @@ export default function ProjectTasksClientPage({
 
   const handleViewDetails = (task: Task) => {
     setSelectedTask(task)
-    setIsSheetOpen(true)
+    setIsUpdateTaskSheetOpen(true)
   }
 
   useEffect(() => {
@@ -312,6 +324,27 @@ export default function ProjectTasksClientPage({
     }
     initializeTasks()
   }, [projectId])
+
+  async function handleUpdateProject(data: ProjectSchemaType) {
+    try {
+      const result = await updateProject(projectId, data)
+
+      if (result.success) {
+        const updatedProject = await getProjectById(projectId)
+        if (updatedProject.success && updatedProject.data) {
+          setProject(updatedProject.data)
+        }
+
+        toast.success(result.message)
+        setIsProjectDialogOpen(false)
+      } else {
+        toast.error(result.message)
+      }
+    } catch (error) {
+      console.error('Error in project update:', error)
+      toast.error('Failed to update project. Please try again!')
+    }
+  }
 
   return (
     <SidebarInset className='relative px-2'>
@@ -337,46 +370,63 @@ export default function ProjectTasksClientPage({
               <SettingsIcon className='w-4 h-4 ml-2' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className='flex flex-col'>
-            <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
-              <SheetTrigger asChild>
-                <Button
-                  className='text-green-50 bg-green-700'
-                  onClick={() => setSelectedTask(null)}
-                  size='sm'
-                >
-                  <Notebook className='w-5 h-5' />
-                  <strong>Create Task</strong>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side='bottom'>
-                <SheetHeader>
-                  <SheetTitle>{selectedTask ? 'Update Task' : 'Create Task'}</SheetTitle>
-                  <SheetDescription>
-                    {selectedTask
-                      ? 'Update the task details.'
-                      : 'Fill in the details for your new task.'}
-                  </SheetDescription>
-                </SheetHeader>
-                <TaskForm
-                  onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
-                  onSuccess={() => handleSheetOpenChange(false)}
-                  onDelete={handleDeleteTask}
-                  initialData={selectedTask || undefined}
-                  submitButtonText={selectedTask ? 'Update Task' : 'Create Task'}
-                  isEditing={!!selectedTask}
-                />
-              </SheetContent>
-            </Sheet>
-
-            <DropdownMenuLink href='/dashboard/create-project' className='px-0'>
-              <Button className='flex-1' size='sm'>
-                <ShoppingBagIcon className='w-5 h-5' />
-                <span>Add New Project</span>
-              </Button>
+          <DropdownMenuContent className='flex flex-col gap-y-1'>
+            <DropdownMenuLink href='/dashboard/create-project'>
+              <ShoppingBagIcon className='w-5 h-5' />
+              <span>New Project</span>
             </DropdownMenuLink>
+
+            <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
+              <DialogTrigger asChild className='text-green-50 bg-gray-700 hover:bg-gray-900'>
+                <Button size='sm' className='px-0'>
+                  <PenBoxIcon className='w-5 h-5' />
+                  Update Project
+                </Button>
+              </DialogTrigger>
+              <DialogContent className='md:max-w-3xl'>
+                <DialogHeader>
+                  <DialogTitle>Update Project</DialogTitle>
+                  <DialogDescription>Update Project Details.</DialogDescription>
+                </DialogHeader>
+                <ProjectEdit
+                  project={project}
+                  onSubmit={handleUpdateProject}
+                  onSuccess={() => setIsProjectDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Sheet open={isUpdateTaskSheetOpen} onOpenChange={handleSheetOpenChange}>
+          <SheetTrigger asChild>
+            <Button
+              className='text-green-50 bg-green-600 hover:bg-green-900'
+              onClick={() => setSelectedTask(null)}
+            >
+              <Notebook className='w-5 h-5' />
+              <strong>New</strong>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side='bottom'>
+            <SheetHeader>
+              <SheetTitle>{selectedTask ? 'Update Task' : 'Create Task'}</SheetTitle>
+              <SheetDescription>
+                {selectedTask
+                  ? 'Update the task details.'
+                  : 'Fill in the details for your new task.'}
+              </SheetDescription>
+            </SheetHeader>
+            <TaskForm
+              onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
+              onSuccess={() => handleSheetOpenChange(false)}
+              onDelete={handleDeleteTask}
+              initialData={selectedTask || undefined}
+              submitButtonText={selectedTask ? 'Update Task' : 'Create Task'}
+              isEditing={!!selectedTask}
+            />
+          </SheetContent>
+        </Sheet>
       </header>
 
       <main className='w-full overflow-x-auto'>

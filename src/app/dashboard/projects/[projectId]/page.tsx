@@ -1,5 +1,6 @@
+import { getProjectById } from '@/actions/projects/get-project'
 import { getTasksByStatus } from '@/actions/tasks/get-task'
-import ProjectTasksClientPage from '@/app/dashboard/projects/[projectId]/projects-tasks.client'
+import ProjectTasksClientPage from '@/app/dashboard/projects/[projectId]/project-tasks.client'
 
 export default async function ProjectTasksPage({
   params
@@ -8,17 +9,22 @@ export default async function ProjectTasksPage({
 }) {
   const { projectId } = await params
 
-  const { data: tasksByStatus } = await getTasksByStatus({ projectId })
+  const [projectResult, tasksByStatus] = await Promise.all([
+    getProjectById(projectId),
+    getTasksByStatus({ projectId })
+  ])
 
-  /**
-   * Calculating the count for each status to show the correct numbers of <LoadingCards />
-   * @returns Object with the number of tasks by status
-   */
   const tasksCount = {
-    pending: tasksByStatus?.pending.length ?? 0,
-    inProgress: tasksByStatus?.['in-progress'].length ?? 0,
-    completed: tasksByStatus?.completed.length ?? 0
+    pending: tasksByStatus.data?.pending.length ?? 0,
+    inProgress: tasksByStatus.data?.['in-progress'].length ?? 0,
+    completed: tasksByStatus.data?.completed.length ?? 0
   }
 
-  return <ProjectTasksClientPage projectId={projectId} initialTasksCount={tasksCount} />
+  return (
+    <ProjectTasksClientPage
+      projectId={projectId}
+      initialProject={projectResult.data}
+      initialTasksCount={tasksCount}
+    />
+  )
 }

@@ -184,17 +184,17 @@ export const projects = pgTable('projects', {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text('name').notNull(),
-  description: text('description'),
+  description: text('description').notNull(),
   clientId: text('client_id')
     .notNull()
     .references(() => clients.id, { onDelete: 'cascade' }),
   assignedEmployeeId: text('assigned_employee_id')
     .notNull()
     .references(() => users.id, { onDelete: 'set null' }),
-  status: projectStatusEnum('status').default('active'),
-  updatedAt: timestamp('updated_at', { mode: 'date' }),
-  startDate: timestamp('start_date', { mode: 'date' }),
-  endDate: timestamp('end_date', { mode: 'date' })
+  status: projectStatusEnum('status').notNull().default('active'),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).notNull(),
+  startDate: timestamp('start_date', { mode: 'date' }).notNull(),
+  endDate: timestamp('end_date', { mode: 'date' }).notNull()
 })
 
 export const tasks = pgTable('tasks', {
