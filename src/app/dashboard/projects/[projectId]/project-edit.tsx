@@ -40,10 +40,10 @@ export function ProjectEdit({ project, onSubmit, onSuccess }: ProjectEditProps) 
     defaultValues: project
       ? {
           name: project.name,
-          description: project.description,
+          description: project.description || '',
           status: project.status,
-          startDate: new Date(project.startDate),
-          endDate: new Date(project.endDate),
+          startDate: new Date(project.startDate || new Date()),
+          endDate: new Date(project.endDate || new Date()),
           clientId: project.clientId
         }
       : undefined
