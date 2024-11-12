@@ -31,7 +31,10 @@ export async function createProject(data: ProjectSchemaType): Promise<CreatProje
     // Create the project record
     const [newProject]: Project[] = await database
       .insert(projects)
-      .values({ ...data, assignedEmployeeId: session.user.id })
+      .values({
+        ...data,
+        assignedEmployeeId: session.user.id
+      })
       .returning()
     const addedEvent = await addEvent(`Project ${newProject.name} created`)
 

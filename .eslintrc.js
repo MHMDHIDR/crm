@@ -5,7 +5,7 @@ module.exports = {
     'no-unused-vars': 'off',
     'func-names': ['warn', 'as-needed'],
     'max-depth': ['warn', 4],
-    'max-lines': ['warn', { max: 400, skipBlankLines: true, skipComments: true }],
+    'max-lines': ['warn', { max: 450, skipBlankLines: true, skipComments: true }],
     'prefer-arrow-callback': 'warn',
     'prefer-const': 'warn',
     'prefer-template': 'warn',
