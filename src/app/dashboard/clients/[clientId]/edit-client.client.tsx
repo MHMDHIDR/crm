@@ -1,8 +1,9 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
+import { updateClient } from '@/actions/clients/update-client'
+import { PhoneInput } from '@/components/custom/phone-input'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -31,24 +32,30 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import { Switch } from '@/components/ui/switch'
 import { Client } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
+
+// Define a simple type for the form values
+type FormValues = {
+  name: string
+  email: string
+  phone: string
+  status: 'active' | 'deactive'
+}
 
 export default function EditClientPageClient({ client }: { client: Client }) {
   const [isPending, startTransition] = useTransition()
   const toast = useToast()
-  const router = useRouter()
 
   // State to hold the client data
   const [clientData, setClientData] = useState(client)
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     defaultValues: {
-      id: clientData.id,
       name: clientData.name || '',
       email: clientData.email || '',
-      password: ''
+      phone: clientData.phone || '',
+      status: clientData.status || 'active'
     }
   })
 
@@ -57,26 +64,32 @@ export default function EditClientPageClient({ client }: { client: Client }) {
     form.reset({
       name: clientData.name,
       email: clientData.email,
-      password: ''
+      phone: clientData.phone,
+      status: clientData.status
     })
   }, [clientData, form])
 
-  const onSubmit = (values: any) => {
-    // startTransition(async () => {
-    //   try {
-    //     const data = await updateClient({ id: clientData.id, ...values })
-    //     if (data.error) {
-    //       toast.error(data.error)
-    //     } else if (data.success) {
-    //       toast.success(data.success)
-    //       // Update local state with new data
-    //       setClientData({ ...clientData, ...values })
-    //       router.refresh() // Refreshes the page
-    //     }
-    //   } catch (error) {
-    //     toast.error('An error occurred')
-    //   }
-    // })
+  const onSubmit = (values: FormValues) => {
+    startTransition(async () => {
+      try {
+        const data = await updateClient({
+          id: clientData.id,
+          ...values,
+          assignedEmployeeId: clientData.assignedEmployeeId
+        })
+
+        if (!data.success) {
+          toast.error(data.message || 'Error updating client')
+        } else if (data.success) {
+          toast.success(data.message)
+          // Update local state with new data
+          setClientData({ ...clientData, ...values })
+        }
+      } catch (error) {
+        console.log('error -->', error)
+        toast.error(`Error ${JSON.stringify(error)}`)
+      }
+    })
   }
 
   return (
@@ -92,6 +105,10 @@ export default function EditClientPageClient({ client }: { client: Client }) {
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
+                <BreadcrumbLink href='/dashboard/clients'>Clients</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className='hidden sm:block' />
+              <BreadcrumbItem>
                 <BreadcrumbPage>Edit Client</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -100,48 +117,86 @@ export default function EditClientPageClient({ client }: { client: Client }) {
       </header>
       <Card>
         <CardHeader>
-          <h1 className='text-2xl font-bold text-center'>👤 Edit Client</h1>
+          <h1 className='text-2xl font-bold text-center'>👥 Edit Client</h1>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className='space-y-2' onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='space-y-2'>
-                <FormField
-                  control={form.control}
-                  name='name'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} disabled={isPending} placeholder='Enter full name' />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} disabled={isPending} placeholder='Enter client name' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        type='email'
+                        placeholder='Enter client email'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='phone'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl className='w-full'>
+                      <PhoneInput placeholder='Enter phone number' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='status'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                      disabled={isPending}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          type='email'
-                          placeholder='Enter email address'
-                        />
+                        <SelectTrigger>
+                          <SelectValue placeholder='Select client status' />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                      <SelectContent>
+                        <SelectItem value='active'>Active</SelectItem>
+                        <SelectItem value='deactive'>Deactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <Button disabled={isPending} variant='pressable' className='w-full'>
-                Save
+                {isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </form>
           </Form>
