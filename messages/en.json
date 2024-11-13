@@ -152,7 +152,8 @@
         "dashboard": "Main Dashboard"
       },
       "actions": {
-        "addNew": "Add New Project",
+        "addNewProject": "Add New Project",
+        "addNewClient": "Add New Client",
         "search": "Look for a Project..."
       },
       "bulkActions": {
@@ -185,7 +186,10 @@
         }
       },
       "empty": {
-        "message": "Sorry we couldn't find any projects."
+        "message": {
+          "noProjects": "Sorry we couldn't find any projects.",
+          "noClients": "You need to add a client first before creating a project."
+        }
       }
     },
     "clients": {

@@ -25,7 +25,7 @@ export async function getUserLanguage(): Promise<UserPreferences['language']> {
       where: eq(userPreferences.userId, user.id)
     })) as UserPreferences
 
-    return preferences.language
+    return preferences?.language || 'en'
   } catch (error) {
     console.error('Error getting user language:', error)
     return 'en'

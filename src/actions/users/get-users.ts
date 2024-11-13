@@ -21,7 +21,8 @@ export async function getUsers(): Promise<{ success: boolean; data?: User[]; err
   try {
     const allUsers = await database.query.users.findMany({
       where: (users, { ne }) => ne(users.id, authorizedAdmin.id),
-      orderBy: (users, { desc }) => [desc(users.emailVerified)]
+      orderBy: (users, { desc }) => [desc(users.emailVerified)],
+      with: { supervisor: true }
     })
 
     return { success: true, data: allUsers }

@@ -53,23 +53,23 @@ export default function EditUserPageClient({ user }: { user: User }) {
       email: userData.email || '',
       password: '',
       role: userData.role || 'Employee',
-      // supervisorId: userData.supervisorId || '',
+      supervisorId: userData.supervisorId,
       isTwoFactorEnabled: userData.isTwoFactorEnabled || false
     }
   })
 
-  // useEffect(() => {
-  //   async function getSupervisors() {
-  //     try {
-  //       const supervisors: SupervisorType[] = await fetchSupervisors()
+  useEffect(() => {
+    async function getSupervisors() {
+      try {
+        const supervisors: SupervisorType[] = await fetchSupervisors()
 
-  //       setSupervisors(supervisors)
-  //     } catch (error) {
-  //       toast.error('An unexpected error, Can NOT get Supervisors Please try again!')
-  //     }
-  //   }
-  //   getSupervisors()
-  // }, [])
+        setSupervisors(supervisors)
+      } catch (error) {
+        toast.error('An unexpected error, Can NOT get Supervisors Please try again!')
+      }
+    }
+    getSupervisors()
+  }, [])
 
   useEffect(() => {
     form.reset({
@@ -77,8 +77,8 @@ export default function EditUserPageClient({ user }: { user: User }) {
       email: userData.email,
       password: '',
       role: userData.role ?? 'Employee',
-      isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false
-      // supervisorId: userData.supervisorId
+      isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false,
+      supervisorId: userData.supervisorId
     })
   }, [userData, form])
 
@@ -188,7 +188,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
                   )}
                 />
 
-                {/* <FormField
+                <FormField
                   control={form.control}
                   name='supervisorId'
                   render={({ field }) => (
@@ -215,7 +215,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
                       <FormMessage />
                     </FormItem>
                   )}
-                /> */}
+                />
 
                 <FormField
                   control={form.control}

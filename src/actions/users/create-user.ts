@@ -39,8 +39,8 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         email: validatedData.email,
         role: validatedData.role,
         image: validatedData.image,
-        hashedPassword
-        // ,supervisorId: validatedData.supervisorId
+        hashedPassword,
+        supervisorId: validatedData.supervisorId
       })
       .returning()
     const addedEvent = await addEvent(`User ${newUser.name} created`)

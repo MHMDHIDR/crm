@@ -34,6 +34,7 @@ export type UserSession = {
   name: User['name']
   email: User['email']
   role: UserRole
+  supervisorId: User['supervisorId']
   image: User['image']
   isTwoFactorEnabled: User['isTwoFactorEnabled']
 } & Partial<UserPreferences>
@@ -64,6 +65,7 @@ export const users = pgTable('users', {
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
   role: userRoleEnum('role').notNull().default('Employee'),
+  supervisorId: text('supervisor_id').notNull(),
   image: text('image').notNull(),
   isTwoFactorEnabled: boolean('is_two_factor_enabled').notNull().default(false),
   emailVerified: timestamp('email_verified', { mode: 'date' }),
@@ -87,7 +89,7 @@ export const sessions = pgTable('sessions', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   expires: timestamp('expires', { mode: 'date' }).notNull(),
-  createdAt: timestamp('created_at', { mode: 'date' }),
+  createdAt: timestamp('created_at', { mode: 'date' }).notNull(),
   role: userRoleEnum('role').default('Employee')
 })
 
@@ -221,7 +223,8 @@ export const userPreferencesRelations = relations(userPreferences, ({ one }) => 
 export const usersRelations = relations(users, ({ many, one }) => ({
   twoFactorConfirmations: many(twoFactorConfirmations),
   preferences: one(userPreferences),
-  events: many(events)
+  events: many(events),
+  supervisor: one(users, { fields: [users.supervisorId], references: [users.id] })
 }))
 
 export const projectsRelations = relations(projects, ({ one }) => ({

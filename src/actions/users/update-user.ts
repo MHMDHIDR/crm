@@ -54,10 +54,10 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
       : undefined),
     ...(allowedRoles.includes(values.role as UserRole)
       ? { role: values.role as UserRole }
+      : undefined),
+    ...(values.supervisorId !== dbUser.supervisorId
+      ? { supervisorId: values.supervisorId }
       : undefined)
-    // ,...(values.supervisorId !== dbUser.supervisorId
-    //   ? { supervisorId: values.supervisorId }
-    //   : undefined)
   }
 
   // Filter out null or undefined values
@@ -85,7 +85,8 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
       name: updatedUser.name,
       email: updatedUser.email,
       isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
-      role: updatedUser.role ?? undefined
+      role: updatedUser.role ?? undefined,
+      supervisorId: updatedUser.supervisorId
     }
   })
 

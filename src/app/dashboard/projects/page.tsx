@@ -47,6 +47,7 @@ import type { ExtendedProject } from '@/db/schema'
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<ExtendedProject[]>([])
   const [loading, setLoading] = useState(true)
+  const [errorMsg, setErrorMsg] = useState<string | undefined>('')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -72,6 +73,11 @@ export default function ProjectsPage() {
   const fetchProjects = useCallback(async () => {
     setLoading(true)
     const result = await getProjects()
+
+    if (!result.success) {
+      setErrorMsg(result.error)
+    }
+
     if (result.success && result.data) {
       setProjects(result.data)
     }
@@ -266,7 +272,7 @@ export default function ProjectsPage() {
             </BreadcrumbList>
           </Breadcrumb>
           <Link href='/dashboard/create-project'>
-            <Button>{dashboardProjectTranslation('actions.addNew')}</Button>
+            <Button>{dashboardProjectTranslation('actions.addNewProject')}</Button>
           </Link>
         </div>
       </header>
@@ -324,12 +330,28 @@ export default function ProjectsPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    <Link href='/dashboard/create-project'>
+                    <Link
+                      href={
+                        errorMsg === 'no projects'
+                          ? '/dashboard/create-project'
+                          : '/dashboard/create-client'
+                      }
+                    >
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
-                          {dashboardProjectTranslation('empty.message')}
+                          {dashboardProjectTranslation(
+                            errorMsg === 'no projects'
+                              ? 'empty.message.noProjects'
+                              : 'empty.message.noClients'
+                          )}
                         </p>
-                        <Button>{dashboardProjectTranslation('actions.addNew')}</Button>
+                        <Button>
+                          {dashboardProjectTranslation(
+                            errorMsg === 'no projects'
+                              ? 'actions.addNewProject'
+                              : 'actions.addNewClient'
+                          )}
+                        </Button>
                       </EmptyState>
                     </Link>
                   </TableCell>

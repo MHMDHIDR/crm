@@ -26,7 +26,7 @@ export const userSchema = z.object({
     })
     .default('Employee'),
 
-  // supervisorId: z.string(),
+  supervisorId: z.string(),
 
   image: z.string().url('Please enter a valid URL for the image')
 })

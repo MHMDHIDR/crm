@@ -150,26 +150,24 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
         )
       }
     },
-    // {
-    //   accessorKey: 'supervisor',
-    //   header: ({ column }) => (
-    //     <Button
-    //       variant='ghost'
-    //       onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-    //     >
-    //       {dashboardDataTableTranslations('headers.supervisor')}
-    //       <ArrowUpDown className='w-4 h-4 ml-2' />
-    //     </Button>
-    //   ),
-    //   cell: ({ row }) => {
-    //     const supervisor = (row.original as unknown as User).supervisor
-    //     return (
-    //       <span className='rounded-full px-2.5 py-0.5 border select-none'>
-    //         {JSON.stringify(supervisor)}
-    //       </span>
-    //     )
-    //   }
-    // },
+    {
+      accessorKey: 'supervisor',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          {dashboardDataTableTranslations('headers.supervisor')}
+          <ArrowUpDown className='w-4 h-4 ml-2' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const supervisor = (row.original as unknown as User).supervisor
+        return (
+          <span className='rounded-full px-2.5 py-0.5 border select-none'>{supervisor.name}</span>
+        )
+      }
+    },
     {
       accessorKey: 'emailVerified',
       header: ({ column }) => (

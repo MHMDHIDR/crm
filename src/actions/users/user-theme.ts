@@ -21,9 +21,9 @@ export async function getUserTheme(): Promise<UserPreferences['theme']> {
       return 'light'
     }
 
-    const preferences = await database.query.userPreferences.findFirst({
+    const preferences = (await database.query.userPreferences.findFirst({
       where: eq(userPreferences.userId, user.id)
-    })
+    })) as UserPreferences
 
     return preferences?.theme || 'light'
   } catch (error) {

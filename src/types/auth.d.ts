@@ -18,6 +18,7 @@ declare module 'next-auth' {
       name: string | null
       email: string
       role: UserRole
+      supervisorId: User['supervisorId']
       image?: string | null
       isTwoFactorEnabled: boolean
       theme?: 'light' | 'dark' | 'system'

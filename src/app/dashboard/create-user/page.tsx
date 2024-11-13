@@ -42,19 +42,19 @@ export default function CreateUserPage() {
   const toast = useToast()
   const dashboardUserTranslation = useTranslations('dashboard.createUser')
 
-  // const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
+  const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
 
-  // useEffect(() => {
-  //   async function getSupervisors() {
-  //     try {
-  //       const supervisors: SupervisorType[] = await fetchSupervisors()
-  //       setSupervisors(supervisors)
-  //     } catch (error) {
-  //       toast.error('We can NOT get Supervisors at the moment, please try again!')
-  //     }
-  //   }
-  //   getSupervisors()
-  // }, [])
+  useEffect(() => {
+    async function getSupervisors() {
+      try {
+        const supervisors: SupervisorType[] = await fetchSupervisors()
+        setSupervisors(supervisors)
+      } catch (error) {
+        toast.error('We can NOT get Supervisors at the moment, please try again!')
+      }
+    }
+    getSupervisors()
+  }, [])
 
   const form = useForm<UserSession & { password: string }>({
     defaultValues: {
@@ -62,7 +62,7 @@ export default function CreateUserPage() {
       email: '',
       password: '',
       role: 'Employee',
-      // supervisorId: '',
+      supervisorId: '',
       image: env.NEXT_PUBLIC_LOGO_URL
     }
   })
@@ -197,13 +197,13 @@ export default function CreateUserPage() {
                 )}
               />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name='supervisorId'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{dashboardUserTranslation('form.supervisor.label')}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value || ''}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className='rtl:rtl'>
                           <SelectValue placeholder='Select a Supervisor' />
@@ -220,7 +220,7 @@ export default function CreateUserPage() {
                     <FormMessage />
                   </FormItem>
                 )}
-              /> */}
+              />
 
               <Button variant='pressable' className='w-full'>
                 {dashboardUserTranslation('form.submit')}

@@ -1,6 +1,7 @@
 'use server'
 
 import { and, eq, sql } from 'drizzle-orm'
+import { getClientsByEmployeeId } from '@/actions/clients/get-clients'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { clients, projects, users } from '@/db/schema'
@@ -28,8 +29,15 @@ export async function getProjects(projectId?: Project['id']): Promise<{
 
     const role = session.user.role
 
+    const { count: clientCount } = await getClientsByEmployeeId(session.user.id)
+
+    if ((!clientCount || !clientCount) && role !== 'Admin') {
+      return { success: false, error: 'no clients' }
+    }
+
     let projectsWithRelations: ProjectWithRelations[] = []
 
+    // if role is Admin, fetch all projects, else fetch only the projects assigned to the employee
     if (role === 'Admin') {
       projectId
         ? (projectsWithRelations = await database.query.projects.findMany({
@@ -60,9 +68,13 @@ export async function getProjects(projectId?: Project['id']): Promise<{
       clientName: project.client?.name ?? 'No Client'
     }))
 
+    if (!extendedProjects.length) {
+      return { success: false, error: 'no projects' }
+    }
+
     return { success: true, data: extendedProjects }
   } catch (error) {
-    return { success: false, error: 'Failed to fetch projects' }
+    return { success: false, error: 'no projects' }
   }
 }
 
