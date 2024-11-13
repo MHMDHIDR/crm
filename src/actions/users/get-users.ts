@@ -1,9 +1,9 @@
 'use server'
 
-import { eq } from 'drizzle-orm'
+import { eq, or } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { database } from '@/db'
-import { users } from '@/db/schema'
+import { UserRole, users } from '@/db/schema'
 import type { User } from '@/db/schema'
 
 /**
@@ -61,4 +61,13 @@ export async function getUserById(
   } catch (error) {
     return { success: false, error: 'Failed to fetch users' }
   }
+}
+
+export type SupervisorType = Pick<User, 'id' | 'name' | 'email'>
+
+export async function fetchSupervisors(): Promise<SupervisorType[]> {
+  return await database
+    .select({ id: users.id, name: users.name, email: users.email })
+    .from(users)
+    .where(or(eq(users.role, UserRole.SUPERVISOR), eq(users.role, UserRole.ADMIN)))
 }

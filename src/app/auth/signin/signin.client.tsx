@@ -138,13 +138,6 @@ export default function SignInClientPage() {
                     </FormItem>
                   )}
                 />
-
-                <Link
-                  href='/auth/reset-password'
-                  className='inline-flex hover:underline underline-offset-4'
-                >
-                  Forgot password?
-                </Link>
               </>
             ) : (
               <FormField
@@ -191,6 +184,15 @@ export default function SignInClientPage() {
                 'Sign In'
               )}
             </Button>
+
+            {!showTwoFactor && (
+              <Link
+                href='/auth/reset-password'
+                className='inline-flex hover:underline underline-offset-4'
+              >
+                Forgot password?
+              </Link>
+            )}
           </form>
         </Form>
       </div>

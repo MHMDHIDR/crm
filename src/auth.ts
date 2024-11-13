@@ -97,9 +97,6 @@ export const {
 
       return token
     }
-    // ,async authorized({ auth }) {
-    //   return !!auth
-    // }
   },
   providers: [
     CredentialsProvider({
@@ -173,11 +170,5 @@ export const {
           .where(eq(sessions.sessionToken, message.token.sessionId as string))
       }
     }
-    // ,async linkAccount({ user }) {
-    //   await database
-    //     .update(users)
-    //     .set({ emailVerified: new Date() })
-    //     .where(eq(users.id, user.id as string))
-    // }
   }
 })

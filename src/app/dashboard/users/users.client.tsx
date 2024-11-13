@@ -88,7 +88,6 @@ export default function UsersClientPage() {
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
-    // setUserToDelete(null) // Ensure we're not targeting a specific user this means we're deleting multiple users
   }
 
   const handleDeleteSingleUser = (userId: string) => {

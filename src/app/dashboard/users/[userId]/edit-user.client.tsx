@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
+import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'
 import { updateUser } from '@/actions/users/update-user'
 import {
   Breadcrumb,
@@ -43,6 +44,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
 
   // State to hold the user data
   const [userData, setUserData] = useState(user)
+  const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
 
   const form = useForm({
     defaultValues: {
@@ -51,11 +53,24 @@ export default function EditUserPageClient({ user }: { user: User }) {
       email: userData.email || '',
       password: '',
       role: userData.role || 'Employee',
+      // supervisorId: userData.supervisorId || '',
       isTwoFactorEnabled: userData.isTwoFactorEnabled || false
     }
   })
 
-  // Update form values if userData changes
+  // useEffect(() => {
+  //   async function getSupervisors() {
+  //     try {
+  //       const supervisors: SupervisorType[] = await fetchSupervisors()
+
+  //       setSupervisors(supervisors)
+  //     } catch (error) {
+  //       toast.error('An unexpected error, Can NOT get Supervisors Please try again!')
+  //     }
+  //   }
+  //   getSupervisors()
+  // }, [])
+
   useEffect(() => {
     form.reset({
       name: userData.name,
@@ -63,6 +78,7 @@ export default function EditUserPageClient({ user }: { user: User }) {
       password: '',
       role: userData.role ?? 'Employee',
       isTwoFactorEnabled: userData.isTwoFactorEnabled ?? false
+      // supervisorId: userData.supervisorId
     })
   }, [userData, form])
 
@@ -171,6 +187,35 @@ export default function EditUserPageClient({ user }: { user: User }) {
                     </FormItem>
                   )}
                 />
+
+                {/* <FormField
+                  control={form.control}
+                  name='supervisorId'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Supervisor</FormLabel>
+                      <Select
+                        disabled={isPending}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className='rtl:rtl'>
+                            <SelectValue placeholder='Select a Supervisor' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className='rtl:rtl'>
+                          {supervisors.map(supervisor => (
+                            <SelectItem key={supervisor.id} value={supervisor.id}>
+                              {supervisor.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
 
                 <FormField
                   control={form.control}

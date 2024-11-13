@@ -17,6 +17,7 @@ type ExtendedSettingsInput = {
   email?: string | null
   password?: string | null
   role?: string | null
+  supervisorId?: string | null
   isTwoFactorEnabled?: boolean | null
 }
 
@@ -54,6 +55,9 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
     ...(allowedRoles.includes(values.role as UserRole)
       ? { role: values.role as UserRole }
       : undefined)
+    // ,...(values.supervisorId !== dbUser.supervisorId
+    //   ? { supervisorId: values.supervisorId }
+    //   : undefined)
   }
 
   // Filter out null or undefined values

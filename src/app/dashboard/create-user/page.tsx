@@ -1,8 +1,10 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { createUser } from '@/actions/users/create-user'
+import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -34,10 +36,25 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { UserRole, UserSession } from '@/db/schema'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
+import type { User } from '@/db/schema'
 
 export default function CreateUserPage() {
   const toast = useToast()
   const dashboardUserTranslation = useTranslations('dashboard.createUser')
+
+  // const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
+
+  // useEffect(() => {
+  //   async function getSupervisors() {
+  //     try {
+  //       const supervisors: SupervisorType[] = await fetchSupervisors()
+  //       setSupervisors(supervisors)
+  //     } catch (error) {
+  //       toast.error('We can NOT get Supervisors at the moment, please try again!')
+  //     }
+  //   }
+  //   getSupervisors()
+  // }, [])
 
   const form = useForm<UserSession & { password: string }>({
     defaultValues: {
@@ -45,6 +62,7 @@ export default function CreateUserPage() {
       email: '',
       password: '',
       role: 'Employee',
+      // supervisorId: '',
       image: env.NEXT_PUBLIC_LOGO_URL
     }
   })
@@ -178,6 +196,31 @@ export default function CreateUserPage() {
                   </FormItem>
                 )}
               />
+
+              {/* <FormField
+                control={form.control}
+                name='supervisorId'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{dashboardUserTranslation('form.supervisor.label')}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value || ''}>
+                      <FormControl>
+                        <SelectTrigger className='rtl:rtl'>
+                          <SelectValue placeholder='Select a Supervisor' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className='rtl:rtl'>
+                        {supervisors.map(supervisor => (
+                          <SelectItem key={supervisor.id} value={supervisor.id}>
+                            {supervisor.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
 
               <Button variant='pressable' className='w-full'>
                 {dashboardUserTranslation('form.submit')}

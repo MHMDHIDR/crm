@@ -359,6 +359,10 @@
             "employee": "موظف"
           }
         },
+        "supervisor": {
+          "label": "Supervisor",
+          "placeholder": "Select a Supervisor"
+        },
         "submit": "إنشاء مستخدم"
       }
     },
@@ -376,6 +380,7 @@
           "suspendedStatus": "حالة التعليق",
           "status": "الحالة",
           "clientName": "اسم العميل",
+          "supervisor": "اسم المشرف",
           "assignedEmployee": "الموظف المعين",
           "description": "الوصف",
           "startDate": "تاريخ البدء",

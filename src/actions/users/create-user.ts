@@ -40,6 +40,7 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         role: validatedData.role,
         image: validatedData.image,
         hashedPassword
+        // ,supervisorId: validatedData.supervisorId
       })
       .returning()
     const addedEvent = await addEvent(`User ${newUser.name} created`)

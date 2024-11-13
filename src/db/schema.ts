@@ -1,5 +1,5 @@
-import { relations } from 'drizzle-orm'
-import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
+import { ColumnBaseConfig, ColumnDataType, eq, relations } from 'drizzle-orm'
+import { boolean, PgColumn, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
 export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
@@ -59,7 +59,7 @@ export type Event = typeof events.$inferSelect
 export const users = pgTable('users', {
   id: text('id')
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn((): string => crypto.randomUUID()),
   name: text('name').notNull(),
   email: text('email').notNull(),
   hashedPassword: text('hashed_password'),
