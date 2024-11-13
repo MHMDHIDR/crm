@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { createUser } from '@/actions/users/create-user'
 import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'
@@ -44,17 +44,18 @@ export default function CreateUserPage() {
 
   const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
 
-  useEffect(() => {
-    async function getSupervisors() {
-      try {
-        const supervisors: SupervisorType[] = await fetchSupervisors()
-        setSupervisors(supervisors)
-      } catch (error) {
-        toast.error('We can NOT get Supervisors at the moment, please try again!')
-      }
+  const getSupervisors = useCallback(async () => {
+    try {
+      const supervisors: SupervisorType[] = await fetchSupervisors()
+      setSupervisors(supervisors)
+    } catch (error) {
+      toast.error('We can NOT get Supervisors at the moment, please try again!')
     }
+  }, [toast])
+
+  useEffect(() => {
     getSupervisors()
-  }, [])
+  }, [getSupervisors])
 
   const form = useForm<UserSession & { password: string }>({
     defaultValues: {

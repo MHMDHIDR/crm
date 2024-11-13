@@ -1,4 +1,4 @@
-import { FileUser, ShoppingBagIcon, UserCheck, Users } from 'lucide-react'
+import { FileUser, LucideIcon, ShoppingBagIcon, UserCheck, Users } from 'lucide-react'
 import { getClientsByEmployeeId } from '@/actions/clients/get-clients'
 import { getProjectsByEmployeeId } from '@/actions/projects/get-project'
 import {
@@ -35,9 +35,7 @@ type DashboardDataProps =
 
 export default async function DashboardPage() {
   const session = await auth()
-
   if (!session?.user.id) return null
-
   const user = session.user
 
   let dashboardData: DashboardDataProps = {}
@@ -72,87 +70,78 @@ export default async function DashboardPage() {
           {user.role === 'Employee' ? (
             // Employee Cards
             <>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Clients</CardTitle>
-                  <FileUser className='w-10 h-10 stroke-1' />
-                </CardHeader>
-                <CardContent>
-                  <h4 className='text-2xl font-bold'>{(dashboardData as any).ClientsCount}</h4>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Projects</CardTitle>
-                  <ShoppingBagIcon className='w-10 h-10 stroke-1' />
-                </CardHeader>
-                <CardContent>
-                  <h4 className='text-2xl font-bold'>{(dashboardData as any).ProjectsCount}</h4>
-                </CardContent>
-              </Card>
+              <MetricCard
+                title='Clients'
+                value={(dashboardData as any).ClientsCount}
+                icon={FileUser}
+              />
+              <MetricCard
+                title='Projects'
+                value={(dashboardData as any).ProjectsCount}
+                icon={ShoppingBagIcon}
+              />
             </>
           ) : user.role === 'Supervisor' ? (
             // Supervisor Cards
             <>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Active Employees</CardTitle>
-                  <UserCheck className='w-10 h-10 stroke-1' />
-                </CardHeader>
-                <CardContent>
-                  <h4 className='text-2xl font-bold'>
-                    {(dashboardData as any).activeEmployees?.length || 0}
-                  </h4>
-                  <div className='mt-4 space-y-2'>
-                    {(dashboardData as any).activeEmployees?.map((employee: any) => (
-                      <div key={employee.id} className='text-sm'>
-                        {employee.name} - {new Date(employee.signedInAt).toLocaleTimeString()}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Total Employees</CardTitle>
-                  <Users className='w-10 h-10 stroke-1' />
-                </CardHeader>
-                <CardContent>
-                  <h4 className='text-2xl font-bold'>
-                    {(dashboardData as any).stats?.totalEmployees || 0}
-                  </h4>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Employee Projects</CardTitle>
-                  <ShoppingBagIcon className='w-10 h-10 stroke-1' />
-                </CardHeader>
-                <CardContent>
-                  <h4 className='text-2xl font-bold'>
-                    {(dashboardData as any).stats?.totalProjects || 0}
-                  </h4>
-                  <p className='text-sm text-muted-foreground mt-2'>
-                    Tasks: {(dashboardData as any).stats?.totalTasks || 0}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                  <CardTitle className='text-sm font-medium'>Employee Clients</CardTitle>
-                  <FileUser className='w-10 h-10 stroke-1' />
-                </CardHeader>
-                <CardContent>
-                  <h4 className='text-2xl font-bold'>
-                    {(dashboardData as any).stats?.totalClients || 0}
-                  </h4>
-                </CardContent>
-              </Card>
+              <MetricCard
+                title='Active Employees'
+                value={(dashboardData as any).activeEmployees?.length || 0}
+                icon={UserCheck}
+              >
+                <div className='mt-4 space-y-2'>
+                  {(dashboardData as any).activeEmployees?.map((employee: any) => (
+                    <div key={employee.id} className='text-sm'>
+                      {employee.name} - {new Date(employee.signedInAt).toLocaleTimeString()}
+                    </div>
+                  ))}
+                </div>
+              </MetricCard>
+              <MetricCard
+                title='Total Employees'
+                value={(dashboardData as any).stats?.totalEmployees || 0}
+                icon={Users}
+              />
+              <MetricCard
+                title='Employees Projects'
+                value={(dashboardData as any).stats?.totalProjects || 0}
+                icon={ShoppingBagIcon}
+                subValue={`Tasks: ${(dashboardData as any).stats?.totalTasks || 0}`}
+              />
+              <MetricCard
+                title='Total Employee Clients'
+                value={(dashboardData as any).stats?.totalClients || 0}
+                icon={FileUser}
+              />
             </>
           ) : null}
         </div>
         <div className='min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min' />
       </div>
     </SidebarInset>
+  )
+}
+
+type MetricCardProps = {
+  title: string
+  value: number
+  icon: LucideIcon
+  subValue?: string | React.ReactNode
+  children?: React.ReactNode
+}
+
+const MetricCard = ({ title, value, icon: Icon, subValue, children }: MetricCardProps) => {
+  return (
+    <Card>
+      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+        <CardTitle className='text-sm font-medium'>{title}</CardTitle>
+        <Icon className='w-10 h-10 stroke-1' />
+      </CardHeader>
+      <CardContent>
+        <h4 className='text-2xl font-bold'>{value}</h4>
+        {subValue && <p className='text-sm text-muted-foreground mt-2'>{subValue}</p>}
+        {children}
+      </CardContent>
+    </Card>
   )
 }

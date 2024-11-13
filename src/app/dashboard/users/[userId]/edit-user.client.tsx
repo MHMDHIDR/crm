@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'
 import { updateUser } from '@/actions/users/update-user'
@@ -58,18 +58,18 @@ export default function EditUserPageClient({ user }: { user: User }) {
     }
   })
 
-  useEffect(() => {
-    async function getSupervisors() {
-      try {
-        const supervisors: SupervisorType[] = await fetchSupervisors()
-
-        setSupervisors(supervisors)
-      } catch (error) {
-        toast.error('An unexpected error, Can NOT get Supervisors Please try again!')
-      }
+  const getSupervisors = useCallback(async () => {
+    try {
+      const supervisors: SupervisorType[] = await fetchSupervisors()
+      setSupervisors(supervisors)
+    } catch (error) {
+      toast.error('We can NOT get Supervisors at the moment, please try again!')
     }
+  }, [toast])
+
+  useEffect(() => {
     getSupervisors()
-  }, [])
+  }, [getSupervisors])
 
   useEffect(() => {
     form.reset({
