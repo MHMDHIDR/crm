@@ -1,13 +1,13 @@
 'use client'
 
 import { ChevronRight } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuLink,
   SidebarMenuSub,
@@ -31,9 +31,13 @@ export function NavMain({
     }[]
   }[]
 }) {
+  const navMenuTranslations = useTranslations('DashboardSidebar.labels')
+
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel className='select-none'>
+        {navMenuTranslations('mainMenu')}
+      </SidebarGroupLabel>
       <SidebarMenu>
         {items.map(item => (
           <Collapsible

@@ -58,8 +58,8 @@ export function NavUser({ user }: { user: UserSession }) {
             align='end'
             sideOffset={4}
           >
-            <DropdownMenuGroup className='flex items-center p-1 text-sm text-left gap-2'>
-              <DropdownMenuLink href={`/dashboard/users/${user.id}`}>
+            <DropdownMenuGroup className='flex items-center p-0.5 text-sm text-left gap-2'>
+              <DropdownMenuLink href={`/dashboard/users/${user.id}`} className='min-w-full'>
                 <Avatar className='w-8 h-8 rounded-lg'>
                   <AvatarImage src={user.image} alt={user.name} />
                   <AvatarFallback className='rounded-lg'>

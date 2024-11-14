@@ -56,8 +56,8 @@ export function DashboardSidebar({
     ],
     pinned: [
       {
-        name: 'Design Engineering',
-        url: '#',
+        name: dashboardSidebarTranslations('labels.pinned.dashboard'),
+        url: '/dashboard',
         icon: Frame
       }
     ],

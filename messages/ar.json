@@ -78,6 +78,13 @@
     }
   },
   "DashboardSidebar": {
+    "labels": {
+      "pinned": {
+        "title": "الروابط المثبتة",
+        "dashboard": "لوحة التحكم"
+      },
+      "mainMenu": "القائمة الرئيسية"
+    },
     "users": {
       "title": "المستخدمون",
       "allUsers": "جميع المستخدمين",
