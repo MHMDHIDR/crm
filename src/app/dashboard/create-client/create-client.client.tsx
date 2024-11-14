@@ -168,8 +168,8 @@ export default function CreateClientClientPage() {
                         <SelectItem value={clientStatus.ACTIVE}>
                           {createUserTranslations('form.status.options.active')}
                         </SelectItem>
-                        <SelectItem value={clientStatus.DEACTIVE}>
-                          {createUserTranslations('form.status.options.deactive')}
+                        <SelectItem value={clientStatus.DEACTIVATED}>
+                          {createUserTranslations('form.status.options.deactivated')}
                         </SelectItem>
                       </SelectContent>
                     </Select>

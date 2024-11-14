@@ -5,12 +5,12 @@ import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { Project, projects } from '@/db/schema'
 
-type ProjectStatus = 'active' | 'deactive'
+type ProjectStatus = 'active' | 'deactivated'
 
 /**
  * Toggle status of one or multiple projects in the database
  * @param projectIds - Array of project IDs to toggle
- * @param status - Status to set ('active' or 'deactive')
+ * @param status - Status to set ('active' or 'deactivated')
  * @returns Promise<{ success: boolean; message?: string }> with success status and optional message
  */
 export async function toggleProjectStatus(

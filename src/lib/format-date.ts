@@ -1,3 +1,5 @@
+import { Locale } from '@/i18n/config'
+
 /**
  * A function to format the date and time with appropriate granularity.
  * This function takes a date string and returns a more intuitive, human-readable format.
@@ -5,15 +7,19 @@
  * @param date the date string to be formatted
  * @returns the formatted date
  */
-export function formatDate(date: string, isNormalDate: boolean = true): string {
+export function formatDate(
+  date: string,
+  locale: Locale = 'en',
+  isNormalDate: boolean = true
+): string {
   if (isNormalDate) {
     const dateOptions = {
       year: 'numeric' as const,
-      month: 'long' as const,
+      month: 'short' as const,
       day: 'numeric' as const
     }
 
-    return new Date(date).toLocaleDateString('en-US', dateOptions)
+    return new Date(date).toLocaleDateString(locale === 'en' ? 'en-US' : 'ar-EG', dateOptions)
   }
 
   const now = new Date().getTime()

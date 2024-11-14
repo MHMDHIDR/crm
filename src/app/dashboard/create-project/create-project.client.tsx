@@ -287,8 +287,8 @@ export default function CreateProjectClientPage() {
                         <SelectItem value={clientStatus.ACTIVE}>
                           {dashboardClientTranslation('form.status.options.active')}
                         </SelectItem>
-                        <SelectItem value={clientStatus.DEACTIVE}>
-                          {dashboardClientTranslation('form.status.options.deactive')}
+                        <SelectItem value={clientStatus.DEACTIVATED}>
+                          {dashboardClientTranslation('form.status.options.deactivated')}
                         </SelectItem>
                       </SelectContent>
                     </Select>

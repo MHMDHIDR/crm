@@ -169,7 +169,7 @@ export function ProjectEdit({ project, onSubmit, onSuccess }: ProjectEditProps) 
                 </FormControl>
                 <SelectContent>
                   <SelectItem value={projectStatus.ACTIVE}>Active</SelectItem>
-                  <SelectItem value={projectStatus.DEACTIVE}>Deactive</SelectItem>
+                  <SelectItem value={projectStatus.DEACTIVATED}>Deactive</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

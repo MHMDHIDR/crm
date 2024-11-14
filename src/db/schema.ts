@@ -1,17 +1,17 @@
-import { ColumnBaseConfig, ColumnDataType, eq, relations } from 'drizzle-orm'
-import { boolean, PgColumn, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
 export const userRoleEnum = pgEnum('role', [UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.EMPLOYEE])
-export const clientStatus = { ACTIVE: 'active', DEACTIVE: 'deactive' } as const
+export const clientStatus = { ACTIVE: 'active', DEACTIVATED: 'deactivated' } as const
 export const clientStatusEnum = pgEnum('client_status', [
   clientStatus.ACTIVE,
-  clientStatus.DEACTIVE
+  clientStatus.DEACTIVATED
 ])
-export const projectStatus = { ACTIVE: 'active', DEACTIVE: 'deactive' } as const
+export const projectStatus = { ACTIVE: 'active', DEACTIVATED: 'deactivated' } as const
 export const projectStatusEnum = pgEnum('project_status', [
   projectStatus.ACTIVE,
-  projectStatus.DEACTIVE
+  projectStatus.DEACTIVATED
 ])
 
 export const TaskStatus = {
@@ -170,6 +170,7 @@ export const clients = pgTable('clients', {
   email: text('email').notNull(),
   phone: text('phone').notNull(),
   status: clientStatusEnum('status').notNull().default('active'),
+  updatedAt: timestamp('updated_at', { mode: 'date' }),
   assignedEmployeeId: text('assigned_employee_id')
     .notNull()
     .references(() => users.id, { onDelete: 'set null' })

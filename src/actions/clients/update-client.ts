@@ -13,7 +13,7 @@ type ExtendedClientInput = {
   name?: string | null
   email?: string | null
   phone?: string | null
-  status?: 'active' | 'deactive' | null
+  status?: 'active' | 'deactivated' | null
   assignedEmployeeId?: string | null
 }
 

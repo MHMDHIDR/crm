@@ -40,7 +40,7 @@ type FormValues = {
   name: string
   email: string
   phone: string
-  status: 'active' | 'deactive'
+  status: 'active' | 'deactivated'
 }
 
 export default function EditClientPageClient({ client }: { client: Client }) {
@@ -187,7 +187,7 @@ export default function EditClientPageClient({ client }: { client: Client }) {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value='active'>Active</SelectItem>
-                        <SelectItem value='deactive'>Deactive</SelectItem>
+                        <SelectItem value='deactivated'>Deactive</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

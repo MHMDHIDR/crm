@@ -11,16 +11,18 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
+import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteClients } from '@/actions/clients/delete-client'
 import { getClients } from '@/actions/clients/get-clients'
+import { toggleClientStatus } from '@/actions/clients/toggle-client-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
-import { TableToolbar } from '@/components/custom/table-toolbar'
+import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -56,7 +58,7 @@ export default function ClientsPageClient() {
   /** Handling Dialogs states (Pefect for Reusable Modals): */
   const [dialogProps, setDialogProps] = useState({
     open: false,
-    action: null as 'delete' | null,
+    action: null as 'delete' | 'activate' | 'deactivate' | null,
     title: '',
     description: '',
     buttonText: '',
@@ -101,10 +103,64 @@ export default function ClientsPageClient() {
     })
   }
 
+  const handleActivateSelected = () => {
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'activate',
+      title: dashboardClientsTranslation('dialog.activate.title'),
+      description: dashboardClientsTranslation('dialog.activate.description'),
+      buttonText: dashboardClientsTranslation('dialog.activate.button'),
+      buttonClass: 'bg-green-600',
+      selectedIds: ids
+    })
+  }
+
+  const handleDeactivateSelected = () => {
+    const ids = selectedRows.map(row => row.original.id)
+    setDialogProps({
+      open: true,
+      action: 'deactivate',
+      title: dashboardClientsTranslation('dialog.deactivate.title'),
+      description: dashboardClientsTranslation('dialog.deactivate.description'),
+      buttonText: dashboardClientsTranslation('dialog.deactivate.button'),
+      buttonClass: 'bg-yellow-600',
+      selectedIds: ids
+    })
+  }
+
+  const handleActivateSingleClient = (clientId: string) => {
+    setDialogProps({
+      open: true,
+      action: 'activate',
+      title: dashboardClientsTranslation('dialog.activate.singleTitle'),
+      description: dashboardClientsTranslation('dialog.activate.singleDescription'),
+      buttonText: dashboardClientsTranslation('dialog.activate.button'),
+      buttonClass: 'bg-green-600',
+      selectedIds: [clientId]
+    })
+  }
+
+  const handleDeactivateSingleClient = (clientId: string) => {
+    setDialogProps({
+      open: true,
+      action: 'deactivate',
+      title: dashboardClientsTranslation('dialog.deactivate.singleTitle'),
+      description: dashboardClientsTranslation('dialog.deactivate.singleDescription'),
+      buttonText: dashboardClientsTranslation('dialog.deactivate.button'),
+      buttonClass: 'bg-yellow-600',
+      selectedIds: [clientId]
+    })
+  }
+
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    const actions = { delete: deleteClients }
+    const actions = {
+      delete: deleteClients,
+      activate: (clientIds: string[]) => toggleClientStatus(clientIds, 'active'),
+      deactivate: (clientIds: string[]) => toggleClientStatus(clientIds, 'deactivated')
+    }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
 
@@ -117,10 +173,51 @@ export default function ClientsPageClient() {
     }
   }
 
+  const getBulkActions = () => {
+    const actions: BulkAction[] = [
+      {
+        label: dashboardClientsTranslation('bulkActions.deleteSelected'),
+        onClick: handleDeleteSelected,
+        variant: 'destructive'
+      }
+    ]
+
+    // Only proceed if there are selected rows
+    if (selectedRows.length > 0) {
+      // Check if any selected row has 'deactivated' status
+      const hasDeactiveProjects = selectedRows.some(row => row.original.status === 'deactivated')
+
+      // Check if any selected row has 'active' status
+      const hasActiveProjects = selectedRows.some(row => row.original.status === 'active')
+
+      // Add Activate button if there are any deactivated projects
+      if (hasDeactiveProjects) {
+        actions.push({
+          label: dashboardClientsTranslation('bulkActions.activateSelected'),
+          onClick: handleActivateSelected,
+          variant: 'success'
+        })
+      }
+
+      // Add Deactivate button if there are any active projects
+      if (hasActiveProjects) {
+        actions.push({
+          label: dashboardClientsTranslation('bulkActions.deactivateSelected'),
+          onClick: handleDeactivateSelected,
+          variant: 'warning'
+        })
+      }
+    }
+
+    return actions
+  }
+
   const columns = useSharedColumns<Client>({
     entityType: 'clients',
     actions: {
       onDelete: handleDeleteSingleClient,
+      onActivate: handleActivateSingleClient,
+      onDeactivate: handleDeactivateSingleClient,
       basePath: '/clients'
     }
   })
@@ -179,13 +276,7 @@ export default function ClientsPageClient() {
           setFiltering={setFiltering}
           selectedRows={selectedRows}
           searchPlaceholder={dashboardClientsTranslation('actions.search')}
-          bulkActions={[
-            {
-              label: dashboardClientsTranslation('bulkActions.deleteSelected'),
-              onClick: handleDeleteSelected,
-              variant: 'destructive'
-            }
-          ]}
+          bulkActions={getBulkActions()}
         />
 
         <div className='border rounded-md'>
@@ -211,7 +302,10 @@ export default function ClientsPageClient() {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
-                    className='rounded-full px-2.5 py-0.5 border select-none'
+                    className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+                      'text-orange-700 hover:text-orange-50 bg-orange-200 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
+                        row.getValue('status') === 'deactivated'
+                    })}
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className='text-center'>

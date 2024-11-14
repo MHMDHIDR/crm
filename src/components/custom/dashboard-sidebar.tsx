@@ -4,6 +4,7 @@ import {
   FileUser,
   Frame,
   Group,
+  MousePointerClick,
   PackagePlusIcon,
   Paintbrush2,
   PersonStanding,
@@ -44,7 +45,6 @@ export function DashboardSidebar({
 
   const sidebarItems = {
     projects: [
-      // If the user role === "Employee", Then show them their projects if they have any
       ...(user.role === 'Employee' && projects && projects.length > 0
         ? projects.map(project => ({
             id: project.id,
@@ -62,7 +62,6 @@ export function DashboardSidebar({
       }
     ],
     navMain: [
-      // Only include the "Users" section if the user role === "Admin"
       ...(user.role === 'Admin'
         ? [
             {
@@ -134,7 +133,16 @@ export function DashboardSidebar({
             icon: Paintbrush2
           }
         ]
-      }
+      },
+      ...(user.role === 'Admin'
+        ? [
+            {
+              title: dashboardSidebarTranslations('events.title'),
+              url: '/dashboard/events',
+              icon: MousePointerClick
+            }
+          ]
+        : [])
     ]
   }
 

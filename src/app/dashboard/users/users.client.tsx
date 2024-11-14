@@ -91,7 +91,6 @@ export default function UsersClientPage() {
   }
 
   const handleDeleteSingleUser = (userId: string) => {
-    // setUserToDelete(userId)
     setDialogProps({
       open: true,
       action: 'delete',
@@ -304,7 +303,7 @@ export default function UsersClientPage() {
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
                     className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-                      'text-orange-700 bg-orange-200 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
+                      'text-orange-700 bg-orange-200 hover:text-orange-800 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
                         row.getValue('suspendedAt') !== null
                     })}
                   >

@@ -14,14 +14,13 @@ import {
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { deleteProjects } from '@/actions/projects/delete-project'
-import { getProjects } from '@/actions/projects/get-project'
-import { toggleProjectStatus } from '@/actions/projects/toggle-project-status'
+import { deleteClients } from '@/actions/clients/delete-client'
+import { getClients } from '@/actions/clients/get-clients'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
-import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
+import { TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -41,25 +40,23 @@ import {
 } from '@/components/ui/table'
 import { useSharedColumns } from '@/hooks/use-shared-columns'
 import { useToast } from '@/hooks/use-toast'
-import { clsx } from '@/lib/cn'
-import type { ExtendedProject } from '@/db/schema'
+import type { Client } from '@/db/schema'
 
-export default function ProjectsClientPage() {
-  const [projects, setProjects] = useState<ExtendedProject[]>([])
+export default function EventsPageClient() {
+  const [clients, setClients] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
-  const [errorMsg, setErrorMsg] = useState<string | undefined>('')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [filtering, setFiltering] = useState('') // This will add global filtering state, which will help us filter the table data
 
-  const dashboardProjectTranslation = useTranslations('dashboard.projects')
+  const dashboardClientsTranslation = useTranslations('dashboard.clients')
 
   /** Handling Dialogs states (Pefect for Reusable Modals): */
   const [dialogProps, setDialogProps] = useState({
     open: false,
-    action: null as 'delete' | 'activate' | 'deactivate' | null,
+    action: null as 'delete' | null,
     title: '',
     description: '',
     buttonText: '',
@@ -69,17 +66,12 @@ export default function ProjectsClientPage() {
 
   const toast = useToast()
 
-  // Fetch projects
-  const fetchProjects = useCallback(async () => {
+  // Fetch clients
+  const fetchClients = useCallback(async () => {
     setLoading(true)
-    const result = await getProjects()
-
-    if (!result.success) {
-      setErrorMsg(result.error)
-    }
-
+    const result = await getClients()
     if (result.success && result.data) {
-      setProjects(result.data)
+      setClients(result.data)
     }
     setLoading(false)
   }, [])
@@ -89,147 +81,52 @@ export default function ProjectsClientPage() {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: dashboardProjectTranslation('dialog.delete.title'),
-      description: dashboardProjectTranslation('dialog.delete.description'),
-      buttonText: dashboardProjectTranslation('dialog.delete.button'),
+      title: dashboardClientsTranslation('dialog.delete.title'),
+      description: dashboardClientsTranslation('dialog.delete.description'),
+      buttonText: dashboardClientsTranslation('dialog.delete.button'),
       buttonClass: 'bg-red-600',
       selectedIds: ids
     })
   }
 
-  const handleDeleteSingleProject = (projectId: string) => {
+  const handleDeleteSingleClient = (clientId: string) => {
     setDialogProps({
       open: true,
       action: 'delete',
-      title: dashboardProjectTranslation('dialog.delete.singleTitle'),
-      description: dashboardProjectTranslation('dialog.delete.singleDescription'),
-      buttonText: dashboardProjectTranslation('dialog.delete.singleTitle'),
+      title: dashboardClientsTranslation('dialog.delete.singleTitle'),
+      description: dashboardClientsTranslation('dialog.delete.singleDescription'),
+      buttonText: dashboardClientsTranslation('dialog.delete.singleButton'),
       buttonClass: 'bg-red-600',
-      selectedIds: [projectId]
-    })
-  }
-
-  const handleActivateSelected = () => {
-    const ids = selectedRows.map(row => row.original.id)
-    setDialogProps({
-      open: true,
-      action: 'activate',
-      title: dashboardProjectTranslation('dialog.activate.title'),
-      description: dashboardProjectTranslation('dialog.activate.description'),
-      buttonText: dashboardProjectTranslation('dialog.activate.button'),
-      buttonClass: 'bg-green-600',
-      selectedIds: ids
-    })
-  }
-
-  const handleDeactivateSelected = () => {
-    const ids = selectedRows.map(row => row.original.id)
-    setDialogProps({
-      open: true,
-      action: 'deactivate',
-      title: dashboardProjectTranslation('dialog.deactivate.title'),
-      description: dashboardProjectTranslation('dialog.deactivate.description'),
-      buttonText: dashboardProjectTranslation('dialog.deactivate.button'),
-      buttonClass: 'bg-yellow-600',
-      selectedIds: ids
-    })
-  }
-
-  const handleActivateSingleProject = (projectId: string) => {
-    setDialogProps({
-      open: true,
-      action: 'activate',
-      title: dashboardProjectTranslation('dialog.activate.singleTitle'),
-      description: dashboardProjectTranslation('dialog.activate.singleDescription'),
-      buttonText: dashboardProjectTranslation('dialog.activate.button'),
-      buttonClass: 'bg-green-600',
-      selectedIds: [projectId]
-    })
-  }
-
-  const handleDeactivateSingleProject = (projectId: string) => {
-    setDialogProps({
-      open: true,
-      action: 'deactivate',
-      title: dashboardProjectTranslation('dialog.deactivate.singleTitle'),
-      description: dashboardProjectTranslation('dialog.deactivate.singleDescription'),
-      buttonText: dashboardProjectTranslation('dialog.deactivate.button'),
-      buttonClass: 'bg-yellow-600',
-      selectedIds: [projectId]
+      selectedIds: [clientId]
     })
   }
 
   const handleAction = async () => {
     if (!dialogProps.action || !dialogProps.selectedIds.length) return
 
-    const actions = {
-      delete: deleteProjects,
-      activate: (projectIds: string[]) => toggleProjectStatus(projectIds, 'active'),
-      deactivate: (projectIds: string[]) => toggleProjectStatus(projectIds, 'deactivated')
-    }
+    const actions = { delete: deleteClients }
 
     const result = await actions[dialogProps.action](dialogProps.selectedIds)
 
     if (result?.success) {
       setDialogProps(prev => ({ ...prev, open: false }))
       toast.success(result.message as string)
-      fetchProjects()
+      fetchClients()
     } else {
       toast.error(result?.message || 'Operation failed')
     }
   }
 
-  const getBulkActions = () => {
-    const actions: BulkAction[] = [
-      {
-        label: dashboardProjectTranslation('bulkActions.deleteSelected'),
-        onClick: handleDeleteSelected,
-        variant: 'destructive'
-      }
-    ]
-
-    // Only proceed if there are selected rows
-    if (selectedRows.length > 0) {
-      // Check if any selected row has 'deactivated' status
-      const hasDeactiveProjects = selectedRows.some(row => row.original.status === 'deactivated')
-
-      // Check if any selected row has 'active' status
-      const hasActiveProjects = selectedRows.some(row => row.original.status === 'active')
-
-      // Add Activate button if there are any deactivated projects
-      if (hasDeactiveProjects) {
-        actions.push({
-          label: dashboardProjectTranslation('bulkActions.activateSelected'),
-          onClick: handleActivateSelected,
-          variant: 'success'
-        })
-      }
-
-      // Add Deactivate button if there are any active projects
-      if (hasActiveProjects) {
-        actions.push({
-          label: dashboardProjectTranslation('bulkActions.deactivateSelected'),
-          onClick: handleDeactivateSelected,
-          variant: 'warning'
-        })
-      }
-    }
-
-    return actions
-  }
-
-  const columns = useSharedColumns<ExtendedProject>({
-    entityType: 'project',
+  const columns = useSharedColumns<Client>({
+    entityType: 'clients',
     actions: {
-      onDelete: handleDeleteSingleProject,
-      onActivate: handleActivateSingleProject,
-      onDeactivate: handleDeactivateSingleProject,
-      basePath: '/projects'
+      onDelete: handleDeleteSingleClient,
+      basePath: '/clients'
     }
   })
 
   const table = useReactTable({
-    data: projects,
+    data: clients,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -252,8 +149,8 @@ export default function ProjectsClientPage() {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   useEffect(() => {
-    fetchProjects()
-  }, [fetchProjects])
+    fetchClients()
+  }, [fetchClients])
 
   return (
     <SidebarInset>
@@ -265,13 +162,13 @@ export default function ProjectsClientPage() {
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
                 <BreadcrumbLink href='/dashboard'>
-                  {dashboardProjectTranslation('breadcrumb.dashboard')}
+                  {dashboardClientsTranslation('breadcrumb.dashboard')}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <Link href='/dashboard/create-project'>
-            <Button>{dashboardProjectTranslation('actions.addNewProject')}</Button>
+          <Link href='/dashboard/create-client'>
+            <Button>{dashboardClientsTranslation('actions.addNew')}</Button>
           </Link>
         </div>
       </header>
@@ -281,8 +178,14 @@ export default function ProjectsClientPage() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          searchPlaceholder={dashboardProjectTranslation('actions.search')}
-          bulkActions={getBulkActions()}
+          searchPlaceholder={dashboardClientsTranslation('actions.search')}
+          bulkActions={[
+            {
+              label: dashboardClientsTranslation('bulkActions.deleteSelected'),
+              onClick: handleDeleteSelected,
+              variant: 'destructive'
+            }
+          ]}
         />
 
         <div className='border rounded-md'>
@@ -308,10 +211,7 @@ export default function ProjectsClientPage() {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
-                    className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-                      'text-orange-700 hover:text-orange-50 bg-orange-200 hover:bg-orange-500 dark:text-orange-200 dark:bg-orange-900 dark:hover:bg-orange-950':
-                        row.getValue('status') === 'deactivated'
-                    })}
+                    className='rounded-full px-2.5 py-0.5 border select-none'
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id} className='text-center'>
@@ -329,28 +229,12 @@ export default function ProjectsClientPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    <Link
-                      href={
-                        errorMsg === 'no projects'
-                          ? '/dashboard/create-project'
-                          : '/dashboard/create-client'
-                      }
-                    >
+                    <Link href='/dashboard/create-client'>
                       <EmptyState>
                         <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
-                          {dashboardProjectTranslation(
-                            errorMsg === 'no projects'
-                              ? 'empty.message.noProjects'
-                              : 'empty.message.noClients'
-                          )}
+                          {dashboardClientsTranslation('empty.message')}
                         </p>
-                        <Button>
-                          {dashboardProjectTranslation(
-                            errorMsg === 'no projects'
-                              ? 'actions.addNewProject'
-                              : 'actions.addNewClient'
-                          )}
-                        </Button>
+                        <Button>{dashboardClientsTranslation('actions.addNew')}</Button>
                       </EmptyState>
                     </Link>
                   </TableCell>

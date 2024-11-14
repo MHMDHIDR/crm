@@ -57,6 +57,7 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
+import { useLocale } from '@/providers/locale-provider'
 import { ProjectSchemaType } from '@/validators/project'
 import { taskSchema } from '@/validators/task'
 import { ProjectEdit } from './project-edit'
@@ -94,6 +95,8 @@ function TaskCard({
   onViewDetails: (task: Task) => void
   className?: string
 }) {
+  const { locale } = useLocale()
+
   return (
     <Card
       className={cn(
@@ -108,7 +111,7 @@ function TaskCard({
           {`${task.description.slice(0, 70)}...`}
         </CardDescription>
         <CardFooter className='absolute inline-block p-0 text-sm text-gray-500 bottom-1'>
-          Due: {formatDate(String(task.dueDate), false)}
+          Due: {formatDate(String(task.dueDate), locale, false)}
         </CardFooter>
       </CardContent>
     </Card>

@@ -12,9 +12,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { ExtendedProject } from '@/db/schema'
+import { ExtendedProject, Project } from '@/db/schema'
 import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
+import { useLocale } from '@/providers/locale-provider'
 
 // Define base entity interface that both User and Client will extend
 type BaseEntity = {
@@ -32,7 +33,7 @@ type User = BaseEntity & {
 }
 
 type Client = BaseEntity & {
-  status: 'active' | 'deactive'
+  status: 'active' | 'deactivated'
 }
 
 // Define the actions that can be performed
@@ -55,6 +56,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
   actions
 }: SharedColumnsProps<T>): ColumnDef<T>[] {
   const dashboardDataTableTranslations = useTranslations('dashboard.dataTable.columns')
+  const { locale } = useLocale()
 
   function getViewEditLabel(entityType: 'users' | 'clients' | 'project'): string {
     return dashboardDataTableTranslations(
@@ -216,7 +218,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
             })}
           >
             {suspendedAt
-              ? formatDate(String(suspendedAt))
+              ? formatDate(String(suspendedAt), locale)
               : dashboardDataTableTranslations('status.active')}
           </span>
         )
@@ -260,11 +262,11 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
               'text-green-600 bg-green-100': status === 'active',
-              'text-red-600 bg-red-100': status === 'deactive'
+              'text-red-600 bg-red-100': status === 'deactivated'
             })}
           >
             {dashboardDataTableTranslations(
-              status === 'active' ? 'status.active' : 'status.deactive'
+              status === 'active' ? 'status.active' : 'status.deactivated'
             )}
           </span>
         )
@@ -291,11 +293,11 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
               'text-green-600 bg-green-100': status === 'active',
-              'text-red-600 bg-red-100': status === 'deactive'
+              'text-red-600 bg-red-100': status === 'deactivated'
             })}
           >
             {dashboardDataTableTranslations(
-              status === 'active' ? 'status.active' : 'status.deactive'
+              status === 'active' ? 'status.active' : 'status.deactivated'
             )}
           </span>
         )
@@ -354,7 +356,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
       ),
       cell: ({ row }) => {
         const startDate = (row.original as ExtendedProject).startDate
-        return <span>{formatDate(String(startDate))}</span>
+        return <span>{formatDate(String(startDate), locale)}</span>
       }
     },
     {
@@ -370,7 +372,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
       ),
       cell: ({ row }) => {
         const endDate = (row.original as ExtendedProject).endDate
-        return <span>{formatDate(String(endDate))}</span>
+        return <span>{formatDate(String(endDate), locale)}</span>
       }
     }
   ]
@@ -419,6 +421,36 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
                   : dashboardDataTableTranslations('actions.suspend.suspend')}
               </DropdownMenuItem>
             )}
+            {(entityType === 'project' || entityType === 'clients') &&
+              actions.onActivate &&
+              actions.onDeactivate && (
+                <DropdownMenuItem
+                  className={clsx({
+                    'text-red-600':
+                      (row.original as Project).status === 'deactivated' ||
+                      (row.original as Client).status === 'deactivated',
+                    'text-green-600':
+                      (row.original as Project).status === 'active' ||
+                      (row.original as Client).status === 'active'
+                  })}
+                  onClick={() =>
+                    ((row.original as unknown as Project) || (row.original as unknown as Client))
+                      .status === 'deactivated'
+                      ? actions.onActivate?.(entity.id)
+                      : actions.onDeactivate?.(entity.id)
+                  }
+                >
+                  <Ban className='mr-0.5 h-4 w-4' />
+                  {((row.original as unknown as Project) || (row.original as unknown as Client))
+                    .status === 'deactivated'
+                    ? entityType === 'project'
+                      ? dashboardDataTableTranslations('actions.status.activate.project')
+                      : dashboardDataTableTranslations('actions.status.activate.client')
+                    : entityType === 'project'
+                      ? dashboardDataTableTranslations('actions.status.deactivated.project')
+                      : dashboardDataTableTranslations('actions.status.deactivated.client')}
+                </DropdownMenuItem>
+              )}
             <DropdownMenuItem className='text-red-600' onClick={() => actions.onDelete(entity.id)}>
               <Trash className='mr-0.5 h-4 w-4' />
               {getDeleteLabel(entityType)}
