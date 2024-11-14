@@ -43,18 +43,17 @@ export default function CreateUserClientPage() {
 
   const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
 
-  const getSupervisors = useCallback(async () => {
-    try {
-      const supervisors: SupervisorType[] = await fetchSupervisors()
-      setSupervisors(supervisors)
-    } catch (error) {
-      toast.error('We can NOT get Supervisors at the moment, please try again!')
-    }
-  }, [toast])
-
   useEffect(() => {
+    const getSupervisors = async () => {
+      try {
+        const supervisors: SupervisorType[] = await fetchSupervisors()
+        setSupervisors(supervisors)
+      } catch (error) {
+        console.error('We can NOT get Supervisors at the moment, please try again!')
+      }
+    }
     getSupervisors()
-  }, [getSupervisors])
+  }, [])
 
   const form = useForm<UserSession & { password: string }>({
     defaultValues: {
