@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,8 +9,19 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { env } from '@/env'
 import LanguageSelector from './language-selector'
 import ThemeSwitch from './theme-switch'
+import type { Metadata } from 'next'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const translations = await getTranslations('DashboardSidebar.settings')
+
+  return {
+    title: `${translations('preferences')} | ${env.NEXT_PUBLIC_APP_NAME}`,
+    description: env.NEXT_PUBLIC_APP_DESCRIPTION
+  }
+}
 
 export default async function DashboardPreferencesPage() {
   return (

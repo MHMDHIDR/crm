@@ -2,9 +2,18 @@ import { Analytics } from '@vercel/analytics/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { getUserLanguage } from '@/actions/users/user-language'
+import { env } from '@/env'
 import { Providers } from '@/providers'
 import { LocaleProvider } from '@/providers/locale-provider'
+import type { Metadata } from 'next'
 import './globals.css'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: env.NEXT_PUBLIC_APP_NAME,
+    description: env.NEXT_PUBLIC_APP_DESCRIPTION
+  }
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = (await getUserLanguage()) ?? (await getLocale())

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'
 import { updateUser } from '@/actions/users/update-user'
@@ -46,6 +46,18 @@ export default function EditUserPageClient({ user }: { user: User }) {
   const [userData, setUserData] = useState(user)
   const [supervisors, setSupervisors] = useState<SupervisorType[]>([])
 
+  useEffect(() => {
+    const getSupervisors = async () => {
+      try {
+        const supervisors: SupervisorType[] = await fetchSupervisors()
+        setSupervisors(supervisors)
+      } catch (error) {
+        console.error('We can NOT get Supervisors at the moment, please try again!')
+      }
+    }
+    getSupervisors()
+  }, [])
+
   const form = useForm({
     defaultValues: {
       id: userData.id,
@@ -57,19 +69,6 @@ export default function EditUserPageClient({ user }: { user: User }) {
       isTwoFactorEnabled: userData.isTwoFactorEnabled || false
     }
   })
-
-  const getSupervisors = useCallback(async () => {
-    try {
-      const supervisors: SupervisorType[] = await fetchSupervisors()
-      setSupervisors(supervisors)
-    } catch (error) {
-      toast.error('We can NOT get Supervisors at the moment, please try again!')
-    }
-  }, [toast])
-
-  useEffect(() => {
-    getSupervisors()
-  }, [getSupervisors])
 
   useEffect(() => {
     form.reset({

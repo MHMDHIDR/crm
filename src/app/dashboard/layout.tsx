@@ -1,10 +1,22 @@
+import { getTranslations } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getProjectsByEmployeeId } from '@/actions/projects/get-project'
 import { auth } from '@/auth'
 import { DashboardSidebar } from '@/components/custom/dashboard-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import { UserSession } from '@/db/schema'
+import { env } from '@/env'
+import type { UserSession } from '@/db/schema'
+import type { Metadata } from 'next'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const translations = await getTranslations('DashboardSidebar.labels.pinned')
+
+  return {
+    title: `${translations('dashboard')} | ${env.NEXT_PUBLIC_APP_NAME}`,
+    description: env.NEXT_PUBLIC_APP_DESCRIPTION
+  }
+}
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()

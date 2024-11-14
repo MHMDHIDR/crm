@@ -11,7 +11,9 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.string().url(),
     NEXT_PUBLIC_LOGO_URL: z.string(),
     NEXT_PUBLIC_ADMIN_EMAIL: z.string().email(),
-    NEXT_PUBLIC_DEFAULT_REDIRECT: z.string()
+    NEXT_PUBLIC_DEFAULT_REDIRECT: z.string(),
+    NEXT_PUBLIC_APP_NAME: z.string(),
+    NEXT_PUBLIC_APP_DESCRIPTION: z.string()
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -20,6 +22,8 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_LOGO_URL: process.env.NEXT_PUBLIC_LOGO_URL,
     NEXT_PUBLIC_ADMIN_EMAIL: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
-    NEXT_PUBLIC_DEFAULT_REDIRECT: process.env.NEXT_PUBLIC_DEFAULT_REDIRECT
+    NEXT_PUBLIC_DEFAULT_REDIRECT: process.env.NEXT_PUBLIC_DEFAULT_REDIRECT,
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION
   }
 })
