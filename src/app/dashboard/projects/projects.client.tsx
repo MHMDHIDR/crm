@@ -218,7 +218,7 @@ export default function ProjectsClientPage() {
     return actions
   }
 
-  const columns = useSharedColumns<ExtendedProject>({
+  const { columns, filterFields } = useSharedColumns<ExtendedProject>({
     entityType: 'project',
     actions: {
       onDelete: handleDeleteSingleProject,
@@ -283,6 +283,7 @@ export default function ProjectsClientPage() {
           selectedRows={selectedRows}
           searchPlaceholder={dashboardProjectTranslation('actions.search')}
           bulkActions={getBulkActions()}
+          filterFields={filterFields}
         />
 
         <div className='border rounded-md'>

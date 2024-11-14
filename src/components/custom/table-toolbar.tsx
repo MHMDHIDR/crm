@@ -1,6 +1,7 @@
 import { Table } from '@tanstack/react-table'
-import { ChevronDown, SettingsIcon } from 'lucide-react'
+import { ChevronDown, SettingsIcon, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +13,10 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import {
+  DataTableFacetedFilter,
+  DataTableFilterField
+} from './data-table/data-table-faceted-filter'
 
 export type BulkAction = {
   label: string
@@ -26,6 +31,7 @@ type TableToolbarProps<TData> = {
   selectedRows: any[]
   bulkActions?: BulkAction[]
   searchPlaceholder?: string
+  filterFields?: DataTableFilterField<TData>[]
 }
 
 export function TableToolbar<TData>({
@@ -34,11 +40,17 @@ export function TableToolbar<TData>({
   setFiltering,
   selectedRows,
   bulkActions = [],
-  searchPlaceholder = 'Search...'
+  searchPlaceholder = 'Search...',
+  filterFields = []
 }: TableToolbarProps<TData>) {
+  const dashboardDatatableTranslation = useTranslations('dashboard.dataTable.tableToolbar')
   const hasBulkActions = bulkActions.length > 0
 
-  const dashboardDatatableTranslation = useTranslations('dashboard.dataTable.tableToolbar')
+  const isFiltered = table.getState().columnFilters.length > 0
+
+  const { filterableColumns } = useMemo(() => {
+    return { filterableColumns: filterFields.filter(field => field.options) }
+  }, [filterFields])
 
   return (
     <div className='flex items-center justify-between gap-x-2 py-2.5'>
@@ -77,7 +89,29 @@ export function TableToolbar<TData>({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        {filterableColumns.map(
+          column =>
+            table.getColumn(column.id as string) && (
+              <DataTableFacetedFilter
+                key={column.id as string}
+                column={table.getColumn(column.id as string)}
+                title={column.label}
+                options={column.options ?? []}
+              />
+            )
+        )}
+        {isFiltered && (
+          <Button
+            variant='ghost'
+            onClick={() => table.resetColumnFilters()}
+            className='h-8 px-2 lg:px-3'
+          >
+            Reset
+            <X className='ml-2 h-4 w-4' />
+          </Button>
+        )}
       </div>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>

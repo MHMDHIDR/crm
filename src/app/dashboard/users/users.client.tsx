@@ -212,7 +212,7 @@ export default function UsersClientPage() {
     return actions
   }
 
-  const columns = useSharedColumns<User>({
+  const { columns, filterFields } = useSharedColumns<User>({
     entityType: 'users',
     actions: {
       onDelete: handleDeleteSingleUser,
@@ -277,6 +277,7 @@ export default function UsersClientPage() {
           selectedRows={selectedRows}
           searchPlaceholder={dashboardUsersTranslation('actions.search')}
           bulkActions={getBulkActions()}
+          filterFields={filterFields}
         />
 
         <div className='border rounded-md'>

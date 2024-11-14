@@ -16,6 +16,7 @@ import { Event, ExtendedProject, Project } from '@/db/schema'
 import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 import { useLocale } from '@/providers/locale-provider'
+import type { DataTableFilterField } from '@/components/custom/data-table/data-table-faceted-filter'
 
 type BaseEntity = {
   id: string
@@ -56,7 +57,10 @@ type entityTypes = 'users' | 'clients' | 'project' | 'events'
 export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>({
   entityType,
   actions
-}: SharedColumnsProps<T>): ColumnDef<T>[] {
+}: SharedColumnsProps<T>): {
+  columns: ColumnDef<T>[]
+  filterFields: DataTableFilterField<T>[]
+} {
   const dashboardDataTableTranslations = useTranslations('dashboard.dataTable.columns')
   const { locale } = useLocale()
 
@@ -71,6 +75,89 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
       `actions.delete.${entityType === 'users' ? 'user' : entityType === 'clients' ? 'client' : 'project'}`
     )
   }
+
+  const filterFields: DataTableFilterField<T>[] = [
+    // For users
+    ...(entityType === 'users'
+      ? [
+          {
+            id: 'role',
+            label: dashboardDataTableTranslations('headers.userRole'),
+            options: [
+              { label: 'Admin', value: 'Admin' },
+              { label: 'Supervisor', value: 'Supervisor' },
+              { label: 'Employee', value: 'Employee' }
+            ]
+          },
+          {
+            id: 'emailVerified',
+            label: dashboardDataTableTranslations('headers.verifiedStatus'),
+            options: [
+              {
+                label: dashboardDataTableTranslations('status.verified'),
+                value: 'true'
+              },
+              {
+                label: dashboardDataTableTranslations('status.pending'),
+                value: 'false'
+              }
+            ]
+          }
+        ]
+      : []),
+    // For clients
+    ...(entityType === 'clients'
+      ? [
+          {
+            id: 'status',
+            label: dashboardDataTableTranslations('headers.status'),
+            options: [
+              {
+                label: dashboardDataTableTranslations('status.active'),
+                value: 'active'
+              },
+              {
+                label: dashboardDataTableTranslations('status.deactivated'),
+                value: 'deactivated'
+              }
+            ]
+          }
+        ]
+      : []),
+    // For projects
+    ...(entityType === 'project'
+      ? [
+          {
+            id: 'status',
+            label: dashboardDataTableTranslations('headers.status'),
+            options: [
+              {
+                label: dashboardDataTableTranslations('status.active'),
+                value: 'active'
+              },
+              {
+                label: dashboardDataTableTranslations('status.deactivated'),
+                value: 'deactivated'
+              }
+            ]
+          }
+        ]
+      : []),
+    // For events
+    ...(entityType === 'events'
+      ? [
+          {
+            id: 'userRole',
+            label: dashboardDataTableTranslations('headers.userRole'),
+            options: [
+              { label: 'Admin', value: 'Admin' },
+              { label: 'Supervisor', value: 'Supervisor' },
+              { label: 'Employee', value: 'Employee' }
+            ]
+          }
+        ]
+      : [])
+  ]
 
   const baseColumns: ColumnDef<T>[] = ['project', 'clients', 'users'].includes(entityType)
     ? [
@@ -153,6 +240,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
             {role}
           </span>
         )
+      },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as User).role
+        return filterValues.includes(value)
       }
     },
     {
@@ -198,6 +289,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
               : dashboardDataTableTranslations('status.pending')}
           </span>
         )
+      },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as User).emailVerified !== null ? 'true' : 'false'
+        return filterValues.includes(value)
       }
     },
     {
@@ -272,6 +367,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
             )}
           </span>
         )
+      },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as Client).status
+        return filterValues.includes(value)
       }
     }
   ]
@@ -302,6 +401,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
             )}
           </span>
         )
+      },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as ExtendedProject).status
+        return filterValues.includes(value)
       }
     },
     {
@@ -427,6 +530,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
             {userRole}
           </span>
         )
+      },
+      filterFn: (row, _id, filterValues: string[]) => {
+        const value = (row.original as unknown as Event).userRole
+        return filterValues.includes(value)
       }
     },
     {
@@ -534,16 +641,19 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
   }
 
   // Combine columns based on entity type
-  return [
-    ...baseColumns,
-    ...(entityType === 'users'
-      ? [...usersColumns, actionsColumn]
-      : entityType === 'clients'
-        ? [...clientsColumns, actionsColumn]
-        : entityType === 'project'
-          ? [...projectsColumns, actionsColumn]
-          : entityType === 'events'
-            ? eventColumns
-            : [])
-  ] as ColumnDef<T>[]
+  return {
+    columns: [
+      ...baseColumns,
+      ...(entityType === 'users'
+        ? [...usersColumns, actionsColumn]
+        : entityType === 'clients'
+          ? [...clientsColumns, actionsColumn]
+          : entityType === 'project'
+            ? [...projectsColumns, actionsColumn]
+            : entityType === 'events'
+              ? eventColumns
+              : [])
+    ] as ColumnDef<T>[],
+    filterFields
+  }
 }

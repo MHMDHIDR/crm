@@ -57,7 +57,7 @@ export default function EventsPageEvent() {
     setLoading(false)
   }, [])
 
-  const columns = useSharedColumns<Event>({
+  const { columns, filterFields } = useSharedColumns<Event>({
     entityType: 'events',
     actions: { basePath: '/events' }
   })
@@ -113,6 +113,7 @@ export default function EventsPageEvent() {
           setFiltering={setFiltering}
           selectedRows={selectedRows}
           searchPlaceholder={dashboardEventsTranslation('actions.search')}
+          filterFields={filterFields}
         />
 
         <div className='border rounded-md'>

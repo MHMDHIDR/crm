@@ -212,7 +212,7 @@ export default function ClientsPageClient() {
     return actions
   }
 
-  const columns = useSharedColumns<Client>({
+  const { columns, filterFields } = useSharedColumns<Client>({
     entityType: 'clients',
     actions: {
       onDelete: handleDeleteSingleClient,
@@ -277,6 +277,7 @@ export default function ClientsPageClient() {
           selectedRows={selectedRows}
           searchPlaceholder={dashboardClientsTranslation('actions.search')}
           bulkActions={getBulkActions()}
+          filterFields={filterFields}
         />
 
         <div className='border rounded-md'>
