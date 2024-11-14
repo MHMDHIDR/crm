@@ -12,7 +12,8 @@ import {
   SidebarMenuLink,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem
+  SidebarMenuSubItem,
+  useSidebar
 } from '@/components/ui/sidebar'
 import type { LucideIcon } from 'lucide-react'
 
@@ -31,6 +32,7 @@ export function NavMain({
     }[]
   }[]
 }) {
+  const { openMobile, setOpenMobile } = useSidebar()
   const navMenuTranslations = useTranslations('DashboardSidebar.labels')
 
   return (
@@ -42,9 +44,9 @@ export function NavMain({
         {items.map(item => (
           <Collapsible
             key={item.title}
-            asChild
             defaultOpen={item.isActive}
             className='group/collapsible'
+            asChild
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
@@ -58,7 +60,10 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map(subItem => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
+                      <SidebarMenuSubButton
+                        onClick={() => openMobile && setOpenMobile(false)}
+                        asChild
+                      >
                         <Link href={subItem.url}>
                           {subItem.icon && <subItem.icon />}
                           <span>{subItem.title}</span>

@@ -38,7 +38,7 @@ export function DashboardSidebar({
   user: UserSession
   projects: ExtendedProject[] | null
 }) {
-  const { open } = useSidebar()
+  const { open, isMobile } = useSidebar()
   const { locale } = useLocale()
   const dashboardSidebarTranslations = useTranslations('DashboardSidebar')
 
@@ -67,7 +67,7 @@ export function DashboardSidebar({
         ? [
             {
               title: dashboardSidebarTranslations('users.title'),
-              url: open ? '' : '/dashboard/users',
+              url: open || isMobile ? '' : '/dashboard/users',
               icon: Users2,
               items: [
                 {
@@ -86,7 +86,7 @@ export function DashboardSidebar({
         : []),
       {
         title: dashboardSidebarTranslations('projects.title'),
-        url: open ? '' : '/dashboard/projects',
+        url: open || isMobile ? '' : '/dashboard/projects',
         icon: ShoppingBagIcon,
         items: [
           {
@@ -103,7 +103,7 @@ export function DashboardSidebar({
       },
       {
         title: dashboardSidebarTranslations('clients.title'),
-        url: open ? '' : '/dashboard/clients',
+        url: open || isMobile ? '' : '/dashboard/clients',
         icon: FileUser,
         items: [
           {
@@ -120,7 +120,7 @@ export function DashboardSidebar({
       },
       {
         title: dashboardSidebarTranslations('settings.title'),
-        url: open ? '' : '/dashboard/account',
+        url: open || isMobile ? '' : '/dashboard/account',
         icon: Settings2,
         items: [
           {
