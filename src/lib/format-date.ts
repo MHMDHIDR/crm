@@ -1,5 +1,12 @@
 import { Locale } from '@/i18n/config'
 
+type formatDateOptions = {
+  date: string
+  locale?: Locale
+  isNormalDate?: boolean
+  isFullTimestamp?: boolean
+}
+
 /**
  * A function to format the date and time with appropriate granularity.
  * This function takes a date string and returns a more intuitive, human-readable format.
@@ -7,11 +14,12 @@ import { Locale } from '@/i18n/config'
  * @param date the date string to be formatted
  * @returns the formatted date
  */
-export function formatDate(
-  date: string,
-  locale: Locale = 'en',
-  isNormalDate: boolean = true
-): string {
+export function formatDate({
+  date,
+  locale = 'en',
+  isNormalDate = true,
+  isFullTimestamp = false
+}: formatDateOptions): string {
   if (isNormalDate) {
     const dateOptions = {
       year: 'numeric' as const,
@@ -19,7 +27,16 @@ export function formatDate(
       day: 'numeric' as const
     }
 
-    return new Date(date).toLocaleDateString(locale === 'en' ? 'en-US' : 'ar-EG', dateOptions)
+    return new Date(date).toLocaleDateString(
+      locale === 'en' ? 'en-US' : 'ar-EG',
+      isFullTimestamp
+        ? {
+            ...dateOptions,
+            hour: 'numeric' as const,
+            minute: 'numeric' as const
+          }
+        : dateOptions
+    )
   }
 
   const now = new Date().getTime()

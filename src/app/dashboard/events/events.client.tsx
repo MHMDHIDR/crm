@@ -12,11 +12,8 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { deleteClients } from '@/actions/clients/delete-client'
-import { getClients } from '@/actions/clients/get-clients'
-import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
+import { getEvents } from '@/actions/events/get-events'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
 import { TablePagination } from '@/components/custom/table-pagination'
@@ -27,7 +24,6 @@ import {
   BreadcrumbLink,
   BreadcrumbList
 } from '@/components/ui/breadcrumb'
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import {
@@ -39,94 +35,35 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { useSharedColumns } from '@/hooks/use-shared-columns'
-import { useToast } from '@/hooks/use-toast'
-import type { Client } from '@/db/schema'
+import type { Event } from '@/db/schema'
 
-export default function EventsPageClient() {
-  const [clients, setClients] = useState<Client[]>([])
+export default function EventsPageEvent() {
+  const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  const [filtering, setFiltering] = useState('') // This will add global filtering state, which will help us filter the table data
+  const [filtering, setFiltering] = useState('')
 
-  const dashboardClientsTranslation = useTranslations('dashboard.clients')
+  const dashboardEventsTranslation = useTranslations('dashboard.events')
 
-  /** Handling Dialogs states (Pefect for Reusable Modals): */
-  const [dialogProps, setDialogProps] = useState({
-    open: false,
-    action: null as 'delete' | null,
-    title: '',
-    description: '',
-    buttonText: '',
-    buttonClass: '',
-    selectedIds: [] as string[]
-  })
-
-  const toast = useToast()
-
-  // Fetch clients
-  const fetchClients = useCallback(async () => {
+  const fetchEvents = useCallback(async () => {
     setLoading(true)
-    const result = await getClients()
+    const result = await getEvents()
     if (result.success && result.data) {
-      setClients(result.data)
+      setEvents(result.data)
     }
     setLoading(false)
   }, [])
 
-  const handleDeleteSelected = () => {
-    const ids = selectedRows.map(row => row.original.id)
-    setDialogProps({
-      open: true,
-      action: 'delete',
-      title: dashboardClientsTranslation('dialog.delete.title'),
-      description: dashboardClientsTranslation('dialog.delete.description'),
-      buttonText: dashboardClientsTranslation('dialog.delete.button'),
-      buttonClass: 'bg-red-600',
-      selectedIds: ids
-    })
-  }
-
-  const handleDeleteSingleClient = (clientId: string) => {
-    setDialogProps({
-      open: true,
-      action: 'delete',
-      title: dashboardClientsTranslation('dialog.delete.singleTitle'),
-      description: dashboardClientsTranslation('dialog.delete.singleDescription'),
-      buttonText: dashboardClientsTranslation('dialog.delete.singleButton'),
-      buttonClass: 'bg-red-600',
-      selectedIds: [clientId]
-    })
-  }
-
-  const handleAction = async () => {
-    if (!dialogProps.action || !dialogProps.selectedIds.length) return
-
-    const actions = { delete: deleteClients }
-
-    const result = await actions[dialogProps.action](dialogProps.selectedIds)
-
-    if (result?.success) {
-      setDialogProps(prev => ({ ...prev, open: false }))
-      toast.success(result.message as string)
-      fetchClients()
-    } else {
-      toast.error(result?.message || 'Operation failed')
-    }
-  }
-
-  const columns = useSharedColumns<Client>({
-    entityType: 'clients',
-    actions: {
-      onDelete: handleDeleteSingleClient,
-      basePath: '/clients'
-    }
+  const columns = useSharedColumns<Event>({
+    entityType: 'events',
+    actions: { basePath: '/events' }
   })
 
   const table = useReactTable({
-    data: clients,
+    data: events,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -149,8 +86,8 @@ export default function EventsPageClient() {
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   useEffect(() => {
-    fetchClients()
-  }, [fetchClients])
+    fetchEvents()
+  }, [fetchEvents])
 
   return (
     <SidebarInset>
@@ -162,14 +99,11 @@ export default function EventsPageClient() {
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
                 <BreadcrumbLink href='/dashboard'>
-                  {dashboardClientsTranslation('breadcrumb.dashboard')}
+                  {dashboardEventsTranslation('breadcrumb.dashboard')}
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <Link href='/dashboard/create-client'>
-            <Button>{dashboardClientsTranslation('actions.addNew')}</Button>
-          </Link>
         </div>
       </header>
       <main className='w-full'>
@@ -178,14 +112,7 @@ export default function EventsPageClient() {
           filtering={filtering}
           setFiltering={setFiltering}
           selectedRows={selectedRows}
-          searchPlaceholder={dashboardClientsTranslation('actions.search')}
-          bulkActions={[
-            {
-              label: dashboardClientsTranslation('bulkActions.deleteSelected'),
-              onClick: handleDeleteSelected,
-              variant: 'destructive'
-            }
-          ]}
+          searchPlaceholder={dashboardEventsTranslation('actions.search')}
         />
 
         <div className='border rounded-md'>
@@ -193,15 +120,13 @@ export default function EventsPageClient() {
             <TableHeader>
               {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <TableHead key={header.id} className='text-center'>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    )
-                  })}
+                  {headerGroup.headers.map(header => (
+                    <TableHead key={header.id} className='text-center'>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
@@ -213,11 +138,16 @@ export default function EventsPageClient() {
                     data-state={row.getIsSelected() && 'selected'}
                     className='rounded-full px-2.5 py-0.5 border select-none'
                   >
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id} className='text-center'>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
+                    {row.getVisibleCells().map(cell => {
+                      const _ROLE_CLASSNAMES =
+                        'text-green-600 bg-green-50 text-orange-600 bg-orange-50 text-blue-600 bg-blue-50'
+
+                      return (
+                        <TableCell key={cell.id} className='text-center'>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      )
+                    })}
                   </TableRow>
                 ))
               ) : loading ? (
@@ -229,14 +159,11 @@ export default function EventsPageClient() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className='h-24 text-center'>
-                    <Link href='/dashboard/create-client'>
-                      <EmptyState>
-                        <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
-                          {dashboardClientsTranslation('empty.message')}
-                        </p>
-                        <Button>{dashboardClientsTranslation('actions.addNew')}</Button>
-                      </EmptyState>
-                    </Link>
+                    <EmptyState>
+                      <p className='mt-4 text-lg text-gray-500 select-none dark:text-gray-400'>
+                        {dashboardEventsTranslation('empty.message')}
+                      </p>
+                    </EmptyState>
                   </TableCell>
                 </TableRow>
               )}
@@ -244,17 +171,7 @@ export default function EventsPageClient() {
           </Table>
         </div>
 
-        <TablePagination table={table} selectedRows={selectedRows} />
-
-        <ConfirmationDialog
-          open={dialogProps.open}
-          onOpenChange={open => setDialogProps(prev => ({ ...prev, open }))}
-          title={dialogProps.title}
-          description={dialogProps.description}
-          buttonText={dialogProps.buttonText}
-          buttonClass={dialogProps.buttonClass}
-          onConfirm={handleAction}
-        />
+        <TablePagination table={table} selectedRows={selectedRows} isSelectable={false} />
       </main>
     </SidebarInset>
   )

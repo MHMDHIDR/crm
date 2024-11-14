@@ -288,6 +288,17 @@
         "addNew": "Add New User"
       }
     },
+    "events": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard"
+      },
+      "actions": {
+        "search": "Look for a Event..."
+      },
+      "empty": {
+        "message": "Sorry we couldn't find any events."
+      }
+    },
     "createClient": {
       "breadcrumb": {
         "dashboard": "Main Dashboard",
@@ -410,6 +421,9 @@
           "suspendedStatus": "Suspended Status",
           "status": "Status",
           "clientName": "Client Name",
+          "userName": "Name",
+          "userRole": "Role",
+          "timestamp": "Time",
           "supervisor": "Supervisor Name",
           "assignedEmployee": "Assigned Employee",
           "description": "Description",

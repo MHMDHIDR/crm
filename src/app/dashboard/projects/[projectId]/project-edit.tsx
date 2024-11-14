@@ -101,7 +101,11 @@ export function ProjectEdit({ project, onSubmit, onSuccess }: ProjectEditProps) 
                           'text-muted-foreground': !field.value
                         })}
                       >
-                        {field.value ? formatDate(String(field.value)) : <span>Pick a date</span>}
+                        {field.value ? (
+                          formatDate({ date: String(field.value) })
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
                         <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                       </Button>
                     </FormControl>
@@ -135,7 +139,11 @@ export function ProjectEdit({ project, onSubmit, onSuccess }: ProjectEditProps) 
                           'text-muted-foreground': !field.value
                         })}
                       >
-                        {field.value ? formatDate(String(field.value)) : <span>Pick a date</span>}
+                        {field.value ? (
+                          formatDate({ date: String(field.value) })
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
                         <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                       </Button>
                     </FormControl>

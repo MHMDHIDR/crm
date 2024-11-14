@@ -165,7 +165,7 @@ export default function CreateProjectClientPage() {
                               )}
                             >
                               {field.value ? (
-                                formatDate(String(field.value))
+                                formatDate({ date: String(field.value) })
                               ) : (
                                 <span>
                                   {dashboardClientTranslation('form.dates.start.placeholder')}
@@ -212,7 +212,7 @@ export default function CreateProjectClientPage() {
                               )}
                             >
                               {field.value ? (
-                                formatDate(String(field.value))
+                                formatDate({ date: String(field.value) })
                               ) : (
                                 <span>
                                   {dashboardClientTranslation('form.dates.end.placeholder')}

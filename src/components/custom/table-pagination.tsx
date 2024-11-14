@@ -5,19 +5,26 @@ import { Button } from '@/components/ui/button'
 interface TablePaginationProps<TData> {
   table: Table<TData>
   selectedRows: any[]
+  isSelectable?: boolean
 }
 
-export function TablePagination<TData>({ table, selectedRows }: TablePaginationProps<TData>) {
+export function TablePagination<TData>({
+  table,
+  selectedRows,
+  isSelectable = true
+}: TablePaginationProps<TData>) {
   const dashboardDatatableTranslation = useTranslations('dashboard.dataTable.tablePagination')
 
   return (
     <div className='flex items-center justify-end py-4 gap-x-2'>
-      <div className='text-sm text-muted-foreground'>
-        {dashboardDatatableTranslation('selected', {
-          count: selectedRows.length,
-          total: table.getFilteredRowModel().rows.length
-        })}
-      </div>
+      {isSelectable && (
+        <div className='text-sm text-muted-foreground'>
+          {dashboardDatatableTranslation('selected', {
+            count: selectedRows.length,
+            total: table.getFilteredRowModel().rows.length
+          })}
+        </div>
+      )}
       <Button
         variant='outline'
         size='sm'

@@ -12,12 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { ExtendedProject, Project } from '@/db/schema'
+import { Event, ExtendedProject, Project } from '@/db/schema'
 import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 import { useLocale } from '@/providers/locale-provider'
 
-// Define base entity interface that both User and Client will extend
 type BaseEntity = {
   id: string
   email: string
@@ -38,76 +37,80 @@ type Client = BaseEntity & {
 
 // Define the actions that can be performed
 type TableActions = {
-  onDelete: (id: string) => void
+  onDelete?: (id: string) => void
   onSuspend?: (id: string) => void
   onUnsuspend?: (id: string) => void
   onActivate?: (id: string) => void
   onDeactivate?: (id: string) => void
-  basePath: '/projects' | '/users' | '/clients'
+  basePath: '/projects' | '/users' | '/clients' | '/events'
 }
 
-type SharedColumnsProps<T extends BaseEntity | ExtendedProject> = {
-  entityType: 'users' | 'clients' | 'project'
+type SharedColumnsProps<T extends BaseEntity | ExtendedProject | Event> = {
+  entityType: 'users' | 'clients' | 'project' | 'events'
   actions: TableActions
 }
 
-export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
+type entityTypes = 'users' | 'clients' | 'project' | 'events'
+
+/* eslint-disable max-lines */
+export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>({
   entityType,
   actions
 }: SharedColumnsProps<T>): ColumnDef<T>[] {
   const dashboardDataTableTranslations = useTranslations('dashboard.dataTable.columns')
   const { locale } = useLocale()
 
-  function getViewEditLabel(entityType: 'users' | 'clients' | 'project'): string {
+  function getViewEditLabel(entityType: Omit<entityTypes, 'events'>): string {
     return dashboardDataTableTranslations(
       `actions.viewEdit.${entityType === 'users' ? 'user' : entityType === 'clients' ? 'client' : 'project'}`
     )
   }
 
-  function getDeleteLabel(entityType: 'users' | 'clients' | 'project'): string {
+  function getDeleteLabel(entityType: Omit<entityTypes, 'events'>): string {
     return dashboardDataTableTranslations(
       `actions.delete.${entityType === 'users' ? 'user' : entityType === 'clients' ? 'client' : 'project'}`
     )
   }
 
-  const baseColumns: ColumnDef<T>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-          aria-label={dashboardDataTableTranslations('select.aria')}
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={value => row.toggleSelected(!!value)}
-          aria-label={dashboardDataTableTranslations('select.rowAria')}
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false
-    },
-    {
-      accessorKey: 'name',
-      header: ({ column }) => (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          {dashboardDataTableTranslations('headers.name')}
-          <ArrowUpDown className='w-4 h-4 ml-2' />
-        </Button>
-      )
-    }
-  ]
+  const baseColumns: ColumnDef<T>[] = ['project', 'clients', 'users'].includes(entityType)
+    ? [
+        {
+          id: 'select',
+          header: ({ table }) => (
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() && 'indeterminate')
+              }
+              onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+              aria-label={dashboardDataTableTranslations('select.aria')}
+            />
+          ),
+          cell: ({ row }) => (
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={value => row.toggleSelected(!!value)}
+              aria-label={dashboardDataTableTranslations('select.rowAria')}
+            />
+          ),
+          enableSorting: false,
+          enableHiding: false
+        },
+        {
+          accessorKey: 'name',
+          header: ({ column }) => (
+            <Button
+              variant='ghost'
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              {dashboardDataTableTranslations('headers.name')}
+              <ArrowUpDown className='w-4 h-4 ml-2' />
+            </Button>
+          )
+        }
+      ]
+    : []
 
-  // User-specific columns
   const usersColumns: ColumnDef<T>[] = [
     {
       accessorKey: 'email',
@@ -142,9 +145,9 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
         return (
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': role === 'Admin',
-              'text-orange-600 bg-orange-100': role === 'Supervisor',
-              'text-blue-600 bg-blue-100': role === 'Employee'
+              'text-green-600 bg-green-50': role === 'Admin',
+              'text-orange-600 bg-orange-50': role === 'Supervisor',
+              'text-blue-600 bg-blue-50': role === 'Employee'
             })}
           >
             {role}
@@ -186,8 +189,8 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
         return (
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': emailVerified !== null,
-              'text-red-600 bg-red-100': emailVerified === null
+              'text-green-600 bg-green-50': emailVerified !== null,
+              'text-red-600 bg-red-50': emailVerified === null
             })}
           >
             {emailVerified
@@ -213,12 +216,12 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
         return (
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': suspendedAt === null,
-              'text-red-600 bg-red-100': suspendedAt !== null
+              'text-green-600 bg-green-50': suspendedAt === null,
+              'text-red-600 bg-red-50': suspendedAt !== null
             })}
           >
             {suspendedAt
-              ? formatDate(String(suspendedAt), locale)
+              ? formatDate({ date: String(suspendedAt), locale })
               : dashboardDataTableTranslations('status.active')}
           </span>
         )
@@ -226,7 +229,6 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
     }
   ]
 
-  // Client-specific columns
   const clientsColumns: ColumnDef<T>[] = [
     {
       accessorKey: 'email',
@@ -261,8 +263,8 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
         return (
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': status === 'active',
-              'text-red-600 bg-red-100': status === 'deactivated'
+              'text-green-600 bg-green-50': status === 'active',
+              'text-red-600 bg-red-50': status === 'deactivated'
             })}
           >
             {dashboardDataTableTranslations(
@@ -274,7 +276,6 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
     }
   ]
 
-  // Project-specific columns
   const projectsColumns: ColumnDef<T>[] = [
     {
       accessorKey: 'status',
@@ -292,8 +293,8 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
         return (
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
-              'text-green-600 bg-green-100': status === 'active',
-              'text-red-600 bg-red-100': status === 'deactivated'
+              'text-green-600 bg-green-50': status === 'active',
+              'text-red-600 bg-red-50': status === 'deactivated'
             })}
           >
             {dashboardDataTableTranslations(
@@ -356,7 +357,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
       ),
       cell: ({ row }) => {
         const startDate = (row.original as ExtendedProject).startDate
-        return <span>{formatDate(String(startDate), locale)}</span>
+        return <span>{formatDate({ date: String(startDate), locale })}</span>
       }
     },
     {
@@ -372,12 +373,80 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
       ),
       cell: ({ row }) => {
         const endDate = (row.original as ExtendedProject).endDate
-        return <span>{formatDate(String(endDate), locale)}</span>
+        return <span>{formatDate({ date: String(endDate), locale })}</span>
       }
     }
   ]
 
-  // Actions column
+  const eventColumns: ColumnDef<Event>[] = [
+    {
+      accessorKey: 'userName',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          {dashboardDataTableTranslations('headers.userName')}
+          <ArrowUpDown className='w-4 h-4 ml-2' />
+        </Button>
+      )
+    },
+    {
+      accessorKey: 'description',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          {dashboardDataTableTranslations('headers.description')}
+          <ArrowUpDown className='w-4 h-4 ml-2' />
+        </Button>
+      )
+    },
+    {
+      accessorKey: 'userRole',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          {dashboardDataTableTranslations('headers.userRole')}
+          <ArrowUpDown className='w-4 h-4 ml-2' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const userRole = row.original.userRole
+        return (
+          <span
+            className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
+              'text-green-600 bg-green-50': userRole === 'Admin',
+              'text-orange-600 bg-orange-50': userRole === 'Supervisor',
+              'text-blue-600 bg-blue-50': userRole === 'Employee'
+            })}
+          >
+            {userRole}
+          </span>
+        )
+      }
+    },
+    {
+      accessorKey: 'timestamp',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          {dashboardDataTableTranslations('headers.timestamp')}
+          <ArrowUpDown className='w-4 h-4 ml-2' />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const timestamp = row.original.timestamp
+        return <span>{formatDate({ date: String(timestamp), locale, isFullTimestamp: true })}</span>
+      }
+    }
+  ]
+
   const actionsColumn: ColumnDef<T> = {
     id: 'actions',
     header: dashboardDataTableTranslations('headers.action'),
@@ -421,7 +490,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
                   : dashboardDataTableTranslations('actions.suspend.suspend')}
               </DropdownMenuItem>
             )}
-            {(entityType === 'project' || entityType === 'clients') &&
+            {['project', 'clients'].includes(entityType) &&
               actions.onActivate &&
               actions.onDeactivate && (
                 <DropdownMenuItem
@@ -451,7 +520,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
                       : dashboardDataTableTranslations('actions.status.deactivated.client')}
                 </DropdownMenuItem>
               )}
-            <DropdownMenuItem className='text-red-600' onClick={() => actions.onDelete(entity.id)}>
+            <DropdownMenuItem
+              className='text-red-600'
+              onClick={() => actions.onDelete?.(entity.id)}
+            >
               <Trash className='mr-0.5 h-4 w-4' />
               {getDeleteLabel(entityType)}
             </DropdownMenuItem>
@@ -465,10 +537,13 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject>({
   return [
     ...baseColumns,
     ...(entityType === 'users'
-      ? usersColumns
+      ? [...usersColumns, actionsColumn]
       : entityType === 'clients'
-        ? clientsColumns
-        : projectsColumns),
-    actionsColumn
-  ]
+        ? [...clientsColumns, actionsColumn]
+        : entityType === 'project'
+          ? [...projectsColumns, actionsColumn]
+          : entityType === 'events'
+            ? eventColumns
+            : [])
+  ] as ColumnDef<T>[]
 }

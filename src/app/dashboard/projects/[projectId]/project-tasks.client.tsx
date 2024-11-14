@@ -111,7 +111,7 @@ function TaskCard({
           {`${task.description.slice(0, 70)}...`}
         </CardDescription>
         <CardFooter className='absolute inline-block p-0 text-sm text-gray-500 bottom-1'>
-          Due: {formatDate(String(task.dueDate), locale, false)}
+          Due: {formatDate({ date: String(task.dueDate), locale, isNormalDate: false })}
         </CardFooter>
       </CardContent>
     </Card>

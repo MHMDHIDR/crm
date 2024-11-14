@@ -288,6 +288,17 @@
         "addNew": "إضافة مستخدم جديد"
       }
     },
+    "events": {
+      "breadcrumb": {
+        "dashboard": "لوحة التحكم الرئيسية"
+      },
+      "actions": {
+        "search": "ابحث عن حدث..."
+      },
+      "empty": {
+        "message": "عذراً، لم نتمكن من العثور على أي أحداث."
+      }
+    },
     "createClient": {
       "breadcrumb": {
         "dashboard": "لوحة التحكم الرئيسية",
@@ -410,6 +421,9 @@
           "suspendedStatus": "حالة التعليق",
           "status": "الحالة",
           "clientName": "اسم العميل",
+          "userName": "إســـم الموظف",
+          "userRole": "الدور",
+          "timestamp": "الوقت",
           "supervisor": "اسم المشرف",
           "assignedEmployee": "الموظف المعين",
           "description": "الوصف",
