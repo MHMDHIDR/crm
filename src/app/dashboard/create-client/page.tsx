@@ -139,7 +139,7 @@ export default function CreateUserPage() {
                     <FormLabel className='text-left'>
                       {createUserTranslations('form.phone.label')}
                     </FormLabel>
-                    <FormControl className='w-full'>
+                    <FormControl className='w-full relative'>
                       <PhoneInput
                         placeholder={createUserTranslations('form.phone.placeholder')}
                         {...field}

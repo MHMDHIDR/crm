@@ -44,7 +44,7 @@ export default async function DashboardPage() {
     const { count: ClientsCount } = await getClientsByEmployeeId(user.id)
     const { count: ProjectsCount } = await getProjectsByEmployeeId(user.id)
     dashboardData = { ClientsCount, ProjectsCount }
-  } else if (user.role === 'Supervisor') {
+  } else if (['Admin', 'Supervisor'].includes(user.role)) {
     const { data: activeEmployees } = await getActiveEmployees(user.id)
     const { data: stats } = await getSupervisorEmployeeStats(user.id)
     dashboardData = { activeEmployees, stats }
@@ -68,7 +68,6 @@ export default async function DashboardPage() {
       <div className='flex flex-col flex-1 p-4 pt-0 gap-4'>
         <div className='grid auto-rows-min gap-4 md:grid-cols-2'>
           {user.role === 'Employee' ? (
-            // Employee Cards
             <>
               <MetricCard
                 title='Clients'
@@ -81,8 +80,7 @@ export default async function DashboardPage() {
                 icon={ShoppingBagIcon}
               />
             </>
-          ) : user.role === 'Supervisor' ? (
-            // Supervisor Cards
+          ) : ['Admin', 'Supervisor'].includes(user.role) ? (
             <>
               <MetricCard
                 title='Active Employees'

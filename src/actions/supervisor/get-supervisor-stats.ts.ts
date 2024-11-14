@@ -1,6 +1,7 @@
 'use server'
 
 import { and, eq, inArray, sql } from 'drizzle-orm'
+import { auth } from '@/auth'
 import { database } from '@/db'
 import { clients, projects, sessions, tasks, users } from '@/db/schema'
 
@@ -45,52 +46,86 @@ export async function getSupervisorEmployeeStats(supervisorId: string): Promise<
   error?: string
 }> {
   try {
-    if (!supervisorId) {
-      throw new Error('Supervisor ID is required')
+    const session = await auth()
+    if (!session) {
+      throw new Error('Unauthorized')
     }
 
-    const employeesUnderSupervisor = await database
-      .select({ id: users.id })
-      .from(users)
-      .where(and(eq(users.supervisorId, supervisorId), eq(users.role, 'Employee')))
+    const userRole = session.user.role
 
-    const employeeIds = employeesUnderSupervisor.map(emp => emp.id)
-    if (employeeIds.length === 0) {
+    if (userRole === 'Admin') {
+      const [[employeeResult], [projectResult], [taskResult], [clientResult]] = await Promise.all([
+        database
+          .select({ totalEmployees: sql<number>`count(*)::int` })
+          .from(users)
+          .where(eq(users.role, 'Employee')),
+
+        database.select({ totalProjects: sql<number>`count(*)::int` }).from(projects),
+
+        database.select({ totalTasks: sql<number>`count(*)::int` }).from(tasks),
+
+        database.select({ totalClients: sql<number>`count(*)::int` }).from(clients)
+      ])
+
       return {
         success: true,
-        data: { totalEmployees: 0, totalProjects: 0, totalTasks: 0, totalClients: 0 }
+        data: {
+          totalEmployees: employeeResult.totalEmployees,
+          totalProjects: projectResult.totalProjects,
+          totalTasks: taskResult.totalTasks,
+          totalClients: clientResult.totalClients
+        }
       }
     }
 
-    const employeeResult = await database
-      .select({ totalEmployees: sql<number>`count(*)::int` })
-      .from(users)
-      .where(and(eq(users.supervisorId, supervisorId), eq(users.role, 'Employee')))
+    if (userRole === 'Supervisor' && supervisorId) {
+      const employeesUnderSupervisor = await database
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.supervisorId, supervisorId), eq(users.role, 'Employee')))
 
-    const projectResult = await database
-      .select({ totalProjects: sql<number>`count(*)::int` })
-      .from(projects)
-      .where(inArray(projects.assignedEmployeeId, employeeIds))
+      const employeeIds = employeesUnderSupervisor.map(emp => emp.id)
+      if (employeeIds.length === 0) {
+        return {
+          success: true,
+          data: { totalEmployees: 0, totalProjects: 0, totalTasks: 0, totalClients: 0 }
+        }
+      }
 
-    const taskResult = await database
-      .select({ totalTasks: sql<number>`count(*)::int` })
-      .from(tasks)
-      .where(inArray(tasks.assignedEmployeeId, employeeIds))
+      const [[employeeResult], [projectResult], [taskResult], [clientResult]] = await Promise.all([
+        await database
+          .select({ totalEmployees: sql<number>`count(*)::int` })
+          .from(users)
+          .where(and(eq(users.supervisorId, supervisorId), eq(users.role, 'Employee'))),
 
-    const clientResult = await database
-      .select({ totalClients: sql<number>`count(*)::int` })
-      .from(clients)
-      .where(inArray(clients.assignedEmployeeId, employeeIds))
+        await database
+          .select({ totalProjects: sql<number>`count(*)::int` })
+          .from(projects)
+          .where(inArray(projects.assignedEmployeeId, employeeIds)),
 
-    return {
-      success: true,
-      data: {
-        totalEmployees: employeeResult[0]?.totalEmployees ?? 0,
-        totalProjects: projectResult[0]?.totalProjects ?? 0,
-        totalTasks: taskResult[0]?.totalTasks ?? 0,
-        totalClients: clientResult[0]?.totalClients ?? 0
+        await database
+          .select({ totalTasks: sql<number>`count(*)::int` })
+          .from(tasks)
+          .where(inArray(tasks.assignedEmployeeId, employeeIds)),
+
+        await database
+          .select({ totalClients: sql<number>`count(*)::int` })
+          .from(clients)
+          .where(inArray(clients.assignedEmployeeId, employeeIds))
+      ])
+
+      return {
+        success: true,
+        data: {
+          totalEmployees: employeeResult.totalEmployees,
+          totalProjects: projectResult.totalProjects,
+          totalTasks: taskResult.totalTasks,
+          totalClients: clientResult.totalClients
+        }
       }
     }
+
+    throw new Error('Unauthorized or invalid role')
   } catch (error) {
     console.error('Error fetching supervisor stats:', error)
     return { success: false, error: 'Failed to fetch supervisor stats' }

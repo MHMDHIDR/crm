@@ -81,16 +81,16 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
         <Button
           type='button'
           variant={'outline'}
-          className={cn('flex gap-1 rounded-e-none rounded-s-lg px-3')}
+          className={cn('flex gap-1.5 rounded-e-none rounded-s-lg')}
           disabled={disabled}
         >
           <FlagComponent country={value} countryName={value} />
           <ChevronsUpDown
-            className={cn('-mr-2 h-4 w-4 opacity-50', disabled ? 'hidden' : 'opacity-100')}
+            className={cn('h-4 w-4 opacity-50', disabled ? 'hidden' : 'opacity-100')}
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className='w-[300px] p-0'>
+      <PopoverContent className='w-80 p-0 absolute -left-6 rtl:-right-6'>
         <Command>
           <CommandInput placeholder='Search country...' />
           <CommandList>
@@ -133,7 +133,7 @@ const FlagComponent = ({ country, countryName }: RPNInput.FlagProps) => {
   const Flag = flags[country]
 
   return (
-    <span className='flex w-6 h-4 overflow-hidden rounded-sm bg-foreground/20'>
+    <span className='w-4 h-4 overflow-hidden rounded-sm bg-foreground/15'>
       {Flag && <Flag title={countryName} />}
     </span>
   )
