@@ -1,10 +1,10 @@
 'use server'
 
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import { getClientsByEmployeeId } from '@/actions/clients/get-clients'
 import { auth } from '@/auth'
 import { database } from '@/db'
-import { projects } from '@/db/schema'
+import { projects, users } from '@/db/schema'
 import type { Client, ExtendedProject, Project, User } from '@/db/schema'
 
 type ProjectWithRelations = Project & {
@@ -28,10 +28,12 @@ export async function getProjects(projectId?: Project['id']): Promise<{
     }
 
     const role = session.user.role
+    const userId = session.user.id
 
+    // This is to get the client count of the Employee themselves
     const { count: clientCount } = await getClientsByEmployeeId(session.user.id)
 
-    if ((!clientCount || !clientCount) && role !== 'Admin') {
+    if (!clientCount && !['Admin', 'Supervisor'].includes(role)) {
       return { success: false, error: 'no clients' }
     }
 
@@ -48,6 +50,31 @@ export async function getProjects(projectId?: Project['id']): Promise<{
             with: { assignedEmployee: true, client: true },
             orderBy: (projects, { desc }) => [desc(projects.updatedAt)]
           }))
+    } else if (role === 'Supervisor') {
+      // Get all employees under this supervisor
+      const employeesUnderSupervisor = await database
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.supervisorId, userId), eq(users.role, 'Employee')))
+
+      const employeeIds = employeesUnderSupervisor.map(emp => emp.id)
+
+      if (employeeIds.length > 0) {
+        // Get all projects assigned to these employees
+        projectId
+          ? (projectsWithRelations = await database.query.projects.findMany({
+              with: { assignedEmployee: true, client: true },
+              where: and(
+                eq(projects.id, projectId),
+                inArray(projects.assignedEmployeeId, employeeIds)
+              )
+            }))
+          : (projectsWithRelations = await database.query.projects.findMany({
+              with: { assignedEmployee: true, client: true },
+              orderBy: (projects, { desc }) => [desc(projects.updatedAt)],
+              where: inArray(projects.assignedEmployeeId, employeeIds)
+            }))
+      }
     } else {
       projectId
         ? (projectsWithRelations = await database.query.projects.findMany({

@@ -74,6 +74,8 @@ export default function ProjectsClientPage() {
     setLoading(true)
     const result = await getProjects()
 
+    console.log(result)
+
     if (!result.success) {
       setErrorMsg(result.error)
     }
