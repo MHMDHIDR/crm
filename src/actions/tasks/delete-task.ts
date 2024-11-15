@@ -1,6 +1,7 @@
 'use server'
 
 import { eq, inArray } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { projects, tasks } from '@/db/schema'
@@ -13,10 +14,12 @@ import { projects, tasks } from '@/db/schema'
 export async function deleteTasks(
   taskIds: string[]
 ): Promise<{ success: boolean; message: string }> {
+  const actionsTranslations = await getTranslations('actions')
+
   try {
     // Validate input
     if (!taskIds.length) {
-      return { success: false, message: 'No tasks selected for deletion' }
+      return { success: false, message: actionsTranslations('noTasksSelected') }
     }
 
     // First, get the task details with project names before deletion
@@ -34,7 +37,7 @@ export async function deleteTasks(
     const deletedTasks = await database.delete(tasks).where(inArray(tasks.id, taskIds)).returning()
 
     if (!deletedTasks.length) {
-      return { success: false, message: 'Failed to delete tasks. Please try again.' }
+      return { success: false, message: actionsTranslations('failedDeleteTasks') }
     }
 
     // Create event entries for all deleted tasks using the project names we fetched
@@ -54,13 +57,13 @@ export async function deleteTasks(
 
     return {
       success: true,
-      message: `Task${deletedTasks.length > 1 ? 's' : ''} deleted successfully`
+      message: actionsTranslations('tasksDeleted', { count: deletedTasks.length > 1 ? 's' : '' })
     }
   } catch (error) {
     console.error('Error deleting tasks:', error)
     return {
       success: false,
-      message: `Failed to Delete The Task. Please Try Again!`
+      message: actionsTranslations('failedDeleteTasks')
     }
   }
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { eq, or } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { UserRole, users } from '@/db/schema'
@@ -11,9 +12,11 @@ import type { User } from '@/db/schema'
  * @returns    Promise<{ success: boolean; data?: User[]; error?: string }>
  */
 export async function getUsers(): Promise<{ success: boolean; data?: User[]; error?: string }> {
+  const actionsTranslations = await getTranslations('actions')
+
   const session = await auth()
   if (!session || !session.user || session.user.role !== 'Admin') {
-    return { success: false, error: 'Unauthorized' }
+    return { success: false, error: actionsTranslations('unauthorized') }
   }
 
   const authorizedAdmin = session.user
@@ -27,7 +30,7 @@ export async function getUsers(): Promise<{ success: boolean; data?: User[]; err
 
     return { success: true, data: allUsers }
   } catch (error) {
-    return { success: false, error: 'Failed to fetch users' }
+    return { success: false, error: actionsTranslations('failedFetch') }
   }
 }
 
@@ -53,6 +56,8 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 export async function getUserById(
   userId: User['id']
 ): Promise<{ success: boolean; data?: User; error?: string }> {
+  const actionsTranslations = await getTranslations('actions')
+
   try {
     const user = await database.query.users.findFirst({
       where: eq(users.id, userId)
@@ -60,7 +65,7 @@ export async function getUserById(
 
     return { success: true, data: user }
   } catch (error) {
-    return { success: false, error: 'Failed to fetch users' }
+    return { success: false, error: actionsTranslations('failedFetch') }
   }
 }
 

@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
@@ -14,6 +15,8 @@ import type { UserSchemaType } from '@/validators/user'
 type CreateUserResult = { success: boolean; message: string }
 
 export async function createUser(data: UserSchemaType): Promise<CreateUserResult> {
+  const actionsTranslations = await getTranslations('actions')
+
   try {
     // Validate the input data
     const validatedData = userSchema.parse(data)
@@ -26,7 +29,10 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
       .limit(1)
 
     if (existingUser.length > 0) {
-      return { success: false, message: 'Email is already in use, please use a different email' }
+      return {
+        success: false,
+        message: actionsTranslations('usedEmail')
+      }
     }
 
     const hashedPassword = hashedString(validatedData.password)
@@ -43,10 +49,18 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         supervisorId: validatedData.supervisorId
       })
       .returning()
-    const addedEvent = await addEvent(`User ${newUser.name} created`)
+
+    const addedEvent = await addEvent(
+      actionsTranslations('userCreated', {
+        userName: newUser.name
+      })
+    )
 
     if (!newUser || !addedEvent.success) {
-      return { success: false, message: 'Failed to create user' }
+      return {
+        success: false,
+        message: actionsTranslations('failedCreateUser')
+      }
     }
 
     const verificationToken = await generateVerificationToken(newUser.email)
@@ -54,7 +68,10 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
 
     return {
       success: true,
-      message: `${newUser.name} has been Created Successfully 🎉.\nEmail has been sent to ${newUser.email} for verification.`
+      message: actionsTranslations('userCreatedWithVerification', {
+        userName: newUser.name,
+        userEmail: newUser.email
+      })
     }
   } catch (error) {
     // Handle Zod validation errors
@@ -62,14 +79,19 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
       const errorMessage = error.errors
         .map(err => `${err.path.join('.')}: ${err.message}`)
         .join('. ')
-      return { success: false, message: errorMessage }
+      return {
+        success: false,
+        message: actionsTranslations('validationError', {
+          errorMessage
+        })
+      }
     }
 
     // Handle other errors
     console.error('User creation error:', error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to create user. Please try again.'
+      message: error instanceof Error ? error.message : actionsTranslations('failedCreateUser')
     }
   }
 }

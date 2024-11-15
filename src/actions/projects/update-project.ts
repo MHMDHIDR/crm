@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
@@ -13,9 +14,11 @@ export async function updateProject(
   projectId: string,
   data: ProjectSchemaType
 ): Promise<UpdateProjectResult> {
+  const actionsTranslations = await getTranslations('actions')
+
   const session = await auth()
   if (!session?.user) {
-    return { success: false, message: 'Unauthorized' }
+    return { success: false, message: actionsTranslations('unauthorized') }
   }
 
   try {
@@ -27,7 +30,7 @@ export async function updateProject(
       .limit(1)
 
     if (existingProject.length > 0 && existingProject[0].id !== projectId) {
-      return { success: false, message: 'A project with this name already exists' }
+      return { success: false, message: actionsTranslations('similarProjectExists') }
     }
 
     // Update the project record
@@ -37,22 +40,23 @@ export async function updateProject(
       .where(eq(projects.id, projectId))
       .returning()
 
-    const addedEvent = await addEvent(`Project ${updatedProject.name} updated`)
+    const addedEvent = await addEvent(
+      actionsTranslations('updatedProject', { clientName: updatedProject.name })
+    )
 
     if (!updatedProject || !addedEvent.success) {
-      return { success: false, message: 'Failed to update project' }
+      return { success: false, message: actionsTranslations('failedUpdate') }
     }
 
     return {
       success: true,
-      message: `${updatedProject.name} has been Updated Successfully 🎉.`
+      message: actionsTranslations('updatedProject', { clientName: updatedProject.name })
     }
   } catch (error) {
     console.error('Project update error:', error)
     return {
       success: false,
-      message:
-        error instanceof Error ? error.message : 'Failed to update project. Please try again.'
+      message: error instanceof Error ? error.message : actionsTranslations('failedUpdate')
     }
   }
 }

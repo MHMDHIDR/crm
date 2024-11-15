@@ -1,6 +1,7 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { getUserById } from '@/actions/users/get-users'
 import { auth, update } from '@/auth'
@@ -27,14 +28,16 @@ type ExtendedSettingsInput = {
  * @returns Promise<{ success: string } | { error: string }> with success message or error
  */
 export const updateUser = async (values: ExtendedSettingsInput) => {
+  const actionsTranslations = await getTranslations('actions')
+
   const session = await auth()
   if (!session?.user) {
-    return { error: 'Unauthorized' }
+    return { error: actionsTranslations('unauthorized') }
   }
 
   const { data: dbUser } = await getUserById(values.id ?? session.user.id)
   if (!dbUser) {
-    return { error: 'Unauthorized' }
+    return { error: actionsTranslations('unauthorized') }
   }
 
   // Prepare fields to update only if they've changed or have a value
@@ -66,7 +69,7 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
   )
 
   if (Object.keys(filteredUpdates).length === 0) {
-    return { error: 'No changes detected' }
+    return { error: actionsTranslations('noChanges') }
   }
 
   const [updatedUser] = await database
@@ -77,7 +80,7 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
   const addedEvent = await addEvent(`Updated user ${updatedUser.name}.`)
 
   if (!updatedUser || !addedEvent.success) {
-    return { error: 'Failed to update settings' }
+    return { error: actionsTranslations('failedUpdate') }
   }
 
   update({
@@ -90,5 +93,5 @@ export const updateUser = async (values: ExtendedSettingsInput) => {
     }
   })
 
-  return { success: 'Settings Updated!' }
+  return { success: actionsTranslations('updatedSettings') }
 }

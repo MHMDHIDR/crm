@@ -1,6 +1,7 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { Project, projects } from '@/db/schema'
@@ -17,12 +18,14 @@ export async function toggleProjectStatus(
   projectIds: string[],
   status: ProjectStatus
 ): Promise<{ success: boolean; message?: string }> {
+  const actionsTranslations = await getTranslations('actions')
+
   try {
     // Validate input
     if (!projectIds.length) {
       return {
         success: false,
-        message: `No Projects Selected For ${status === 'active' ? 'Activation' : 'Deactivation'}! Please Select projects.`
+        message: actionsTranslations('noProjectsSelectedForStatus', { status })
       }
     }
 
@@ -37,13 +40,13 @@ export async function toggleProjectStatus(
     if (!toggledProjects.length) {
       return {
         success: false,
-        message: `Failed to ${status === 'active' ? 'activate' : 'deactivate'} projects`
+        message: actionsTranslations('failedActivateProjects', { status })
       }
     }
 
     // Create event entries for all updated projects
     const eventPromises = toggledProjects.map(project =>
-      addEvent(`${project.name} ${status === 'active' ? 'Activated' : 'Deactivated'}!`)
+      addEvent(actionsTranslations('activatedProject', { ProjectName: project.name, status }))
     )
     // Wait for all events to be added
     const eventResults = await Promise.all(eventPromises)
@@ -54,13 +57,13 @@ export async function toggleProjectStatus(
 
     return {
       success: true,
-      message: `${toggledProjects.length} project${toggledProjects.length > 1 ? 's' : ''} ${status === 'active' ? 'activated' : 'deactivated'} successfully`
+      message: actionsTranslations('projectsStatusChanged', {
+        count: toggledProjects.length,
+        status
+      })
     }
   } catch (error) {
     console.error(`Error ${status === 'active' ? 'activating' : 'deactivating'} projects:`, error)
-    return {
-      success: false,
-      message: `Failed to ${status === 'active' ? 'activate' : 'deactivate'} projects. Please try again.`
-    }
+    return { success: false, message: actionsTranslations('failedAction') }
   }
 }

@@ -1,6 +1,7 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
+import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { users } from '@/db/schema'
@@ -18,12 +19,14 @@ export async function toggleUserStatus(
   userIds: string[],
   status: UserStatus
 ): Promise<{ success: boolean; message?: string }> {
+  const actionsTranslations = await getTranslations('actions')
+
   try {
     // Validate input
     if (!userIds.length) {
       return {
         success: false,
-        message: `No Users Selected For ${status === 'suspend' ? 'Suspension' : 'Unsuspension'}! Please Select users.`
+        message: actionsTranslations('noUsersSelectedForStatus', { status })
       }
     }
 
@@ -37,7 +40,7 @@ export async function toggleUserStatus(
     if (!toggledUser.length) {
       return {
         success: false,
-        message: `Failed to ${status === 'suspend' ? 'suspend' : 'unsuspend'} users`
+        message: actionsTranslations('failedToggleUsers', { status })
       }
     }
 
@@ -54,13 +57,13 @@ export async function toggleUserStatus(
 
     return {
       success: true,
-      message: `Users ${status === 'suspend' ? 'suspended' : 'unsuspended'} successfully`
+      message: actionsTranslations('usersStatusChanged', { status })
     }
   } catch (error) {
     console.error(`Error ${status === 'suspend' ? 'suspending' : 'unsuspending'} users:`, error)
     return {
       success: false,
-      message: `Failed to ${status === 'suspend' ? 'suspend' : 'unsuspend'} users. Please try again.`
+      message: actionsTranslations('failedToggleUsers', { status })
     }
   }
 }

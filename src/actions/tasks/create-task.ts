@@ -1,5 +1,6 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
@@ -12,9 +13,11 @@ type CreateTaskResult = { success: boolean; message: string }
 export async function createTask(
   data: z.infer<typeof taskSchema> & { projectId: string }
 ): Promise<CreateTaskResult> {
+  const actionsTranslations = await getTranslations('actions')
+
   const session = await auth()
   if (!session?.user) {
-    return { success: false, message: 'Unauthorized' }
+    return { success: false, message: actionsTranslations('unauthorized') }
   }
 
   try {
@@ -25,18 +28,18 @@ export async function createTask(
     const addedEvent = await addEvent(`Task ${newTask.title} created`)
 
     if (!newTask || !addedEvent.success) {
-      return { success: false, message: 'Failed to create task' }
+      return { success: false, message: actionsTranslations('failedCreateTask') }
     }
 
     return {
       success: true,
-      message: `${newTask.title} has been created successfully 🎉.`
+      message: actionsTranslations('taskCreated', { taskTitle: newTask.title })
     }
   } catch (error) {
     console.error('Task creation error:', error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to create task. Please try again.'
+      message: error instanceof Error ? error.message : actionsTranslations('failedCreateTask')
     }
   }
 }
