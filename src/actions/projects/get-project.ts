@@ -4,7 +4,7 @@ import { and, eq, sql } from 'drizzle-orm'
 import { getClientsByEmployeeId } from '@/actions/clients/get-clients'
 import { auth } from '@/auth'
 import { database } from '@/db'
-import { clients, projects, users } from '@/db/schema'
+import { projects } from '@/db/schema'
 import type { Client, ExtendedProject, Project, User } from '@/db/schema'
 
 type ProjectWithRelations = Project & {

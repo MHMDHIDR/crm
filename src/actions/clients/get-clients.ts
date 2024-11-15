@@ -1,9 +1,9 @@
 'use server'
 
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { database } from '@/db'
-import { clients } from '@/db/schema'
+import { clients, users } from '@/db/schema'
 import type { Client } from '@/db/schema'
 
 /**
@@ -18,6 +18,7 @@ export async function getClients(): Promise<{ success: boolean; data?: Client[];
     }
 
     const role = session.user.role
+    const userId = session.user.id
 
     let allClients: Client[] = []
 
@@ -25,6 +26,21 @@ export async function getClients(): Promise<{ success: boolean; data?: Client[];
       allClients = await database.query.clients.findMany({
         orderBy: (clients, { desc }) => [desc(clients.email)]
       })
+    } else if (role === 'Supervisor') {
+      const employeesUnderSupervisor = await database
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.supervisorId, userId), eq(users.role, 'Employee')))
+
+      const employeeIds = employeesUnderSupervisor.map(emp => emp.id)
+
+      if (employeeIds.length > 0) {
+        // Get all clients assigned to these employees
+        allClients = await database.query.clients.findMany({
+          orderBy: (clients, { desc }) => [desc(clients.email)],
+          where: inArray(clients.assignedEmployeeId, employeeIds)
+        })
+      }
     } else {
       allClients = await database.query.clients.findMany({
         orderBy: (clients, { desc }) => [desc(clients.email)],
