@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { authenticate } from '@/actions/auth/auth'
 import { getUserLanguage } from '@/actions/users/user-language'
 import { getUserTheme } from '@/actions/users/user-theme'
+import { OpenTestUsers } from '@/components/custom/open-test-users'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -96,6 +97,8 @@ export default function SignInClientPage() {
             </p>
           )}
         </div>
+
+        <OpenTestUsers />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
