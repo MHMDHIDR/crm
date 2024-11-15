@@ -443,8 +443,15 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
       accessorKey: 'description',
       header: dashboardDataTableTranslations('headers.description'),
       cell: ({ row }) => {
-        const description = (row.original as ExtendedProject).description
-        return <span className='truncate'>{description}</span>
+        const description = (row.original as ExtendedProject).description || ''
+        const MAX_LENGTH = 30
+        return (
+          <span className='truncate' title={description}>
+            {description.length > MAX_LENGTH
+              ? `${description.substring(0, MAX_LENGTH)}...`
+              : description}
+          </span>
+        )
       }
     },
     {
