@@ -1,7 +1,6 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
@@ -11,12 +10,10 @@ import type { ProjectSchemaType } from '@/validators/project'
 type CreatProjectResult = { success: boolean; message: string }
 
 export async function createProject(data: ProjectSchemaType): Promise<CreatProjectResult> {
-  const actionsTranslations = await getTranslations('actions')
-
   // Get the current assigned employee ID
   const session = await auth()
   if (!session?.user) {
-    return { success: false, message: actionsTranslations('unauthorized') }
+    return { success: false, message: 'Unauthorized' }
   }
 
   try {
@@ -28,7 +25,7 @@ export async function createProject(data: ProjectSchemaType): Promise<CreatProje
       .limit(1)
 
     if (existingClient.length > 0) {
-      return { success: false, message: actionsTranslations('usedEmail') }
+      return { success: false, message: 'Email is already in use, please use a different email' }
     }
 
     // Create the project record
@@ -39,23 +36,22 @@ export async function createProject(data: ProjectSchemaType): Promise<CreatProje
         assignedEmployeeId: session.user.id
       })
       .returning()
-    const addedEvent = await addEvent(
-      actionsTranslations('projectCreated', { projectName: newProject.name })
-    )
+    const addedEvent = await addEvent(`Project ${newProject.name} created`)
 
     if (!newProject || !addedEvent.success) {
-      return { success: false, message: actionsTranslations('failedAction') }
+      return { success: false, message: 'Failed to create project' }
     }
 
     return {
       success: true,
-      message: actionsTranslations('projectCreated', { projectName: newProject.name })
+      message: `${newProject.name} has been Created Successfully 🎉.`
     }
   } catch (error) {
     console.error('Project creation error:', error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : actionsTranslations('failedAction')
+      message:
+        error instanceof Error ? error.message : 'Failed to create project. Please try again.'
     }
   }
 }

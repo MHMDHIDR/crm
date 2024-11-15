@@ -1,7 +1,6 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { projects } from '@/db/schema'
@@ -14,12 +13,10 @@ import { projects } from '@/db/schema'
 export async function deleteProjects(
   projectIds: string[]
 ): Promise<{ success: boolean; message?: string }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     // Validate input
     if (!projectIds.length) {
-      return { success: false, message: actionsTranslations('noProjectsSelected') }
+      return { success: false, message: 'No projects selected for deletion' }
     }
 
     // Delete projects from the database
@@ -29,12 +26,12 @@ export async function deleteProjects(
       .returning()
 
     if (!deletedProject.length) {
-      return { success: false, message: actionsTranslations('failedDelete') }
+      return { success: false, message: 'Failed to delete projects. Please try again.' }
     }
 
     // Create event entries for all updated projects
     const eventPromises = deletedProject.map(project =>
-      addEvent(actionsTranslations('projectDeleted', { projectName: project.name }))
+      addEvent(`Deleted ${project.name} Project!`)
     )
     // Wait for all events to be added
     const eventResults = await Promise.all(eventPromises)
@@ -43,9 +40,9 @@ export async function deleteProjects(
       console.warn('Some events failed to be recorded: ', eventResults)
     }
 
-    return { success: true, message: actionsTranslations('deletedSuccessfully') }
+    return { success: true, message: 'Projects deleted successfully' }
   } catch (error) {
     console.error('Error deleting projects:', error)
-    return { success: false, message: actionsTranslations('failedDelete') }
+    return { success: false, message: 'Failed to delete projects. Please try again.' }
   }
 }

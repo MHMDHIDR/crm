@@ -1,7 +1,6 @@
 'use server'
 
 import { inArray } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { Client, clients } from '@/db/schema'
@@ -18,16 +17,12 @@ export async function toggleClientStatus(
   clientIds: string[],
   status: ClientStatus
 ): Promise<{ success: boolean; message?: string }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     // Validate input
     if (!clientIds.length) {
       return {
         success: false,
-        message: actionsTranslations('noClientsSelectedForStatus', {
-          status: status === 'active' ? 'activation' : 'deactivation'
-        })
+        message: `No Clients Selected For ${status === 'active' ? 'Activation' : 'Deactivation'}! Please Select clients.`
       }
     }
 
@@ -42,13 +37,13 @@ export async function toggleClientStatus(
     if (!toggledClients.length) {
       return {
         success: false,
-        message: actionsTranslations('failedActivateClients', { status })
+        message: `Failed to ${status === 'active' ? 'activate' : 'deactivate'} clients`
       }
     }
 
     // Create event entries for all updated clients
     const eventPromises = toggledClients.map(client =>
-      addEvent(actionsTranslations('activatedClient', { clientName: client.name, status }))
+      addEvent(`${client.name} ${status === 'active' ? 'Activated' : 'Deactivated'}!`)
     )
     // Wait for all events to be added
     const eventResults = await Promise.all(eventPromises)
@@ -59,10 +54,13 @@ export async function toggleClientStatus(
 
     return {
       success: true,
-      message: actionsTranslations('clientsStatusChanged', { count: toggledClients.length, status })
+      message: `${toggledClients.length} client${toggledClients.length > 1 ? 's' : ''} ${status === 'active' ? 'activated' : 'deactivated'} successfully`
     }
   } catch (error) {
     console.error(`Error ${status === 'active' ? 'activating' : 'deactivating'} clients:`, error)
-    return { success: false, message: actionsTranslations('failedAction') }
+    return {
+      success: false,
+      message: `Failed to ${status === 'active' ? 'activate' : 'deactivate'} clients. Please try again.`
+    }
   }
 }

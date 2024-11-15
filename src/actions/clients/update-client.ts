@@ -1,7 +1,6 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
@@ -24,12 +23,10 @@ type ExtendedClientInput = {
  * @returns Promise<{ success: string } | { error: string }> with success message or error
  */
 export const updateClient = async (values: ExtendedClientInput) => {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const session = await auth()
     if (!session?.user) {
-      return { success: false, message: actionsTranslations('unauthorized') }
+      return { success: false, message: 'Unauthorized' }
     }
 
     // Validate the input data
@@ -55,7 +52,7 @@ export const updateClient = async (values: ExtendedClientInput) => {
     )
 
     if (Object.keys(filteredUpdates).length === 0) {
-      return { success: false, message: actionsTranslations('noChanges') }
+      return { success: false, message: 'No changes detected' }
     }
 
     // Update the client
@@ -66,21 +63,16 @@ export const updateClient = async (values: ExtendedClientInput) => {
       .returning()
 
     if (!updatedClient) {
-      return { success: false, message: actionsTranslations('failedUpdate') }
+      return { success: false, message: 'Failed to update client' }
     }
 
     // Log the event
-    const addedEvent = await addEvent(
-      actionsTranslations('updatedClient', { clientName: updatedClient.name })
-    )
+    const addedEvent = await addEvent(`Updated client ${updatedClient.name}.`)
     if (!addedEvent.success) {
       return { success: false, message: 'Failed to log event' }
     }
 
-    return {
-      success: true,
-      message: actionsTranslations('updatedClient', { clientName: updatedClient.name })
-    }
+    return { success: true, message: 'Client Updated Successfully!' }
   } catch (error) {
     console.error('Error updating client:', error)
 
@@ -91,6 +83,6 @@ export const updateClient = async (values: ExtendedClientInput) => {
       }))
       return { success: false, message: fieldErrors[0].message }
     }
-    return { success: false, message: actionsTranslations('failedUpdate') }
+    return { success: false, message: 'An error occurred while updating the client' }
   }
 }

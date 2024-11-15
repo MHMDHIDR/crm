@@ -1,7 +1,6 @@
 'use server'
 
 import { and, eq, inArray, sql } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { getClientsByEmployeeId } from '@/actions/clients/get-clients'
 import { auth } from '@/auth'
 import { database } from '@/db'
@@ -22,12 +21,10 @@ export async function getProjects(projectId?: Project['id']): Promise<{
   data?: ExtendedProject[]
   error?: string
 }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const session = await auth()
     if (!session) {
-      return { success: false, error: actionsTranslations('unauthorized') }
+      return { success: false, error: 'You must be logged in to fetch projects' }
     }
 
     const role = session.user.role

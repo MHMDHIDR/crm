@@ -1,7 +1,6 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { database } from '@/db'
@@ -41,12 +40,10 @@ export async function getUserLanguage(): Promise<UserPreferences['language']> {
 export async function updateUserLanguage(
   language: UserPreferences['language']
 ): Promise<{ success: boolean; message: string }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const session = await auth()
     if (!session?.user?.id) {
-      return { success: false, message: actionsTranslations('unauthorized') }
+      return { success: false, message: 'User not authenticated' }
     }
 
     // First try to update existing preferences
@@ -62,9 +59,9 @@ export async function updateUserLanguage(
     }
 
     revalidatePath('/')
-    return { success: true, message: actionsTranslations('LanguageChanged') }
+    return { success: true, message: 'Language updated successfully 🎉' }
   } catch (error) {
     console.error('Error updating language:', error)
-    return { success: false, message: actionsTranslations('failedUpdate') }
+    return { success: false, message: 'Error updating language!' }
   }
 }

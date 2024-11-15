@@ -1,7 +1,6 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
@@ -14,40 +13,27 @@ type UpdateTaskStatusParams = {
 }
 
 export async function updateTaskStatus({ taskId, status }: UpdateTaskStatusParams) {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const [updatedTask] = await database
       .update(tasks)
       .set({ status })
       .where(eq(tasks.id, taskId))
       .returning()
-    const addedEvent = await addEvent(
-      actionsTranslations('taskStatusUpdated', {
-        taskTitle: updatedTask.title,
-        status
-      })
-    )
+    const addedEvent = await addEvent(`Task ${updatedTask.title} status updated to ${status}`)
 
     if (!updatedTask || !addedEvent.success) {
-      return {
-        success: false,
-        message: actionsTranslations('failedUpdateTaskStatus')
-      }
+      return { success: false, message: 'Failed to update task status' }
     }
 
     return {
       success: true,
-      message: actionsTranslations('taskStatusUpdated', {
-        taskTitle: updatedTask.title,
-        status
-      })
+      message: `Task ${updatedTask.title} status updated successfully`
     }
   } catch (error) {
     console.error('Error updating task status:', error)
     return {
       success: false,
-      message: actionsTranslations('failedUpdateTaskStatus')
+      message: 'Failed to update task status'
     }
   }
 }
@@ -63,8 +49,6 @@ export async function updateTask({
   dueDate,
   status
 }: UpdateTaskParams) {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const [updatedTask] = await database
       .update(tasks)
@@ -77,31 +61,23 @@ export async function updateTask({
       .where(eq(tasks.id, taskId))
       .returning()
 
-    const addedEvent = await addEvent(
-      actionsTranslations('taskUpdated', {
-        taskTitle: updatedTask.title
-      })
-    )
+    const addedEvent = await addEvent(`Task "${updatedTask.title}" updated to ${status}`)
 
     if (!updatedTask || !addedEvent.success) {
-      return {
-        success: false,
-        message: actionsTranslations('failedUpdateTask')
-      }
+      return { success: false, message: 'Failed to update task' }
     }
 
     return {
       success: true,
-      message: actionsTranslations('taskUpdated', {
-        taskTitle: updatedTask.title
-      }),
+      message: `Task "${updatedTask.title}" updated successfully`,
       data: updatedTask
     }
   } catch (error) {
     console.error('Error updating task:', error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : actionsTranslations('unknownError')
+      message: 'Failed to update task',
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     }
   }
 }

@@ -1,7 +1,6 @@
 'use server'
 
 import { and, eq } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { tasks } from '@/db/schema'
@@ -17,12 +16,10 @@ export async function getTasks({ projectId }: { projectId: Project['id'] }): Pro
   data?: Task[]
   error?: string
 }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const session = await auth()
     if (!session) {
-      return { success: false, error: actionsTranslations('unauthorized') }
+      return { success: false, error: 'You must be logged in to fetch tasks' }
     }
 
     let allTasks: Task[] = []
@@ -33,7 +30,7 @@ export async function getTasks({ projectId }: { projectId: Project['id'] }): Pro
 
     return { success: true, data: allTasks }
   } catch (error) {
-    return { success: false, error: actionsTranslations('failedFetch') }
+    return { success: false, error: 'Failed to fetch tasks' }
   }
 }
 
@@ -47,12 +44,10 @@ export async function getTasksByStatus({ projectId }: { projectId: Project['id']
   data?: TasksByStatus
   error?: string
 }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const session = await auth()
     if (!session) {
-      return { success: false, error: actionsTranslations('unauthorized') }
+      return { success: false, error: 'You must be logged in to fetch tasks' }
     }
 
     const allTasks = await database.query.tasks.findMany({
@@ -78,6 +73,6 @@ export async function getTasksByStatus({ projectId }: { projectId: Project['id']
 
     return { success: true, data: tasksByStatus }
   } catch (error) {
-    return { success: false, error: actionsTranslations('failedFetch') }
+    return { success: false, error: 'Failed to fetch tasks' }
   }
 }

@@ -1,7 +1,6 @@
 'use server'
 
 import { and, eq, inArray, sql } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { clients, users } from '@/db/schema'
@@ -12,12 +11,10 @@ import type { Client } from '@/db/schema'
  * @returns    Promise<{ success: boolean; data?: Client[]; error?: string }>
  */
 export async function getClients(): Promise<{ success: boolean; data?: Client[]; error?: string }> {
-  const actionsTranslations = await getTranslations('actions')
-
   try {
     const session = await auth()
     if (!session) {
-      return { success: false, error: actionsTranslations('unauthorized') }
+      return { success: false, error: 'You must be logged in to fetch clients' }
     }
 
     const role = session.user.role
@@ -53,7 +50,7 @@ export async function getClients(): Promise<{ success: boolean; data?: Client[];
 
     return { success: true, data: allClients }
   } catch (error) {
-    return { success: false, error: actionsTranslations('failedAction') }
+    return { success: false, error: 'Failed to fetch clients' }
   }
 }
 

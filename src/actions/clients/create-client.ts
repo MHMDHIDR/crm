@@ -1,7 +1,6 @@
 'use server'
 
 import { eq } from 'drizzle-orm'
-import { getTranslations } from 'next-intl/server'
 import { addEvent } from '@/actions/events/add-event'
 import { auth } from '@/auth'
 import { database } from '@/db'
@@ -11,12 +10,10 @@ import type { ClientSchemaType } from '@/validators/client'
 type CreateClientResult = { success: boolean; message: string }
 
 export async function createClient(data: ClientSchemaType): Promise<CreateClientResult> {
-  const actionsTranslations = await getTranslations('actions')
-
   // Get the current assigned employee ID
   const session = await auth()
   if (!session?.user) {
-    return { success: false, message: actionsTranslations('unauthorized') }
+    return { success: false, message: 'Unauthorized' }
   }
 
   try {
@@ -28,7 +25,7 @@ export async function createClient(data: ClientSchemaType): Promise<CreateClient
       .limit(1)
 
     if (existingClient.length > 0) {
-      return { success: false, message: actionsTranslations('usedEmail') }
+      return { success: false, message: 'Email is already in use, please use a different email' }
     }
 
     // Create the client record
@@ -42,23 +39,21 @@ export async function createClient(data: ClientSchemaType): Promise<CreateClient
         assignedEmployeeId: session.user.id
       })
       .returning()
-    const addedEvent = await addEvent(
-      actionsTranslations('eventClientCreated', { clientName: newClient.name })
-    )
+    const addedEvent = await addEvent(`Client ${newClient.name} created`)
 
     if (!newClient || !addedEvent.success) {
-      return { success: false, message: actionsTranslations('failedAction') }
+      return { success: false, message: 'Failed to create client' }
     }
 
     return {
       success: true,
-      message: actionsTranslations('eventClientCreated', { clientName: newClient.name })
+      message: `${newClient.name} File has been Created Successfully 🎉.`
     }
   } catch (error) {
     console.error('Client creation error:', error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : actionsTranslations('failedAction')
+      message: error instanceof Error ? error.message : 'Failed to create client. Please try again.'
     }
   }
 }

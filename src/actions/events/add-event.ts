@@ -1,6 +1,5 @@
 'use server'
 
-import { getTranslations } from 'next-intl/server'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { Event, events, UserRole } from '@/db/schema'
@@ -19,8 +18,6 @@ type EventOptions = {
  * @returns Object with success status and message
  */
 export async function addEvent(description: string, options: EventOptions = {}) {
-  const actionsTranslations = await getTranslations('actions')
-
   const { skipAuth = false, userId, userName, userRole } = options
 
   // If not skipping auth, get the current session
@@ -28,7 +25,7 @@ export async function addEvent(description: string, options: EventOptions = {}) 
   if (!skipAuth) {
     const session = await auth()
     if (!session?.user) {
-      return { success: false, message: actionsTranslations('unauthorized'), event: null }
+      return { success: false, message: 'Unauthorized', event: null }
     }
     user = session.user
   }
