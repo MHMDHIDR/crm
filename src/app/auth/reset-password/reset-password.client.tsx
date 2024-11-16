@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { redirect } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
+import { defaultLocale, locales, redirect, usePathname, useRouter } from '@/i18n/routing'
 import { userSchema } from '@/validators/user'
 
 // Create reset password schema with optional 2FA code
@@ -27,6 +28,7 @@ type resetPasswordData = z.infer<typeof resetPasswordSchema>
 export default function ResetPasswordClientPage() {
   const toast = useToast()
   const [isPending, startTransition] = useTransition()
+  const locale = useLocale()
 
   const form = useForm<resetPasswordData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -52,7 +54,7 @@ export default function ResetPasswordClientPage() {
         toast.error('An error occurred during resetting password')
       }
 
-      redirect('/auth/signin')
+      redirect({ href: '/auth/signin', locale })
     })
   }
 

@@ -13,7 +13,6 @@ import {
 } from '@tanstack/react-table'
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteClients } from '@/actions/clients/delete-client'
 import { getClients } from '@/actions/clients/get-clients'
@@ -42,6 +41,7 @@ import {
 } from '@/components/ui/table'
 import { useSharedColumns } from '@/hooks/use-shared-columns'
 import { useToast } from '@/hooks/use-toast'
+import { Link } from '@/i18n/routing'
 import type { Client } from '@/db/schema'
 
 export default function ClientsPageClient() {

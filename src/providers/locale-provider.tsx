@@ -1,9 +1,8 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
 import { createContext, useContext, useState } from 'react'
-import { defaultLocale, locales } from '@/i18n/config'
-import type { Locale } from '@/i18n/config'
+import { defaultLocale, locales, usePathname, useRouter } from '@/i18n/routing'
+import type { Locale } from '@/i18n/routing'
 
 type LocaleContextType = {
   locale: Locale
@@ -19,7 +18,7 @@ export function LocaleProvider({
   children: React.ReactNode
   initialLocale?: Locale
 }) {
-  const [locale, setLocaleState] = useState<Locale>(initialLocale)
+  const [locale, setLocaleState] = useState<Locale>(initialLocale || defaultLocale)
   const router = useRouter()
   const pathname = usePathname()
 

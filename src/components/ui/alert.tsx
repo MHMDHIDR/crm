@@ -1,7 +1,6 @@
 'use client'
 
 import { cva } from 'class-variance-authority'
-import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { cn } from '@/lib/cn'
 import type { VariantProps } from 'class-variance-authority'

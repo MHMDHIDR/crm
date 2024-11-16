@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { Bell, Calendar } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import Link from 'next/link'
 import { checkUserDeadlines } from '@/actions/notifications/deadline'
 import {
   getUnreadNotificationsCount,
@@ -13,6 +12,7 @@ import EmptyState from '@/components/custom/empty-state'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Link } from '@/i18n/routing'
 
 export default async function NotificationsPage() {
   const session = await auth()
@@ -82,9 +82,9 @@ export default async function NotificationsPage() {
                 <Link
                   href={
                     notification.type === 'project_deadline'
-                      ? '/dashboard/projects/' + notification.referenceId
+                      ? `/dashboard/projects/${notification.referenceId}`
                       : notification.type === 'task_deadline'
-                        ? '/dashboard/projects/' + notification.referenceId
+                        ? `/dashboard/projects/${notification.referenceId}`
                         : ''
                   }
                 >

@@ -12,7 +12,6 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteProjects } from '@/actions/projects/delete-project'
 import { getProjects } from '@/actions/projects/get-project'
@@ -41,6 +40,7 @@ import {
 } from '@/components/ui/table'
 import { useSharedColumns } from '@/hooks/use-shared-columns'
 import { useToast } from '@/hooks/use-toast'
+import { Link } from '@/i18n/routing'
 import { clsx } from '@/lib/cn'
 import type { ExtendedProject } from '@/db/schema'
 

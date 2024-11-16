@@ -1,7 +1,7 @@
 import { Briefcase, MenuIcon, XIcon } from 'lucide-react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { UserSession } from '@/db/schema'
+import { Link } from '@/i18n/routing'
 import { SignOutButton } from './signout-button'
 
 export default function Nav({ user }: { user: UserSession }) {

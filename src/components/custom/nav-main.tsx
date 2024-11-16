@@ -2,7 +2,6 @@
 
 import { ChevronRight, Link2Icon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { ReactElement } from 'react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
@@ -16,6 +15,7 @@ import {
   SidebarMenuSubItem,
   useSidebar
 } from '@/components/ui/sidebar'
+import { Link } from '@/i18n/routing'
 import type { LucideIcon } from 'lucide-react'
 
 type IconType = LucideIcon | ReactElement

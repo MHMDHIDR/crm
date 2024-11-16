@@ -3,8 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -25,6 +23,7 @@ import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
+import { Link, redirect } from '@/i18n/routing'
 import { useLocale } from '@/providers/locale-provider'
 import { userSchema } from '@/validators/user'
 
@@ -40,7 +39,7 @@ export default function SignInClientPage() {
   const [showTwoFactor, setShowTwoFactor] = useState(false)
   const [isPending, startTransition] = useTransition()
   const { setTheme: setProviderTheme } = useTheme()
-  const { setLocale } = useLocale()
+  const { setLocale, locale } = useLocale()
 
   const form = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
@@ -82,7 +81,7 @@ export default function SignInClientPage() {
         toast.error('An error occurred during sign in')
       }
 
-      redirect(env.NEXT_PUBLIC_DEFAULT_REDIRECT)
+      redirect({ href: env.NEXT_PUBLIC_DEFAULT_REDIRECT, locale })
     })
   }
 

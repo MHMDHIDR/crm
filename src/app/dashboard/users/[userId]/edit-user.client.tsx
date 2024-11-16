@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'
@@ -36,6 +35,7 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Switch } from '@/components/ui/switch'
 import { User, UserRole } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from '@/i18n/routing'
 
 export default function EditUserPageClient({ user }: { user: User }) {
   const [isPending, startTransition] = useTransition()

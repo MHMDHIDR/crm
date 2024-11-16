@@ -1,7 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown, Ban, MoreHorizontal, Pencil, Trash } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -13,6 +12,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Event, ExtendedProject, Project } from '@/db/schema'
+import { Link } from '@/i18n/routing'
 import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 import { useLocale } from '@/providers/locale-provider'

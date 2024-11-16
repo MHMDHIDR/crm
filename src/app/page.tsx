@@ -1,6 +1,5 @@
 import { CheckIcon, ClipboardList, Users } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
-import Link from 'next/link'
 import { auth } from '@/auth'
 import Footer from '@/components/custom/footer'
 import Nav from '@/components/custom/nav'
@@ -14,6 +13,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { UserSession } from '@/db/schema'
+import { Link } from '@/i18n/routing'
 
 export default async function HomePage() {
   const session = await auth()
