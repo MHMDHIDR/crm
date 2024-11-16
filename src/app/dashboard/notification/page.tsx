@@ -57,13 +57,18 @@ export default async function NotificationsPage() {
         userNotifications.map(notification => (
           <Alert
             key={notification.id}
-            className={clsx('hover:-translate-y-1.5 transition-transform hover:shadow', {
-              'bg-gray-50': notification.isRead,
-              'bg-blue-50': !notification.isRead
-            })}
+            className={clsx(
+              'md:hover:-translate-y-1.5 transition-transform md:hover:shadow mb-1.5 md:mb-2.5',
+              {
+                'bg-gray-50': notification.isRead,
+                'bg-blue-50': !notification.isRead
+              }
+            )}
           >
-            <Calendar className='h-4 w-4' />
-            <AlertTitle>{notification.title}</AlertTitle>
+            <header className='flex items-center gap-x-3'>
+              <Calendar className='h-4 w-4' />
+              <AlertTitle className='font-bold'>{notification.title}</AlertTitle>
+            </header>
             <AlertDescription className='flex flex-col gap-1.5 sm:flex-row sm:items-center'>
               <span className='flex flex-1'>{notification.message}</span>
               <div className='flex'>
