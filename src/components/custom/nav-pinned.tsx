@@ -2,13 +2,13 @@
 
 import { PinIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
+import { Collapsible } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarMenuLink
 } from '@/components/ui/sidebar'
 import type { LucideIcon } from 'lucide-react'
 
@@ -24,21 +24,26 @@ export function NavPinned({
   const navMenuTranslations = useTranslations('DashboardSidebar.labels')
 
   return (
-    <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
+    <SidebarGroup>
       <SidebarGroupLabel className='flex gap-x-1.5 select-none'>
         <span>{navMenuTranslations('pinned.title')}</span>
         <PinIcon className='rotate-45' />
       </SidebarGroupLabel>
       <SidebarMenu>
         {pinned.map(item => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <Link href={item.url}>
+          <Collapsible
+            key={item.name}
+            defaultOpen={item.url === '/dashboard'}
+            className='group/collapsible'
+            asChild
+          >
+            <SidebarMenuItem>
+              <SidebarMenuLink tooltip={item.name} key={item.name} href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+              </SidebarMenuLink>
+            </SidebarMenuItem>
+          </Collapsible>
         ))}
       </SidebarMenu>
     </SidebarGroup>

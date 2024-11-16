@@ -18,10 +18,10 @@ import { deleteProjects } from '@/actions/projects/delete-project'
 import { getProjects } from '@/actions/projects/get-project'
 import { toggleProjectStatus } from '@/actions/projects/toggle-project-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
+import { TablePagination } from '@/components/custom/data-table/table-pagination'
+import { BulkAction, TableToolbar } from '@/components/custom/data-table/table-toolbar'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
-import { TablePagination } from '@/components/custom/table-pagination'
-import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,

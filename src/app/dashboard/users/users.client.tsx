@@ -18,10 +18,10 @@ import { deleteUsers } from '@/actions/users/delete-user'
 import { getUsers } from '@/actions/users/get-users'
 import { toggleUserStatus } from '@/actions/users/toggle-user-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
+import { TablePagination } from '@/components/custom/data-table/table-pagination'
+import { BulkAction, TableToolbar } from '@/components/custom/data-table/table-toolbar'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
-import { TablePagination } from '@/components/custom/table-pagination'
-import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,

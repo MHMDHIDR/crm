@@ -1,6 +1,6 @@
 'use client'
 
-import { BadgeCheck, Bell, ChevronsUpDown, LogOut, Paintbrush2 } from 'lucide-react'
+import { BadgeCheck, ChevronsUpDown, LogOut, Paintbrush2 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { addEvent } from '@/actions/events/add-event'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -82,10 +82,6 @@ export function NavUser({ user }: { user: UserSession }) {
                 <Paintbrush2 />
                 Preferences
               </DropdownMenuLink>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignout}>

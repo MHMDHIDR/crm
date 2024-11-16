@@ -14,10 +14,10 @@ import {
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useState } from 'react'
 import { getEvents } from '@/actions/events/get-events'
+import { TablePagination } from '@/components/custom/data-table/table-pagination'
+import { TableToolbar } from '@/components/custom/data-table/table-toolbar'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
-import { TablePagination } from '@/components/custom/table-pagination'
-import { TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,

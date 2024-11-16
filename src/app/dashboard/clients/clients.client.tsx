@@ -19,10 +19,10 @@ import { deleteClients } from '@/actions/clients/delete-client'
 import { getClients } from '@/actions/clients/get-clients'
 import { toggleClientStatus } from '@/actions/clients/toggle-client-status'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
+import { TablePagination } from '@/components/custom/data-table/table-pagination'
+import { BulkAction, TableToolbar } from '@/components/custom/data-table/table-toolbar'
 import EmptyState from '@/components/custom/empty-state'
 import { LoadingCard } from '@/components/custom/loading'
-import { TablePagination } from '@/components/custom/table-pagination'
-import { BulkAction, TableToolbar } from '@/components/custom/table-toolbar'
 import {
   Breadcrumb,
   BreadcrumbItem,

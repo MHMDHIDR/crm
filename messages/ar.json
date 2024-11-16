@@ -107,6 +107,9 @@
     },
     "events": {
       "title": "الأحداث"
+    },
+    "notifications": {
+      "title": "الإشعارات"
     }
   },
   "notFound": {

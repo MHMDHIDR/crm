@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  Bell,
   FileUser,
   Frame,
   Group,
@@ -142,7 +143,12 @@ export function DashboardSidebar({
               icon: MousePointerClick
             }
           ]
-        : [])
+        : []),
+      {
+        title: dashboardSidebarTranslations('notifications.title'),
+        url: '/dashboard/notification',
+        icon: Bell
+      }
     ]
   }
 

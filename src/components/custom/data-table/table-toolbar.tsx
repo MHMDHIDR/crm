@@ -2,6 +2,10 @@ import { Table } from '@tanstack/react-table'
 import { ChevronDown, SettingsIcon, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
+import {
+  DataTableFacetedFilter,
+  DataTableFilterField
+} from '@/components/custom/data-table/data-table-faceted-filter'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,10 +17,6 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import {
-  DataTableFacetedFilter,
-  DataTableFilterField
-} from './data-table/data-table-faceted-filter'
 
 export type BulkAction = {
   label: string

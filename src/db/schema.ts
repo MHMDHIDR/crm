@@ -27,6 +27,16 @@ export const taskStatusEnum = pgEnum('task_status', [
 export const themeEnum = pgEnum('theme', ['light', 'dark'])
 export const languageEnum = pgEnum('language', ['en', 'ar'])
 
+export const NotificationType = {
+  PROJECT_DEADLINE: 'project_deadline',
+  TASK_DEADLINE: 'task_deadline'
+} as const
+
+export const notificationTypeEnum = pgEnum('notification_type', [
+  NotificationType.PROJECT_DEADLINE,
+  NotificationType.TASK_DEADLINE
+])
+
 export type User = typeof users.$inferSelect
 export type UserRole = (typeof userRoleEnum.enumValues)[number]
 export type UserSession = {
@@ -56,6 +66,8 @@ export type TasksByStatus = {
 }
 
 export type Event = typeof events.$inferSelect
+
+export type Notification = typeof notifications.$inferSelect
 
 export const users = pgTable('users', {
   id: text('id')
@@ -149,6 +161,23 @@ export const twoFactorConfirmations = pgTable(
   })
 )
 
+export const notifications = pgTable('notifications', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  type: notificationTypeEnum('type').notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  referenceId: text('reference_id').notNull(), // Project or Task ID
+  isRead: boolean('is_read').default(false).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' })
+    .notNull()
+    .$defaultFn(() => new Date())
+})
+
 export const events = pgTable('events', {
   id: text('id')
     .primaryKey()
@@ -239,4 +268,8 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
 
 export const eventsRelations = relations(events, ({ one }) => ({
   user: one(users, { fields: [events.userId], references: [users.id] })
+}))
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, { fields: [notifications.userId], references: [users.id] })
 }))
