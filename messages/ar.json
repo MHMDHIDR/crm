@@ -205,6 +205,32 @@
         }
       }
     },
+    "tasks": {
+      "breadcrumb": {
+        "dashboard": "اللوحة الرئيسية",
+        "title": "المهام"
+      },
+      "newTask": {
+        "title": "عنوان المهمة",
+        "description": "وصف المهمة",
+        "dueDate": "تاريخ الانتهاء",
+        "pickDate": "اختر تاريخاً",
+        "status": "الحالة",
+        "createTask": "إنشاء مهمة",
+        "sheet": {
+          "createDescription": "الرجاء إدخال تفاصيل المهمة.",
+          "updateDescription": "الرجاء تحديث تفاصيل المهمة."
+        }
+      },
+      "updateTask": "تحديث المهمة",
+      "newProject": "مشروع جديد",
+      "noTasks": "لا توجد مهام",
+      "pending": "معلق",
+      "inProgress": "قيد التنفيذ",
+      "completed": "منجز",
+      "updateProject": "تحديث المشروع",
+      "updateProjectDetails": "تحديث تفاصيل المشروع"
+    },
     "clients": {
       "breadcrumb": {
         "dashboard": "لوحة التحكم الرئيسية"
@@ -409,6 +435,15 @@
         },
         "submit": "إنشاء مستخدم"
       }
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "empty": {
+        "title": "لا توجد إشعارات",
+        "message": "عذراً، لم يتم العثور على أي إشعارات جديدة."
+      },
+      "markAsRead": "وضع علامة كمقروء",
+      "viewDetails": "عرض التفاصيل"
     },
     "dataTable": {
       "columns": {

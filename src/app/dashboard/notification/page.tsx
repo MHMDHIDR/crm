@@ -1,5 +1,7 @@
 import clsx from 'clsx'
 import { Bell, Calendar } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import { checkUserDeadlines } from '@/actions/notifications/deadline'
 import {
   getUnreadNotificationsCount,
@@ -15,6 +17,7 @@ import { Button } from '@/components/ui/button'
 export default async function NotificationsPage() {
   const session = await auth()
   if (!session) return null
+  const notificationTranslations = await getTranslations('dashboard.notifications')
 
   // Check for new notifications whenever the page loads
   await checkUserDeadlines(session.user.id)
@@ -30,8 +33,8 @@ export default async function NotificationsPage() {
     <div className='container mx-auto p-6'>
       <div className='flex items-center gap-2 mb-6'>
         <Bell className='h-6 w-6' />
-        <h1 className='flex items-center space-x-2 text-2xl font-bold'>
-          <span>Notifications</span>
+        <h1 className='flex items-center gap-x-2 text-xl font-bold'>
+          <span>{notificationTranslations('title')}</span>
           {unreadNotificationsCount > 0 && (
             <Badge variant={'destructive'} className={'text-base select-none'}>
               {unreadNotificationsCount}
@@ -40,37 +43,30 @@ export default async function NotificationsPage() {
         </h1>
       </div>
 
-      <div className='space-y-4'>
-        {userNotifications.length === 0 ? (
-          <Alert className='select-none'>
-            <AlertTitle className='flex items-center gap-x-2'>
-              <Calendar className='h-4 w-4' />
-              <span>No Notifications!</span>
-            </AlertTitle>
-            <AlertDescription>
-              <EmptyState>You're all caught up! No pending notifications at the moment.</EmptyState>
-            </AlertDescription>
-          </Alert>
-        ) : (
-          userNotifications.map(notification => (
-            <Alert
-              key={notification.id}
-              className={clsx('hover:-translate-y-1.5 transition-transform hover:shadow', {
-                'bg-gray-50': notification.isRead,
-                'bg-blue-50': !notification.isRead
-              })}
-              href={
-                notification.type === 'project_deadline'
-                  ? '/dashboard/projects/' + notification.referenceId
-                  : 'task_deadline'
-                    ? '/dashboard/projects/' + notification.referenceId
-                    : ''
-              }
-            >
-              <Calendar className='h-4 w-4' />
-              <AlertTitle>{notification.title}</AlertTitle>
-              <AlertDescription className='flex justify-between items-center'>
-                <span>{notification.message}</span>
+      {userNotifications.length === 0 ? (
+        <Alert className='select-none'>
+          <AlertTitle className='flex items-center gap-x-2'>
+            <Calendar className='h-4 w-4' />
+            <span>{notificationTranslations('empty.title')}</span>
+          </AlertTitle>
+          <AlertDescription>
+            <EmptyState>{notificationTranslations('empty.message')}</EmptyState>
+          </AlertDescription>
+        </Alert>
+      ) : (
+        userNotifications.map(notification => (
+          <Alert
+            key={notification.id}
+            className={clsx('hover:-translate-y-1.5 transition-transform hover:shadow', {
+              'bg-gray-50': notification.isRead,
+              'bg-blue-50': !notification.isRead
+            })}
+          >
+            <Calendar className='h-4 w-4' />
+            <AlertTitle>{notification.title}</AlertTitle>
+            <AlertDescription className='flex flex-col gap-1.5 sm:flex-row sm:items-center'>
+              <span className='flex flex-1'>{notification.message}</span>
+              <div className='flex'>
                 {!notification.isRead && (
                   <form
                     action={async () => {
@@ -79,15 +75,28 @@ export default async function NotificationsPage() {
                     }}
                   >
                     <Button variant='outline' size='sm'>
-                      Mark as Read
+                      {notificationTranslations('markAsRead')}
                     </Button>
                   </form>
                 )}
-              </AlertDescription>
-            </Alert>
-          ))
-        )}
-      </div>
+                <Link
+                  href={
+                    notification.type === 'project_deadline'
+                      ? '/dashboard/projects/' + notification.referenceId
+                      : notification.type === 'task_deadline'
+                        ? '/dashboard/projects/' + notification.referenceId
+                        : ''
+                  }
+                >
+                  <Button variant='link' size='sm' type='button'>
+                    {notificationTranslations('viewDetails')}
+                  </Button>
+                </Link>
+              </div>
+            </AlertDescription>
+          </Alert>
+        ))
+      )}
     </div>
   )
 }

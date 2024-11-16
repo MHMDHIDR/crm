@@ -138,14 +138,15 @@ function Column({
         return 0
     }
   }
+  const tasksTranslation = useTranslations('dashboard.tasks')
 
   return (
     <Card className='bg-slate-50 dark:bg-slate-950 max-h-fit'>
       <CardHeader className='px-4 pb-1'>
-        <CardTitle>
-          {title}
+        <CardTitle className='flex gap-x-1.5 items-center'>
+          <span>{title}</span>
           <Badge
-            className='ml-2 rounded-full'
+            className='rounded-full'
             variant={
               status === 'pending' ? 'outline' : status === 'in-progress' ? 'warning' : 'success'
             }
@@ -176,8 +177,10 @@ function Column({
               ) : (
                 !isLoading &&
                 tasks.length === 0 && (
-                  //Important: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
-                  <div className='text-sm text-gray-400 text-center min-w-[21rem]'>No Tasks</div>
+                  //IMPORTANT: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
+                  <div className='text-sm text-gray-400 text-center min-w-[21rem]'>
+                    {tasksTranslation('noTasks')}
+                  </div>
                 )
               )}
               {tasks.map((task, index) => (
@@ -211,8 +214,9 @@ export default function ProjectTasksClientPage({
   initialProject,
   initialTasksCount
 }: ProjectTasksClientPageProps) {
-  const [project, setProject] = useState<ExtendedProject | undefined>(initialProject)
+  const tasksTranslation = useTranslations('dashboard.tasks')
 
+  const [project, setProject] = useState<ExtendedProject | undefined>(initialProject)
   const [isUpdateTaskSheetOpen, setIsUpdateTaskSheetOpen] = useState(false)
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
@@ -358,10 +362,12 @@ export default function ProjectTasksClientPage({
           <Breadcrumb className='flex-1'>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href='/dashboard'>
+                  {tasksTranslation('breadcrumb.dashboard')}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
-              <BreadcrumbItem>Tasks</BreadcrumbItem>
+              <BreadcrumbItem>{tasksTranslation('breadcrumb.title')}</BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
@@ -374,22 +380,22 @@ export default function ProjectTasksClientPage({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className='flex flex-col gap-y-1'>
-            <DropdownMenuLink href='/dashboard/create-project'>
+            <DropdownMenuLink href='/dashboard/create-project' className='flex gap-x-4 rtl:rtl'>
               <ShoppingBagIcon className='w-5 h-5' />
-              <span>New Project</span>
+              <span>{tasksTranslation('newProject')}</span>
             </DropdownMenuLink>
 
             <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
               <DialogTrigger asChild className='text-green-50 bg-gray-700 hover:bg-gray-900'>
-                <Button size='sm' className='px-0'>
+                <Button size='sm' className='flex gap-x-4 rtl:rtl'>
                   <PenBoxIcon className='w-5 h-5' />
-                  Update Project
+                  {tasksTranslation('updateProject')}
                 </Button>
               </DialogTrigger>
               <DialogContent className='md:max-w-3xl'>
                 <DialogHeader>
-                  <DialogTitle>Update Project</DialogTitle>
-                  <DialogDescription>Update Project Details.</DialogDescription>
+                  <DialogTitle>{tasksTranslation('updateProject')}</DialogTitle>
+                  <DialogDescription>{tasksTranslation('updateProjectDetails')}</DialogDescription>
                 </DialogHeader>
                 <ProjectEdit
                   project={project}
@@ -408,16 +414,20 @@ export default function ProjectTasksClientPage({
               onClick={() => setSelectedTask(null)}
             >
               <Notebook className='w-5 h-5' />
-              <strong>New</strong>
+              <strong>{tasksTranslation('newTask.createTask')}</strong>
             </Button>
           </SheetTrigger>
           <SheetContent side='bottom'>
             <SheetHeader>
-              <SheetTitle>{selectedTask ? 'Update Task' : 'Create Task'}</SheetTitle>
-              <SheetDescription>
+              <SheetTitle className='text-center md:text-2xl'>
                 {selectedTask
-                  ? 'Update the task details.'
-                  : 'Fill in the details for your new task.'}
+                  ? tasksTranslation('updateTask')
+                  : tasksTranslation('newTask.createTask')}
+              </SheetTitle>
+              <SheetDescription className='text-center'>
+                {selectedTask
+                  ? tasksTranslation('newTask.sheet.updateDescription')
+                  : tasksTranslation('newTask.sheet.createDescription')}
               </SheetDescription>
             </SheetHeader>
             <TaskForm
@@ -425,7 +435,11 @@ export default function ProjectTasksClientPage({
               onSuccess={() => handleSheetOpenChange(false)}
               onDelete={handleDeleteTask}
               initialData={selectedTask || undefined}
-              submitButtonText={selectedTask ? 'Update Task' : 'Create Task'}
+              submitButtonText={
+                selectedTask
+                  ? tasksTranslation('updateTask')
+                  : tasksTranslation('newTask.createTask')
+              }
               isEditing={!!selectedTask}
             />
           </SheetContent>
@@ -437,7 +451,7 @@ export default function ProjectTasksClientPage({
           <div className='flex justify-start min-w-max'>
             <div className='grid grid-cols-3 gap-6 mt-5 mb-10'>
               <Column
-                title='Pending'
+                title={tasksTranslation('pending')}
                 tasks={tasks.pending}
                 status='pending'
                 onViewDetails={handleViewDetails}
@@ -445,7 +459,7 @@ export default function ProjectTasksClientPage({
                 isLoading={isLoading}
               />
               <Column
-                title='In Progress'
+                title={tasksTranslation('inProgress')}
                 tasks={tasks['in-progress']}
                 status='in-progress'
                 onViewDetails={handleViewDetails}
@@ -453,7 +467,7 @@ export default function ProjectTasksClientPage({
                 isLoading={isLoading}
               />
               <Column
-                title='Completed'
+                title={tasksTranslation('completed')}
                 tasks={tasks.completed}
                 status='completed'
                 onViewDetails={handleViewDetails}

@@ -205,6 +205,32 @@
         }
       }
     },
+    "tasks": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "title": "Tasks"
+      },
+      "newTask": {
+        "title": "Task Title",
+        "description": "Description",
+        "dueDate": "Due Date",
+        "pickDate": "Pick a date",
+        "status": "Status",
+        "createTask": "Create Task",
+        "sheet": {
+          "createDescription": "Fill in the details for your new task.",
+          "updateDescription": "Update the task details."
+        }
+      },
+      "updateTask": "Update Task",
+      "newProject": "New Project",
+      "noTasks": "No tasks found.",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "updateProject": "Update Project",
+      "updateProjectDetails": "Update Project Details"
+    },
     "clients": {
       "breadcrumb": {
         "dashboard": "Main Dashboard"
@@ -409,6 +435,15 @@
         },
         "submit": "Create User"
       }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "empty": {
+        "title": "No Notifications",
+        "message": "You Are All Caught up! No Pending Notifications At The Moment 🎉"
+      },
+      "markAsRead": "Mark as Read",
+      "viewDetails": "View Details"
     },
     "dataTable": {
       "columns": {

@@ -98,7 +98,7 @@ export function NavMain({
                   href={item.url}
                   onClick={() => openMobile && setOpenMobile(false)}
                 >
-                  {item.icon && renderIcon(item.icon)}item
+                  {item.icon && renderIcon(item.icon)}
                   <span>{item.title}</span>
                   <Link2Icon className='ml-auto rtl:rotate-180 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
                 </SidebarMenuLink>

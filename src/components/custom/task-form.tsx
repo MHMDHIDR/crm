@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon, Trash2Icon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -51,6 +52,7 @@ export function TaskForm({
   isEditing = false
 }: TaskFormProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const tasksTranslation = useTranslations('dashboard.tasks')
 
   const form = useForm<TaskSchemaType>({
     resolver: zodResolver(taskSchema),
@@ -85,7 +87,7 @@ export function TaskForm({
             name='title'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{tasksTranslation('newTask.title')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -99,7 +101,7 @@ export function TaskForm({
             name='description'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{tasksTranslation('newTask.description')}</FormLabel>
                 <FormControl>
                   <Textarea {...field} className='min-h-32 md:min-h-40 max-h-72' />
                 </FormControl>
@@ -113,7 +115,7 @@ export function TaskForm({
             name='dueDate'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel>{tasksTranslation('newTask.dueDate')}</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild className='min-w-full'>
                     <FormControl>
@@ -126,7 +128,7 @@ export function TaskForm({
                         {field.value ? (
                           formatDate({ date: String(field.value) })
                         ) : (
-                          <span>Pick a date</span>
+                          <span>{tasksTranslation('newTask.pickDate')}</span>
                         )}
                         <CalendarIcon className='w-4 h-4 ml-auto opacity-50' />
                       </Button>
@@ -152,17 +154,23 @@ export function TaskForm({
             name='status'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{tasksTranslation('newTask.status')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className='rtl:rtl'>
                       <SelectValue placeholder='Select Task Status' />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value={TaskStatus.PENDING}>Pending</SelectItem>
-                    <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
-                    <SelectItem value={TaskStatus.COMPLETED}>Completed</SelectItem>
+                  <SelectContent className='rtl:rtl'>
+                    <SelectItem value={TaskStatus.PENDING}>
+                      {tasksTranslation('pending')}
+                    </SelectItem>
+                    <SelectItem value={TaskStatus.IN_PROGRESS}>
+                      {tasksTranslation('inProgress')}
+                    </SelectItem>
+                    <SelectItem value={TaskStatus.COMPLETED}>
+                      {tasksTranslation('completed')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -170,7 +178,7 @@ export function TaskForm({
             )}
           />
 
-          <div className='flex justify-end mt-4 gap-x-2.5'>
+          <div className='flex justify-end rtl:justify-start mt-4 gap-x-2.5'>
             <Button type='submit' disabled={form.formState.isSubmitting}>
               {submitButtonText}
             </Button>
