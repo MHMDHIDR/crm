@@ -3,6 +3,7 @@
 import { ChevronRight, Link2Icon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
+import { ReactElement } from 'react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   SidebarGroup,
@@ -17,23 +18,38 @@ import {
 } from '@/components/ui/sidebar'
 import type { LucideIcon } from 'lucide-react'
 
+type IconType = LucideIcon | ReactElement
+
 export function NavMain({
   items
 }: {
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon?: IconType
     isActive?: boolean
     items?: {
       title: string
       url: string
-      icon?: LucideIcon
+      icon?: IconType
     }[]
   }[]
 }) {
   const { openMobile, setOpenMobile } = useSidebar()
   const navMenuTranslations = useTranslations('DashboardSidebar.labels')
+
+  const renderIcon = (icon: IconType): React.ReactNode => {
+    if (!icon) return null
+
+    // If icon is a LucideIcon component
+    if ('render' in icon) {
+      const Icon = icon as LucideIcon
+      return <Icon />
+    }
+
+    // If icon is a ReactElement (JSX)
+    return icon as React.ReactNode
+  }
 
   return (
     <SidebarGroup>
@@ -53,7 +69,7 @@ export function NavMain({
                 <>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuLink tooltip={item.title} href={item.url}>
-                      {item.icon && <item.icon />}
+                      {item.icon && renderIcon(item.icon)}
                       <span>{item.title}</span>
                       <ChevronRight className='ml-auto rtl:rotate-180 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
                     </SidebarMenuLink>
@@ -67,7 +83,7 @@ export function NavMain({
                             asChild
                           >
                             <Link href={subItem.url}>
-                              {subItem.icon && <subItem.icon />}
+                              {subItem.icon && renderIcon(subItem.icon)}
                               <span>{subItem.title}</span>
                             </Link>
                           </SidebarMenuSubButton>
@@ -76,17 +92,17 @@ export function NavMain({
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 </>
-              ) : !item.items ? (
+              ) : (
                 <SidebarMenuLink
                   tooltip={item.title}
                   href={item.url}
                   onClick={() => openMobile && setOpenMobile(false)}
                 >
-                  {item.icon && <item.icon />}
+                  {item.icon && renderIcon(item.icon)}item
                   <span>{item.title}</span>
                   <Link2Icon className='ml-auto rtl:rotate-180 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
                 </SidebarMenuLink>
-              ) : null}
+              )}
             </SidebarMenuItem>
           </Collapsible>
         ))}

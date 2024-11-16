@@ -1,4 +1,5 @@
 import { cva } from 'class-variance-authority'
+import Link from 'next/link'
 import * as React from 'react'
 import { cn } from '@/lib/cn'
 import type { VariantProps } from 'class-variance-authority'
@@ -21,9 +22,28 @@ const alertVariants = cva(
 
 const Alert = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div ref={ref} role='alert' className={cn(alertVariants({ variant }), className)} {...props} />
+  React.HTMLAttributes<HTMLDivElement> & { href?: string } & VariantProps<typeof alertVariants>
+>(({ className, variant, href, ...props }, ref) => (
+  <>
+    {' '}
+    {href ? (
+      <Link href={href}>
+        <div
+          ref={ref}
+          role='alert'
+          className={cn(alertVariants({ variant }), className)}
+          {...props}
+        />
+      </Link>
+    ) : (
+      <div
+        ref={ref}
+        role='alert'
+        className={cn(alertVariants({ variant }), className)}
+        {...props}
+      />
+    )}
+  </>
 ))
 Alert.displayName = 'Alert'
 

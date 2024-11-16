@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  BellDotIcon,
   FileUser,
   Frame,
   Group,
@@ -17,10 +18,14 @@ import {
   Users2
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { spec } from 'node:test/reporters'
+import { useEffect, useState } from 'react'
+import { getUnreadNotificationsCount } from '@/actions/notifications/notifications'
 import { NavMain } from '@/components/custom/nav-main'
 import { NavPinned } from '@/components/custom/nav-pinned'
 import { NavUser } from '@/components/custom/nav-user'
 import { ProjectSwitcher } from '@/components/custom/project-switcher'
+import { Badge } from '@/components/ui/badge'
 import {
   Sidebar,
   SidebarContent,
@@ -29,16 +34,18 @@ import {
   SidebarRail,
   useSidebar
 } from '@/components/ui/sidebar'
-import { ExtendedProject, UserSession } from '@/db/schema'
+import { ExtendedProject, Notification, UserSession } from '@/db/schema'
 import { useLocale } from '@/providers/locale-provider'
 
 export function DashboardSidebar({
   user,
   projects,
+  notificationsCount,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: UserSession
   projects: ExtendedProject[] | null
+  notificationsCount: number
 }) {
   const { open, isMobile } = useSidebar()
   const { locale } = useLocale()
@@ -147,7 +154,20 @@ export function DashboardSidebar({
       {
         title: dashboardSidebarTranslations('notifications.title'),
         url: '/dashboard/notification',
-        icon: Bell
+        icon:
+          notificationsCount > 0 ? (
+            <>
+              <Badge
+                variant='destructive'
+                className='absolute bottom-4 left-3 text-xs select-none px-1 py-0'
+              >
+                {notificationsCount}
+              </Badge>
+              <BellDotIcon />
+            </>
+          ) : (
+            Bell
+          )
       }
     ]
   }

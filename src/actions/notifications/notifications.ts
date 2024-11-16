@@ -1,6 +1,7 @@
 'use server'
 
 import { and, eq, sql } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 import { auth } from '@/auth'
 import { database } from '@/db'
 import { notifications, projects, tasks } from '@/db/schema'
@@ -8,13 +9,13 @@ import type { Notification, UserSession } from '@/db/schema'
 
 export async function getUnreadNotificationsCount(): Promise<{
   success: boolean
-  count?: number
+  count: number
   error?: string
 }> {
   try {
     const session = await auth()
     if (!session) {
-      return { success: false, error: 'Unauthorized' }
+      return { success: false, error: 'Unauthorized', count: 0 }
     }
 
     const [result] = await database
@@ -24,7 +25,7 @@ export async function getUnreadNotificationsCount(): Promise<{
 
     return { success: true, count: result.count }
   } catch (error) {
-    return { success: false, error: 'Failed to fetch notifications count' }
+    return { success: false, error: 'Failed to fetch notifications count', count: 0 }
   }
 }
 
@@ -69,6 +70,7 @@ export async function markNotificationAsRead(
       .set({ isRead: true })
       .where(and(eq(notifications.id, notificationId), eq(notifications.userId, session.user.id)))
 
+    revalidatePath('/dashboard/notifications')
     return { success: true }
   } catch (error) {
     return { success: false, error: 'Failed to mark notification as read' }

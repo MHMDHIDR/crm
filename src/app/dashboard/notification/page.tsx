@@ -1,12 +1,16 @@
-import { eq } from 'drizzle-orm'
+import clsx from 'clsx'
 import { Bell, Calendar } from 'lucide-react'
 import { checkUserDeadlines } from '@/actions/notifications/deadline'
-import { getUserNotificationsByUserId } from '@/actions/notifications/notifications'
+import {
+  getUnreadNotificationsCount,
+  getUserNotificationsByUserId,
+  markNotificationAsRead
+} from '@/actions/notifications/notifications'
 import { auth } from '@/auth'
+import EmptyState from '@/components/custom/empty-state'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { database } from '@/db'
-import { notifications } from '@/db/schema'
 
 export default async function NotificationsPage() {
   const session = await auth()
@@ -20,27 +24,48 @@ export default async function NotificationsPage() {
     userId: session.user.id
   })
 
+  const { count: unreadNotificationsCount } = await getUnreadNotificationsCount()
+
   return (
     <div className='container mx-auto p-6'>
       <div className='flex items-center gap-2 mb-6'>
         <Bell className='h-6 w-6' />
-        <h1 className='text-2xl font-bold'>Notifications</h1>
+        <h1 className='flex items-center space-x-2 text-2xl font-bold'>
+          <span>Notifications</span>
+          {unreadNotificationsCount > 0 && (
+            <Badge variant={'destructive'} className={'text-base select-none'}>
+              {unreadNotificationsCount}
+            </Badge>
+          )}
+        </h1>
       </div>
 
       <div className='space-y-4'>
         {userNotifications.length === 0 ? (
-          <Alert>
-            <Calendar className='h-4 w-4' />
-            <AlertTitle>No Notifications</AlertTitle>
+          <Alert className='select-none'>
+            <AlertTitle className='flex items-center gap-x-2'>
+              <Calendar className='h-4 w-4' />
+              <span>No Notifications!</span>
+            </AlertTitle>
             <AlertDescription>
-              You're all caught up! No pending notifications at the moment.
+              <EmptyState>You're all caught up! No pending notifications at the moment.</EmptyState>
             </AlertDescription>
           </Alert>
         ) : (
           userNotifications.map(notification => (
             <Alert
               key={notification.id}
-              className={notification.isRead ? 'bg-gray-50' : 'bg-blue-50'}
+              className={clsx('hover:-translate-y-1.5 transition-transform hover:shadow', {
+                'bg-gray-50': notification.isRead,
+                'bg-blue-50': !notification.isRead
+              })}
+              href={
+                notification.type === 'project_deadline'
+                  ? '/dashboard/projects/' + notification.referenceId
+                  : 'task_deadline'
+                    ? '/dashboard/projects/' + notification.referenceId
+                    : ''
+              }
             >
               <Calendar className='h-4 w-4' />
               <AlertTitle>{notification.title}</AlertTitle>
@@ -50,10 +75,7 @@ export default async function NotificationsPage() {
                   <form
                     action={async () => {
                       'use server'
-                      await database
-                        .update(notifications)
-                        .set({ isRead: true })
-                        .where(eq(notifications.id, notification.id))
+                      await markNotificationAsRead(notification.id)
                     }}
                   >
                     <Button variant='outline' size='sm'>
