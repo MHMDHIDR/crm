@@ -60,8 +60,8 @@ export default async function NotificationsPage() {
             className={clsx(
               'md:hover:-translate-y-1.5 transition-transform md:hover:shadow mb-1.5 md:mb-2.5',
               {
-                'bg-gray-50': notification.isRead,
-                'bg-blue-50': !notification.isRead
+                'bg-gray-50 dark:bg-gray-900': notification.isRead,
+                'bg-blue-50 dark:bg-blue-950': !notification.isRead
               }
             )}
           >
