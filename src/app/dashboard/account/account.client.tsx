@@ -180,40 +180,44 @@ export default function AccountClientPage({ user }: { user: UserSession }) {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name='role'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{dashboardAccountTranslation('settings.role.label')}</FormLabel>
-                      <FormControl>
-                        <Select
-                          disabled={isPending}
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger className='rtl:rtl'>
-                            <SelectValue
-                              placeholder={dashboardAccountTranslation('settings.role.placeholder')}
-                            />
-                          </SelectTrigger>
-                          <SelectContent className='rtl:rtl'>
-                            <SelectItem value={UserRole.ADMIN}>
-                              {dashboardAccountTranslation('settings.role.options.admin')}
-                            </SelectItem>
-                            <SelectItem value={UserRole.SUPERVISOR}>
-                              {dashboardAccountTranslation('settings.role.options.supervisor')}
-                            </SelectItem>
-                            <SelectItem value={UserRole.EMPLOYEE}>
-                              {dashboardAccountTranslation('settings.role.options.employee')}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {user.role === 'Admin' && (
+                  <FormField
+                    control={form.control}
+                    name='role'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{dashboardAccountTranslation('settings.role.label')}</FormLabel>
+                        <FormControl>
+                          <Select
+                            disabled={isPending}
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger className='rtl:rtl'>
+                              <SelectValue
+                                placeholder={dashboardAccountTranslation(
+                                  'settings.role.placeholder'
+                                )}
+                              />
+                            </SelectTrigger>
+                            <SelectContent className='rtl:rtl'>
+                              <SelectItem value={UserRole.ADMIN}>
+                                {dashboardAccountTranslation('settings.role.options.admin')}
+                              </SelectItem>
+                              <SelectItem value={UserRole.SUPERVISOR}>
+                                {dashboardAccountTranslation('settings.role.options.supervisor')}
+                              </SelectItem>
+                              <SelectItem value={UserRole.EMPLOYEE}>
+                                {dashboardAccountTranslation('settings.role.options.employee')}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
