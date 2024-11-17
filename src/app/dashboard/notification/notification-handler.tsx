@@ -1,6 +1,7 @@
 'use client'
 
 import { Bell } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import {
   AlertDialog,
@@ -15,6 +16,8 @@ import {
 import type { Notification } from '@/db/schema'
 
 export default function NotificationHandler({ notifications }: { notifications: Notification[] }) {
+  const notificationTranslations = useTranslations('dashboard.notifications')
+
   const [permission, setPermission] = useState('default')
   const [showDialog, setShowDialog] = useState(false)
 
@@ -91,11 +94,10 @@ export default function NotificationHandler({ notifications }: { notifications: 
           <AlertDialogHeader>
             <AlertDialogTitle className='flex items-center gap-2'>
               <Bell className='h-5 w-5' />
-              Enable Notifications
+              {notificationTranslations('enable')}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Stay updated with important deadline notifications for your projects and tasks. Enable
-              notifications to receive timely alerts about upcoming deadlines.
+              {notificationTranslations('enableMessage')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -104,13 +106,12 @@ export default function NotificationHandler({ notifications }: { notifications: 
                 onClick={requestPermission}
                 className='bg-primary hover:bg-primary/90'
               >
-                Enable Notifications
+                {notificationTranslations('enable')}
               </AlertDialogAction>
             )}
             {permission === 'denied' && (
               <AlertDialogDescription className='text-sm text-destructive'>
-                Notifications are blocked. Please enable them in your browser settings to receive
-                alerts.
+                {notificationTranslations('blockedMessage')}
               </AlertDialogDescription>
             )}
             {permission === 'denied' && <AlertDialogCancel>Close</AlertDialogCancel>}

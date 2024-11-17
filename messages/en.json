@@ -443,7 +443,10 @@
         "message": "You Are All Caught up! No Pending Notifications At The Moment 🎉"
       },
       "markAsRead": "Mark as Read",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "enable": "Enable Notifications",
+      "enableMessage": "Stay updated with important deadline notifications for your projects and tasks. Enable notifications to receive timely alerts about upcoming deadlines.",
+      "blockedMessage": "Notifications are blocked. Please enable them in your browser settings to receive alerts."
     },
     "dataTable": {
       "columns": {

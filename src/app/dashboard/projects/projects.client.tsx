@@ -52,7 +52,7 @@ export default function ProjectsClientPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
-  const [filtering, setFiltering] = useState('') // This will add global filtering state, which will help us filter the table data
+  const [filtering, setFiltering] = useState('')
 
   const dashboardProjectTranslation = useTranslations('dashboard.projects')
 

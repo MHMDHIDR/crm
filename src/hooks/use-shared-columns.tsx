@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, Ban, MoreHorizontal, Pencil, Trash } from 'lucide-react'
+import { ArrowUpDown, Ban, CheckCircle, MoreHorizontal, Pencil, Trash } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -359,7 +359,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
           <span
             className={clsx('rounded-full px-2.5 py-0.5 border select-none', {
               'text-green-600 bg-green-50': status === 'active',
-              'text-red-600 bg-red-50': status === 'deactivated'
+              'text-red-600 dark:text-red-200 bg-red-50': status === 'deactivated'
             })}
           >
             {dashboardDataTableTranslations(
@@ -609,10 +609,10 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
               actions.onDeactivate && (
                 <DropdownMenuItem
                   className={clsx({
-                    'text-red-600':
+                    'text-green-600':
                       (row.original as Project).status === 'deactivated' ||
                       (row.original as Client).status === 'deactivated',
-                    'text-green-600':
+                    'text-red-600':
                       (row.original as Project).status === 'active' ||
                       (row.original as Client).status === 'active'
                   })}
@@ -623,15 +623,22 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
                       : actions.onDeactivate?.(entity.id)
                   }
                 >
-                  <Ban className='mr-0.5 h-4 w-4' />
                   {((row.original as unknown as Project) || (row.original as unknown as Client))
-                    .status === 'deactivated'
-                    ? entityType === 'project'
-                      ? dashboardDataTableTranslations('actions.status.activate.project')
-                      : dashboardDataTableTranslations('actions.status.activate.client')
-                    : entityType === 'project'
-                      ? dashboardDataTableTranslations('actions.status.deactivated.project')
-                      : dashboardDataTableTranslations('actions.status.deactivated.client')}
+                    .status === 'deactivated' ? (
+                    <>
+                      <CheckCircle className='mr-0.5 h-4 w-4' />
+                      {entityType === 'project'
+                        ? dashboardDataTableTranslations('actions.status.activate.project')
+                        : dashboardDataTableTranslations('actions.status.activate.client')}
+                    </>
+                  ) : (
+                    <>
+                      <Ban className='mr-0.5 h-4 w-4' />
+                      {entityType === 'project'
+                        ? dashboardDataTableTranslations('actions.status.deactivated.project')
+                        : dashboardDataTableTranslations('actions.status.deactivated.client')}
+                    </>
+                  )}
                 </DropdownMenuItem>
               )}
             <DropdownMenuItem

@@ -24,12 +24,13 @@ export async function checkUserDeadlines(userId: string, daysCountFromNow: numbe
       )
     )
 
-  // Check tasks
+  // Check tasks - now including projectId in the select
   const upcomingTasks = await database
     .select({
       id: tasks.id,
       title: tasks.title,
-      dueDate: tasks.dueDate
+      dueDate: tasks.dueDate,
+      projectId: tasks.projectId
     })
     .from(tasks)
     .where(
@@ -72,14 +73,14 @@ export async function checkUserDeadlines(userId: string, daysCountFromNow: numbe
     }
   }
 
-  // Create notifications for tasks
+  // Create notifications for tasks - now using projectId as referenceId
   for (const task of upcomingTasks) {
     const existingNotification = await database
       .select()
       .from(notifications)
       .where(
         and(
-          eq(notifications.referenceId, task.id),
+          eq(notifications.referenceId, task.projectId),
           eq(notifications.type, 'task_deadline'),
           eq(notifications.userId, userId)
         )
@@ -96,7 +97,7 @@ export async function checkUserDeadlines(userId: string, daysCountFromNow: numbe
         type: 'task_deadline',
         title: 'Task Deadline Alert',
         message: `Task "${task.title}" is due in ${daysLeft} days`,
-        referenceId: task.id,
+        referenceId: task.projectId, // Changed from task.id to task.projectId
         createdAt: new Date()
       })
     }
