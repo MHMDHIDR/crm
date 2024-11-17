@@ -58,14 +58,14 @@ export default function SignInClientPage() {
 
         const result = await authenticate(formData)
 
-        if (!result.success) {
-          toast.error(result.message)
-          return
-        }
-
         if (result.twoFactor) {
           setShowTwoFactor(true)
           toast.success('2FA code has been sent to your email')
+          return
+        }
+
+        if (!result.success) {
+          toast.error(result.message)
           return
         }
 
