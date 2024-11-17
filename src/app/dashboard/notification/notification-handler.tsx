@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell } from 'lucide-react'
+import { Bell, CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import {
@@ -96,16 +96,17 @@ export default function NotificationHandler({ notifications }: { notifications: 
               <Bell className='h-5 w-5' />
               {notificationTranslations('enable')}
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className='rtl:text-right font-bold'>
               {notificationTranslations('enableMessage')}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className='flex flex-1'>
             {permission !== 'denied' && (
               <AlertDialogAction
                 onClick={requestPermission}
-                className='bg-primary hover:bg-primary/90'
+                className='bg-primary hover:bg-primary/90 flex-1 font-bold text-green-600 text-md'
               >
+                <CheckCircle className='h-5 w-5' />
                 {notificationTranslations('enable')}
               </AlertDialogAction>
             )}
