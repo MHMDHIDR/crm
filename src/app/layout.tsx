@@ -1,3 +1,4 @@
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages, setRequestLocale } from 'next-intl/server'
 import { getUserLanguage } from '@/actions/users/user-language'
@@ -28,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className='min-h-screen bg-background' suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <LocaleProvider initialLocale={locale}>
+            <SpeedInsights />
             <Providers>{children}</Providers>
           </LocaleProvider>
         </NextIntlClientProvider>
