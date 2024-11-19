@@ -1,6 +1,6 @@
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages, setRequestLocale } from 'next-intl/server'
+import { getLocale, getMessages } from 'next-intl/server'
 import { getUserLanguage } from '@/actions/users/user-language'
 import { env } from '@/env'
 import { Providers } from '@/providers'
@@ -18,7 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = (await getUserLanguage()) ?? (await getLocale())
   const messages = await getMessages({ locale })
-  setRequestLocale(locale)
 
   return (
     <html lang={locale} dir={locale === 'en' ? 'ltr' : 'rtl'} suppressHydrationWarning>

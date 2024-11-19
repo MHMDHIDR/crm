@@ -1,4 +1,4 @@
-import { getLocale, getTranslations, setRequestLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { getUserLanguage } from '@/actions/users/user-language'
 import { auth } from '@/auth'
 import { NotFoundIcon } from '@/components/custom/icons'
@@ -10,7 +10,6 @@ export default async function RootNotFound() {
   const user = session?.user
   const notFoundTranslations = await getTranslations('notFound')
   const locale = (await getUserLanguage()) ?? (await getLocale())
-  setRequestLocale(locale)
 
   return (
     <section>
