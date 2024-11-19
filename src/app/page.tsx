@@ -172,9 +172,11 @@ export default async function HomePage() {
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className='w-full'>
-                      {homeTranslations('pricing.ctaButton.default')}
-                    </Button>
+                    <Link href='/auth/signin' className='inline-flex w-full'>
+                      <Button className='w-full'>
+                        {homeTranslations('pricing.ctaButton.default')}
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
                 <Card>
@@ -204,9 +206,11 @@ export default async function HomePage() {
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className='w-full'>
-                      {homeTranslations('pricing.ctaButton.default')}
-                    </Button>
+                    <Link href='/auth/signin' className='inline-flex w-full'>
+                      <Button className='w-full'>
+                        {homeTranslations('pricing.ctaButton.default')}
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
                 <Card>
@@ -236,9 +240,11 @@ export default async function HomePage() {
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className='w-full'>
-                      {homeTranslations('pricing.ctaButton.enterprise')}
-                    </Button>
+                    <Link href='/auth/signin' className='inline-flex w-full'>
+                      <Button className='w-full'>
+                        {homeTranslations('pricing.ctaButton.enterprise')}
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               </div>
