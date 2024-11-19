@@ -2,7 +2,6 @@ import { getTranslations } from 'next-intl/server'
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator
@@ -24,6 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DashboardPreferencesPage() {
+  const dashboardPreferencesTranslation = await getTranslations('dashboard.preferences')
+
   return (
     <SidebarInset>
       <header className='flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
@@ -33,11 +34,13 @@ export default async function DashboardPreferencesPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className='hidden sm:block'>
-                <BreadcrumbLink href='/dashboard'>Main Dashboard</BreadcrumbLink>
+                {dashboardPreferencesTranslation('breadcrumb.dashboard')}
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>
-                <BreadcrumbPage>Preferences</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {dashboardPreferencesTranslation('breadcrumb.preferences')}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

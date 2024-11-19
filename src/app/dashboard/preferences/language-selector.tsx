@@ -20,7 +20,7 @@ import { useLocale } from '@/providers/locale-provider'
 
 export default function LanguageSelector() {
   const { setLocale, locale } = useLocale()
-  const languageSelectTranslations = useTranslations('dashboard.languageSelect')
+  const languageSelectTranslations = useTranslations('dashboard.preferences.languageSelect')
   const toast = useToast()
 
   const [currentLanguage, setCurrentLanguage] = useState<UserPreferences['language']>(locale)
@@ -29,9 +29,6 @@ export default function LanguageSelector() {
   // Fetch user's language preference on component mount
   useEffect(() => {
     async function fetchLanguage() {
-      // const cookieStore = await cookies()
-      // const language = cookieStore.get('NEXT_LOCALE')?.value as Locale
-      // Get the current user's language preference from Client Cookies
       const language = getCookie('NEXT_LOCALE') as Locale
 
       setCurrentLanguage(language)

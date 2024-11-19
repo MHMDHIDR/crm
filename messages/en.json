@@ -121,11 +121,6 @@
     }
   },
   "dashboard": {
-    "languageSelect": {
-      "title": "Select Language",
-      "english": "🇬🇧 English",
-      "arabic": "🇸🇦 العربية"
-    },
     "account": {
       "breadcrumb": {
         "dashboard": "Main Dashboard",
@@ -326,6 +321,23 @@
       },
       "empty": {
         "message": "Sorry we couldn't find any events."
+      }
+    },
+    "preferences": {
+      "breadcrumb": {
+        "dashboard": "Main Dashboard",
+        "preferences": "Preferences"
+      },
+      "title": "Preferences",
+      "languageSelect": {
+        "title": "Select Language",
+        "english": "🇬🇧 English",
+        "arabic": "🇸🇦 العربية"
+      },
+      "themeSwitch": {
+        "title": "Select your preferred theme 🌗",
+        "light": "Light Mode 🌞",
+        "dark": "Dark Mode 🌚"
       }
     },
     "createClient": {

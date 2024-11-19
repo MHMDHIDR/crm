@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { updateUserTheme } from '@/actions/users/user-theme'
@@ -10,6 +11,7 @@ import { useToast } from '@/hooks/use-toast'
 
 export default function ThemeSwitch() {
   const storedTheme = localStorage.getItem('theme') as UserPreferences['theme']
+  const themeSwitchTranslations = useTranslations('dashboard.preferences.themeSwitch')
 
   const [newTheme, setNewTheme] = useState(storedTheme)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -45,11 +47,11 @@ export default function ThemeSwitch() {
 
   return (
     <div>
-      <h2 className='mb-4 text-lg font-bold'>Select your preferred theme 😎</h2>
+      <h2 className='mb-4 text-lg font-bold'>{themeSwitchTranslations('title')}</h2>
 
       <div className='flex items-center gap-x-2'>
         <Switch checked={newTheme === 'dark'} onCheckedChange={toggleTheme} disabled={isUpdating} />
-        <Label>{newTheme === 'dark' ? 'Dark' : 'Light'} Theme</Label>
+        <Label>{themeSwitchTranslations(newTheme === 'dark' ? 'dark' : 'light')}</Label>
       </div>
     </div>
   )

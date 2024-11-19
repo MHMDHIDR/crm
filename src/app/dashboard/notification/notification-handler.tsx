@@ -2,7 +2,7 @@
 
 import { Bell, CheckCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,38 +19,41 @@ import type { Notification } from '@/db/schema'
 export default function NotificationHandler({ notifications }: { notifications: Notification[] }) {
   const notificationTranslations = useTranslations('dashboard.notifications')
   const toast = useToast()
-
   const [permission, setPermission] = useState('default')
   const [showDialog, setShowDialog] = useState(false)
 
-  const showNotification = (notification: Notification) => {
-    if (permission !== 'granted') return
+  // Move showNotification into useCallback to prevent recreation on every render
+  const showNotification = useCallback(
+    (notification: Notification) => {
+      if (permission !== 'granted') return
 
-    const notificationTitle =
-      notification.type === 'project_deadline' ? 'Project Deadline Alert' : 'Task Deadline Alert'
+      const notificationTitle =
+        notification.type === 'project_deadline' ? 'Project Deadline Alert' : 'Task Deadline Alert'
 
-    const options = {
-      body: notification.message,
-      icon: '/favicon.ico',
-      tag: notification.id,
-      data: {
-        url:
-          notification.type === 'project_deadline'
-            ? `/dashboard/projects/${notification.referenceId}`
-            : `/dashboard/tasks/${notification.referenceId}`
+      const options = {
+        body: notification.message,
+        icon: '/favicon.ico',
+        tag: notification.id,
+        data: {
+          url:
+            notification.type === 'project_deadline'
+              ? `/dashboard/projects/${notification.referenceId}`
+              : `/dashboard/tasks/${notification.referenceId}`
+        }
       }
-    }
 
-    const browserNotification = new Notification(notificationTitle, options)
+      const browserNotification = new Notification(notificationTitle, options)
 
-    browserNotification.onclick = event => {
-      event.preventDefault()
-      window.focus()
-      window.location.href = browserNotification.data.url
-    }
-  }
+      browserNotification.onclick = event => {
+        event.preventDefault()
+        window.focus()
+        window.location.href = browserNotification.data.url
+      }
+    },
+    [permission]
+  )
 
-  const requestPermission = async () => {
+  const requestPermission = useCallback(async () => {
     try {
       const result = await Notification.requestPermission()
       setPermission(result)
@@ -61,12 +64,11 @@ export default function NotificationHandler({ notifications }: { notifications: 
     } catch (error) {
       console.error('Error requesting notification permission:', error)
     }
-  }
+  }, [])
 
   useEffect(() => {
     // Check if browser supports notifications
     if (!('Notification' in window)) {
-      // alert('This browser does not support notifications')
       toast.error('This browser does not support notifications')
       return
     }
@@ -79,16 +81,18 @@ export default function NotificationHandler({ notifications }: { notifications: 
     if (currentPermission !== 'granted') {
       setShowDialog(true)
     }
+  }, [toast])
 
-    // Watch for new notifications
-    if (notifications && notifications.length > 0) {
+  // Separate useEffect for handling notifications
+  useEffect(() => {
+    if (notifications && notifications.length > 0 && permission === 'granted') {
       notifications.forEach(notification => {
         if (!notification.isRead) {
           showNotification(notification)
         }
       })
     }
-  }, [notifications, showNotification, toast])
+  }, [notifications, showNotification, permission])
 
   return (
     <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
