@@ -70,6 +70,7 @@ type ColumnComponentProps = {
   status: ColumnType
   initialTasksCount: ProjectTasksClientPageProps['initialTasksCount']
   isLoading: boolean
+  isDragDropReady: boolean
   onViewDetails: (task: Task) => void
 }
 type ProjectTasksClientPageProps = {
@@ -123,6 +124,7 @@ function Column({
   tasks,
   status,
   isLoading,
+  isDragDropReady,
   initialTasksCount,
   onViewDetails
 }: ColumnComponentProps) {
@@ -156,54 +158,54 @@ function Column({
         </CardTitle>
       </CardHeader>
       <CardContent className='p-2.5'>
-        <Droppable
-          droppableId={status}
-          isDropDisabled={false}
-          isCombineEnabled={false}
-          direction='vertical'
-          ignoreContainerClipping={false}
-        >
-          {provided => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className='space-y-2 overflow-x-hidden'
-            >
-              {isLoading ? (
-                <LoadingCard
-                  renderedSkeletons={getSkeletonCount()}
-                  className='min-w-80 max-w-[21rem] h-28'
-                />
-              ) : (
-                !isLoading &&
-                tasks.length === 0 && (
-                  //IMPORTANT: Adding this to allow to drag items when the column has no TaskCards rendered inside it!
+        {isDragDropReady ? (
+          <Droppable droppableId={status} isDropDisabled={false} direction='vertical'>
+            {provided => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className='space-y-2 overflow-x-hidden min-h-[50px]'
+              >
+                {isLoading ? (
+                  <LoadingCard
+                    renderedSkeletons={getSkeletonCount()}
+                    className='min-w-80 max-w-[21rem] h-28'
+                  />
+                ) : tasks.length === 0 ? (
                   <div className='text-sm text-gray-400 text-center min-w-[21rem]'>
                     {tasksTranslation('noTasks')}
                   </div>
-                )
-              )}
-              {tasks.map((task, index) => (
-                <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                  {provided => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <TaskCard
-                        task={task}
-                        onViewDetails={onViewDetails}
-                        className='dark:bg-slate-900'
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+                ) : (
+                  tasks.map((task, index) => (
+                    <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
+                      {provided => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <TaskCard
+                            task={task}
+                            onViewDetails={onViewDetails}
+                            className='dark:bg-slate-900'
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))
+                )}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        ) : (
+          <div className='space-y-2 overflow-x-hidden min-h-[50px]'>
+            <LoadingCard
+              renderedSkeletons={getSkeletonCount()}
+              className='min-w-80 max-w-[21rem] h-28'
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -215,20 +217,21 @@ export default function ProjectTasksClientPage({
   initialTasksCount
 }: ProjectTasksClientPageProps) {
   const tasksTranslation = useTranslations('dashboard.tasks')
+  const dashboardProjectsTranslation = useTranslations('dashboard.dataTable.tableToolbar')
+
+  const toast = useToast()
 
   const [project, setProject] = useState<ExtendedProject | undefined>(initialProject)
   const [isUpdateTaskSheetOpen, setIsUpdateTaskSheetOpen] = useState(false)
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [isDragDropReady, setIsDragDropReady] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [tasks, setTasks] = useState<TasksByStatus>({
     pending: [],
     'in-progress': [],
     completed: []
   })
-
-  const dashboardProjectsTranslation = useTranslations('dashboard.dataTable.tableToolbar')
-  const toast = useToast()
 
   function handleSheetOpenChange(open: boolean) {
     setIsUpdateTaskSheetOpen(open)
@@ -319,19 +322,6 @@ export default function ProjectTasksClientPage({
     setIsUpdateTaskSheetOpen(true)
   }
 
-  useEffect(() => {
-    setIsLoading(true)
-    const initializeTasks = async () => {
-      const result = await getTasksByStatus({ projectId })
-      if (result?.data) {
-        setTasks(result.data)
-
-        setIsLoading(false)
-      }
-    }
-    initializeTasks()
-  }, [projectId])
-
   async function handleUpdateProject(data: ProjectSchemaType) {
     try {
       const result = await updateProject(projectId, data)
@@ -352,6 +342,35 @@ export default function ProjectTasksClientPage({
       toast.error('Failed to update project. Please try again!')
     }
   }
+
+  useEffect(() => {
+    let mounted = true
+
+    const initializeTasks = async () => {
+      setIsLoading(true)
+      try {
+        const result = await getTasksByStatus({ projectId })
+        if (mounted && result?.data) {
+          setTasks(result.data)
+          setIsDragDropReady(true)
+        }
+      } catch (error) {
+        console.error('Failed to load tasks:', error)
+      } finally {
+        if (mounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    initializeTasks()
+
+    // Cleanup function
+    return () => {
+      mounted = false
+      setIsDragDropReady(false)
+    }
+  }, [projectId])
 
   return (
     <SidebarInset className='relative px-2'>
@@ -457,6 +476,7 @@ export default function ProjectTasksClientPage({
                 onViewDetails={handleViewDetails}
                 initialTasksCount={initialTasksCount}
                 isLoading={isLoading}
+                isDragDropReady={isDragDropReady}
               />
               <Column
                 title={tasksTranslation('inProgress')}
@@ -465,6 +485,7 @@ export default function ProjectTasksClientPage({
                 onViewDetails={handleViewDetails}
                 initialTasksCount={initialTasksCount}
                 isLoading={isLoading}
+                isDragDropReady={isDragDropReady}
               />
               <Column
                 title={tasksTranslation('completed')}
@@ -473,6 +494,7 @@ export default function ProjectTasksClientPage({
                 onViewDetails={handleViewDetails}
                 initialTasksCount={initialTasksCount}
                 isLoading={isLoading}
+                isDragDropReady={isDragDropReady}
               />
             </div>
           </div>
