@@ -2,7 +2,9 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { and, eq, lt } from 'drizzle-orm'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { cookies } from 'next/headers'
 import { getUserById } from '@/actions/users/get-users'
+import { getUserLanguage } from '@/actions/users/user-language'
 import { database } from '@/db'
 import { sessions, twoFactorConfirmations, userPreferences, users } from '@/db/schema'
 import { compareHashedStrings } from '@/lib/crypt'
@@ -23,13 +25,22 @@ export const {
   callbacks: {
     async signIn({ user }) {
       const { data: existingUser } = await getUserById(user.id as string)
+      const language = await getUserLanguage(user.id as string)
+      const cookieStore = await cookies()
 
-      // TODO: check if this is necessary
-      if (!existingUser) return false // Prevent sign in without user TODO: check if this is necessary
-      // TODO: check if this is necessary
+      if (!existingUser) return false
 
       // Prevent sign in without email verification
-      if (!existingUser.emailVerified) return false
+      if (!existingUser.emailVerified) {
+        return false
+      }
+
+      cookieStore.set('NEXT_LOCALE', language, {
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 // 30 days
+      })
 
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id)

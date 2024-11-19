@@ -13,7 +13,7 @@ import { sendTwoFactorTokenEmail } from '@/lib/mail'
 import { generateTwoFactorToken } from '@/lib/tokens'
 import { userSchema } from '@/validators/user'
 
-type AuthResult = { success: boolean; message: string; twoFactor?: boolean }
+type AuthResult = { success: boolean; message: string; twoFactor?: boolean; userId?: string }
 
 export async function authenticate(formData: FormData): Promise<AuthResult> {
   const email = formData.get('email') as string
@@ -83,7 +83,7 @@ export async function authenticate(formData: FormData): Promise<AuthResult> {
       userRole: existingUser.role
     })
 
-    return { success: true, message: 'Successfully signed in' }
+    return { success: true, message: 'Successfully signed in', userId: existingUser.id }
   } catch (error) {
     console.error('Authentication error:', error)
 

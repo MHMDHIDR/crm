@@ -7,6 +7,8 @@ import { Providers } from '@/providers'
 import { LocaleProvider } from '@/providers/locale-provider'
 import type { Metadata } from 'next'
 import './globals.css'
+import { cookies } from 'next/headers'
+import { defaultLocale, Locale } from '@/i18n/routing'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -16,7 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = (await getUserLanguage()) ?? (await getLocale())
+  // const locale = (await getUserLanguage()) ?? (await getLocale())
+  const cookieStore = await cookies()
+  const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value as Locale
+  const locale = cookieLocale ?? defaultLocale
   const messages = await getMessages({ locale })
 
   return (

@@ -12,17 +12,16 @@ import type { UserPreferences, UserSession } from '@/db/schema'
  * @param userId  ID of the user to get language preference for
  * @returns {Promise<UserPreferences['language']>} A promise that contains an array of user preferences 'light' | 'dark'
  */
-export async function getUserLanguage(): Promise<UserPreferences['language']> {
+export async function getUserLanguage(
+  userId: UserSession['id']
+): Promise<UserPreferences['language']> {
   try {
-    const session = await auth()
-    const user = session?.user as UserSession
-
-    if (!user?.id) {
+    if (!userId) {
       return 'en'
     }
 
     const preferences = (await database.query.userPreferences.findFirst({
-      where: eq(userPreferences.userId, user.id)
+      where: eq(userPreferences.userId, userId)
     })) as UserPreferences
 
     return preferences?.language || 'en'

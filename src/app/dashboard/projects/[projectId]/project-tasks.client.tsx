@@ -211,6 +211,7 @@ function Column({
   )
 }
 
+/* eslint-disable max-lines */
 export default function ProjectTasksClientPage({
   projectId,
   initialProject,

@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
+// import { cookies } from 'next/headers'
 import { useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -21,9 +22,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
+import { UserSession } from '@/db/schema'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
-import { Link, redirect } from '@/i18n/routing'
+import { Link, Locale, redirect } from '@/i18n/routing'
 import { useLocale } from '@/providers/locale-provider'
 import { userSchema } from '@/validators/user'
 
@@ -57,6 +59,8 @@ export default function SignInClientPage() {
         }
 
         const result = await authenticate(formData)
+        // const cookieStore = await cookies()
+        // const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value as Locale
 
         if (result.twoFactor) {
           setShowTwoFactor(true)
@@ -70,7 +74,11 @@ export default function SignInClientPage() {
         }
 
         // Fetch and set theme and locale after successful authentication
-        const [userTheme, userLanguage] = await Promise.all([getUserTheme(), getUserLanguage()])
+        const [userTheme, userLanguage] = await Promise.all([
+          getUserTheme(),
+          getUserLanguage(result.userId as UserSession['id'])
+        ])
+        // const userTheme = await getUserTheme()
 
         setProviderTheme(userTheme || 'light')
         setLocale(userLanguage || 'en')

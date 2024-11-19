@@ -26,10 +26,12 @@ export function LocaleProvider({
     if (!locales.includes(newLocale)) return
     setLocaleState(newLocale)
 
+    // Update cookie when locale changes
+    document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=${30 * 24 * 60 * 60}`
+
     // Force a hard navigation to update the locale
-    const currentPath = pathname || '/'
     router.refresh()
-    router.push(currentPath)
+    router.push(pathname || '/')
   }
 
   return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>

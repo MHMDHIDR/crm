@@ -86,7 +86,6 @@ export default function EditClientPageClient({ client }: { client: Client }) {
           setClientData({ ...clientData, ...values })
         }
       } catch (error) {
-        console.log('error -->', error)
         toast.error(`Error ${JSON.stringify(error)}`)
       }
     })
