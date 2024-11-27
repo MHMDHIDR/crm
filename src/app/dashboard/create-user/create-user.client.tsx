@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { createUser } from '@/actions/users/create-user'
 import { fetchSupervisors, SupervisorType } from '@/actions/users/get-users'

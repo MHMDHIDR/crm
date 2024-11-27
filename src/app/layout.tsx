@@ -18,7 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // const locale = (await getUserLanguage()) ?? (await getLocale())
   const cookieStore = await cookies()
   const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value as Locale
   const locale = cookieLocale ?? defaultLocale
