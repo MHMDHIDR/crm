@@ -58,8 +58,6 @@ export default function SignInClientPage() {
         }
 
         const result = await authenticate(formData)
-        // const cookieStore = await cookies()
-        // const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value as Locale
 
         if (result.twoFactor) {
           setShowTwoFactor(true)

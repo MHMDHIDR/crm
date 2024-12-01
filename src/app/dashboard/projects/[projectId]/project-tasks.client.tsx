@@ -55,7 +55,7 @@ import {
 } from '@/components/ui/sheet'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useToast } from '@/hooks/use-toast'
-import { cn } from '@/lib/cn'
+import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 import { useLocale } from '@/providers/locale-provider'
 import { ProjectSchemaType } from '@/validators/project'
@@ -97,12 +97,16 @@ function TaskCard({
   className?: string
 }) {
   const { locale } = useLocale()
+  const isPastDue = new Date(task.dueDate).getTime() - new Date().getTime() < 0
 
   return (
     <Card
-      className={cn(
+      className={clsx(
+        className,
         'relative rounded-lg cursor-grab dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md min-w-80 max-w-[21rem] h-28 overflow-hidden',
-        className
+        {
+          'bg-red-100 dark:bg-red-950': isPastDue
+        }
       )}
       title={task.title}
     >
@@ -466,44 +470,45 @@ export default function ProjectTasksClientPage({
         </Sheet>
       </header>
 
-      <main className='w-full overflow-x-auto'>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className='flex justify-start min-w-max'>
-            <div className='grid grid-cols-3 gap-6 mt-5 mb-10'>
-              <Column
-                title={tasksTranslation('pending')}
-                tasks={tasks.pending}
-                status='pending'
-                onViewDetails={handleViewDetails}
-                initialTasksCount={initialTasksCount}
-                isLoading={isLoading}
-                isDragDropReady={isDragDropReady}
-              />
-              <Column
-                title={tasksTranslation('inProgress')}
-                tasks={tasks['in-progress']}
-                status='in-progress'
-                onViewDetails={handleViewDetails}
-                initialTasksCount={initialTasksCount}
-                isLoading={isLoading}
-                isDragDropReady={isDragDropReady}
-              />
-              <Column
-                title={tasksTranslation('completed')}
-                tasks={tasks.completed}
-                status='completed'
-                onViewDetails={handleViewDetails}
-                initialTasksCount={initialTasksCount}
-                isLoading={isLoading}
-                isDragDropReady={isDragDropReady}
-              />
+      <section className='relative'>
+        <main className='w-full overflow-x-auto'>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className='flex justify-start min-w-max'>
+              <div className='grid grid-cols-3 gap-6 mt-5 mb-10'>
+                <Column
+                  title={tasksTranslation('pending')}
+                  tasks={tasks.pending}
+                  status='pending'
+                  onViewDetails={handleViewDetails}
+                  initialTasksCount={initialTasksCount}
+                  isLoading={isLoading}
+                  isDragDropReady={isDragDropReady}
+                />
+                <Column
+                  title={tasksTranslation('inProgress')}
+                  tasks={tasks['in-progress']}
+                  status='in-progress'
+                  onViewDetails={handleViewDetails}
+                  initialTasksCount={initialTasksCount}
+                  isLoading={isLoading}
+                  isDragDropReady={isDragDropReady}
+                />
+                <Column
+                  title={tasksTranslation('completed')}
+                  tasks={tasks.completed}
+                  status='completed'
+                  onViewDetails={handleViewDetails}
+                  initialTasksCount={initialTasksCount}
+                  isLoading={isLoading}
+                  isDragDropReady={isDragDropReady}
+                />
+              </div>
             </div>
-          </div>
-        </DragDropContext>
-      </main>
-
-      <div className='absolute top-0 bottom-0 left-0 w-8 pointer-events-none bg-gradient-to-r from-white dark:from-neutral-950 to-transparent' />
-      <div className='absolute top-0 bottom-0 right-0 w-8 pointer-events-none bg-gradient-to-l from-white dark:from-neutral-950 to-transparent' />
+          </DragDropContext>
+        </main>
+        <div className='absolute -left-4 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-neutral-950 to-transparent pointer-events-none' />
+        <div className='absolute -right-4 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-neutral-950  to-transparent pointer-events-none' />
+      </section>
     </SidebarInset>
   )
 }

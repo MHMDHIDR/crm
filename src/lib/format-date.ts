@@ -10,7 +10,10 @@ type formatDateOptions = {
 /**
  * A function to format the date and time with appropriate granularity.
  * This function takes a date string and returns a more intuitive, human-readable format.
- * Example: 2022-03-28T00:00:00.000Z => '2 weeks ago'
+ * Handles both past and future dates appropriately.
+ * Examples:
+ * - Future date: "2 days left"
+ * - Past date: "2 days ago"
  * @param date the date string to be formatted
  * @returns the formatted date
  */
@@ -42,48 +45,50 @@ export function formatDate({
   const now = new Date().getTime()
   const givenDate = new Date(date).getTime()
   const diff = givenDate - now
-  const days = Math.round(diff / (1000 * 60 * 60 * 24))
+  const isPast = diff < 0
+  const absDays = Math.abs(Math.round(diff / (1000 * 60 * 60 * 24)))
+  const absWeeks = Math.abs(Math.round(absDays / 7))
+  const absMonths = Math.abs(Math.floor(absDays / 30))
+  const absYears = Math.abs(Math.floor(absDays / 365))
 
-  const weeks = Math.round(days / 7)
-  const months = Math.floor(days / 30)
-  const years = Math.floor(days / 365)
+  const suffix = isPast ? 'ago' : 'left'
 
   switch (true) {
-    case days === 0:
+    case absDays === 0:
       return 'Today'
 
-    case days === 1:
-      return 'Tomorrow'
+    case absDays === 1:
+      return isPast ? 'Yesterday' : 'Tomorrow'
 
-    case days >= 2 && days <= 5:
-      return `${days} days left`
+    case absDays >= 2 && absDays <= 5:
+      return `${absDays} days ${suffix}`
 
-    case days >= 6 && days <= 10:
-      return `${weeks} week left`
+    case absDays >= 6 && absDays <= 10:
+      return `${absWeeks} week ${suffix}`
 
-    case days >= 10 && days <= 14:
-      return `${weeks} weeks left`
+    case absDays >= 10 && absDays <= 14:
+      return `${absWeeks} weeks ${suffix}`
 
-    case days >= 15 && days <= 17:
-      return `${weeks} weeks left`
+    case absDays >= 15 && absDays <= 17:
+      return `${absWeeks} weeks ${suffix}`
 
-    case weeks > 2 && weeks < 4:
-      return '3 weeks left'
+    case absWeeks > 2 && absWeeks < 4:
+      return `3 weeks ${suffix}`
 
-    case days >= 25 && days <= 35:
-      return '1 month left'
+    case absDays >= 25 && absDays <= 35:
+      return `1 month ${suffix}`
 
-    case months >= 2 && months <= 11:
-      return `${months} months left`
+    case absMonths >= 2 && absMonths <= 11:
+      return `${absMonths} months ${suffix}`
 
-    case years === 1:
-      return '1 year left'
+    case absYears === 1:
+      return `1 year ${suffix}`
 
-    case years > 1:
-      return `${years} years left`
+    case absYears > 1:
+      return `${absYears} years ${suffix}`
 
     default:
-      return `${days} days left`
+      return `${absDays} days ${suffix}`
   }
 }
 
@@ -108,18 +113,6 @@ function formatDateToString(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const year = date.getFullYear()
   return `${day}/${month}/${year}`
-}
-
-/**
- * Parse a date string in 'dd/MM/yyyy' format to a Date object
- * @param dateString Date string in 'dd/MM/yyyy' format
- * @param format Format string (unused, kept for compatibility)
- * @param baseDate Base date (unused, kept for compatibility)
- * @returns Parsed Date object
- */
-export function parse(dateString: string, format: string, baseDate: Date): Date {
-  const [day, month, year] = dateString.split('/').map(Number)
-  return new Date(year, month - 1, day)
 }
 
 /**
