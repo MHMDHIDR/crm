@@ -18,9 +18,6 @@ import {
   Users2
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { spec } from 'node:test/reporters'
-import { useEffect, useState } from 'react'
-import { getUnreadNotificationsCount } from '@/actions/notifications/notifications'
 import { NavMain } from '@/components/custom/nav-main'
 import { NavPinned } from '@/components/custom/nav-pinned'
 import { NavUser } from '@/components/custom/nav-user'
@@ -34,7 +31,7 @@ import {
   SidebarRail,
   useSidebar
 } from '@/components/ui/sidebar'
-import { ExtendedProject, Notification, UserSession } from '@/db/schema'
+import { ExtendedProject, UserSession } from '@/db/schema'
 import { useLocale } from '@/providers/locale-provider'
 
 export function DashboardSidebar({

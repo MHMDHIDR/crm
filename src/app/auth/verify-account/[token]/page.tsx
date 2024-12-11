@@ -1,6 +1,5 @@
 'use client'
 
-import { useLocale } from 'next-intl'
 import { redirect } from 'next/navigation'
 import { use, useEffect } from 'react'
 import { newVerification } from '@/actions/auth/new-verification'
