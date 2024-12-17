@@ -1,7 +1,6 @@
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { NextIntlClientProvider } from 'next-intl'
-import { getLocale, getMessages } from 'next-intl/server'
-import { getUserLanguage } from '@/actions/users/user-language'
+import { getMessages } from 'next-intl/server'
 import { env } from '@/env'
 import { Providers } from '@/providers'
 import { LocaleProvider } from '@/providers/locale-provider'
