@@ -46,7 +46,7 @@ type TableActions = {
   basePath: '/projects' | '/users' | '/clients' | '/events'
 }
 
-type SharedColumnsProps<T extends BaseEntity | ExtendedProject | Event> = {
+type SharedColumnsProps<_> = {
   entityType: 'users' | 'clients' | 'project' | 'events'
   actions: TableActions
 }
@@ -211,7 +211,7 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
         </Button>
       ),
       cell: ({ row }) => (
-        <Link href={`${actions.basePath}/${row.original.id}`} className='hover:underline'>
+        <Link href={`/dashboard${actions.basePath}/${row.original.id}`} className='hover:underline'>
           {row.getValue('email')}
         </Link>
       )
