@@ -24,7 +24,7 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/comp
 import { UserSession } from '@/db/schema'
 import { env } from '@/env'
 import { useToast } from '@/hooks/use-toast'
-import { Link, Locale, redirect } from '@/i18n/routing'
+import { Link, redirect } from '@/i18n/routing'
 import { useLocale } from '@/providers/locale-provider'
 import { userSchema } from '@/validators/user'
 
