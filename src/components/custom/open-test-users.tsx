@@ -19,7 +19,49 @@ import {
   TableRow
 } from '@/components/ui/table'
 
-export function OpenTestUsers() {
+export function OpenTestUsers({
+  setTestUser
+}: {
+  setTestUser: (value: { email: string; password: string }) => void
+}) {
+  const TestUsers = [
+    {
+      email: 'admin@crm.technodevlabs.com',
+      role: 'Admin',
+      password: 'mM@123123'
+    },
+    {
+      email: 'sup1@crm.technodevlabs.com',
+      role: 'Supervisor',
+      password: 'mM@123123'
+    },
+    {
+      email: 'sup2@crm.technodevlabs.com',
+      role: 'Supervisor',
+      password: 'mM@123123'
+    },
+    {
+      email: 'emp1@crm.technodevlabs.com',
+      role: 'Employee',
+      password: 'mM@123123'
+    },
+    {
+      email: 'emp2@crm.technodevlabs.com',
+      role: 'Employee',
+      password: 'mM@123123'
+    },
+    {
+      email: 'emp3@crm.technodevlabs.com',
+      role: 'Employee',
+      password: 'mM@123123'
+    },
+    {
+      email: 'emp4@crm.technodevlabs.com',
+      role: 'Employee',
+      password: 'mM@123123'
+    }
+  ]
+
   return (
     <div className='grid grid-cols-2 gap-2'>
       <Sheet key={'bottom'}>
@@ -44,41 +86,24 @@ export function OpenTestUsers() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className='font-medium'>admin@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Admin</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className='font-medium'>sup1@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Supervisor</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className='font-medium'>sup2@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Supervisor</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className='font-medium'>emp1@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Employee</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className='font-medium'>emp2@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Employee</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className='font-medium'>emp3@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Employee</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className='font-medium'>emp4@crm.technodevlabs.com</TableCell>
-                  <TableCell className='text-center'>Employee</TableCell>
-                  <TableCell className='text-center'>mM@123123</TableCell>
-                </TableRow>
+                {TestUsers.map((user, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell className='text-center'>{user.role}</TableCell>
+                    <TableCell className='text-center'>
+                      <SheetClose asChild>
+                        <Button
+                          variant='outline'
+                          onClick={() =>
+                            setTestUser({ email: user.email, password: user.password })
+                          }
+                        >
+                          Use This User
+                        </Button>
+                      </SheetClose>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>

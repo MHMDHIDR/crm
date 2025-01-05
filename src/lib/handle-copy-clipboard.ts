@@ -7,7 +7,7 @@ import { Error as ErrorIcon, Success } from '@/components/custom/icons'
  * @param code the string to be copied to the clipboard
  * @returns void
  * */
-export const handleCopyToClipboard = async (code: string) => {
+export async function handleCopyToClipboard(code: string) {
   try {
     await navigator.clipboard.writeText(code)
 

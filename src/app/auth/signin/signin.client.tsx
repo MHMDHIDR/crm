@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { authenticate } from '@/actions/auth/auth'
@@ -38,6 +38,7 @@ type SignInData = z.infer<typeof signInSchema>
 export default function SignInClientPage() {
   const toast = useToast()
   const [showTwoFactor, setShowTwoFactor] = useState(false)
+  const [testUser, setTestUser] = useState({ email: '', password: '' })
   const [isPending, startTransition] = useTransition()
   const { setTheme: setProviderTheme } = useTheme()
   const { setLocale, locale } = useLocale()
@@ -46,6 +47,13 @@ export default function SignInClientPage() {
     resolver: zodResolver(signInSchema),
     defaultValues: { email: '', password: '', code: '' }
   })
+
+  useEffect(() => {
+    if (testUser.email && testUser.password) {
+      form.setValue('email', testUser.email)
+      form.setValue('password', testUser.password)
+    }
+  }, [testUser, form])
 
   function onSubmit(data: SignInData) {
     startTransition(async () => {
@@ -102,7 +110,7 @@ export default function SignInClientPage() {
           )}
         </div>
 
-        <OpenTestUsers />
+        <OpenTestUsers setTestUser={setTestUser} />
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
