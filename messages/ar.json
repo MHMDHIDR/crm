@@ -203,6 +203,7 @@
     "tasks": {
       "breadcrumb": {
         "dashboard": "اللوحة الرئيسية",
+        "projects": "المشاريع",
         "title": "المهام"
       },
       "newTask": {

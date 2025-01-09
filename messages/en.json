@@ -203,6 +203,7 @@
     "tasks": {
       "breadcrumb": {
         "dashboard": "Main Dashboard",
+        "projects": "Projects",
         "title": "Tasks"
       },
       "newTask": {

@@ -391,6 +391,12 @@ export default function ProjectTasksClientPage({
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className='hidden sm:block' />
+              <BreadcrumbItem className='hidden sm:block'>
+                <BreadcrumbLink href='/dashboard/projects'>
+                  {tasksTranslation('breadcrumb.projects')}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className='hidden sm:block' />
               <BreadcrumbItem>{tasksTranslation('breadcrumb.title')}</BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
