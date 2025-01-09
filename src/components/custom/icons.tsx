@@ -1,6 +1,4 @@
-import { motion, useAnimation } from 'motion/react'
 import { cn } from '@/lib/cn'
-import type { Variants } from 'motion/react'
 
 /* eslint-disable max-lines */
 

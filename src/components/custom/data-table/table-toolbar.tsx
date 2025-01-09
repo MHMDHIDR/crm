@@ -65,13 +65,13 @@ export function TableToolbar<TData>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant='outline'>
-                {dashboardDatatableTranslation('bulkActions')}
+                {dashboardDatatableTranslation('extraActions')}
                 <SettingsIcon className='w-4 h-4 ml-2' />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className='space-y-1'>
               <DropdownMenuLabel className='text-center'>
-                {dashboardDatatableTranslation('bulkActions')}
+                {dashboardDatatableTranslation('extraActions')}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {bulkActions.map((action, index) => (
