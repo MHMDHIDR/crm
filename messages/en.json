@@ -526,7 +526,7 @@
       },
       "tableToolbar": {
         "search": "Search...",
-        "bulkActions": "Bulk Actions",
+        "extraActions": "Extra Actions",
         "columns": "Columns"
       },
       "ConfirmationDialog": {

@@ -120,13 +120,12 @@ export default async function DashboardPage() {
                   title='Total Employee Clients'
                   value={dashboardData.supervisorData.stats.totalClients}
                   icon={FileUser}
-                  subValue={`with a total of ${dashboardData.supervisorData.stats.totalProjects} projects`}
+                  subValue={`Total of ${dashboardData.supervisorData.stats.totalProjects} projects`}
                 />
               </Link>
             </>
           ) : null}
         </div>
-        <div className='min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min' />
       </div>
     </SidebarInset>
   )

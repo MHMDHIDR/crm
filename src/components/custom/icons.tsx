@@ -1,5 +1,6 @@
-// Get the icons from https://simpleicons.org/?q=icon_name
+import { motion, useAnimation } from 'motion/react'
 import { cn } from '@/lib/cn'
+import type { Variants } from 'motion/react'
 
 /* eslint-disable max-lines */
 

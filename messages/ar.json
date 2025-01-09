@@ -527,7 +527,7 @@
       },
       "tableToolbar": {
         "search": "بحث...",
-        "bulkActions": "إجراءات متعددة",
+        "extraActions": "إجراءات إضافية",
         "columns": "الأعمدة"
       },
       "ConfirmationDialog": {

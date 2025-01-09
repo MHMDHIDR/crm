@@ -405,7 +405,7 @@ export default function ProjectTasksClientPage({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='outline'>
-              {dashboardProjectsTranslation('bulkActions')}
+              {dashboardProjectsTranslation('extraActions')}
               <SettingsIcon className='w-4 h-4 ml-2' />
             </Button>
           </DropdownMenuTrigger>
