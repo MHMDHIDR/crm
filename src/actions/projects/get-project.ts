@@ -116,10 +116,7 @@ export async function getProjectById(
   try {
     const projectWithRelations = await database.query.projects.findFirst({
       where: eq(projects.id, projectId),
-      with: {
-        assignedEmployee: true,
-        client: true
-      }
+      with: { assignedEmployee: true, client: true }
     })
 
     if (!projectWithRelations) {

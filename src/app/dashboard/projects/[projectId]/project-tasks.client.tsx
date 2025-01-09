@@ -478,6 +478,9 @@ export default function ProjectTasksClientPage({
 
       <section className='relative'>
         <main className='w-full overflow-x-auto'>
+          <h1 className='text-xl text-center select-none my-3'>
+            <strong className='border-double border-4 p-2'>{project?.name}</strong>
+          </h1>
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className='flex justify-start min-w-max'>
               <div className='grid grid-cols-3 gap-6 mt-5 mb-10'>

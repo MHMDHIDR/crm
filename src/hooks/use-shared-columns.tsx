@@ -193,6 +193,14 @@ export function useSharedColumns<T extends BaseEntity | ExtendedProject | Event>
               {dashboardDataTableTranslations('headers.name')}
               <ArrowUpDown className='w-4 h-4 ml-2' />
             </Button>
+          ),
+          cell: ({ row }) => (
+            <Link
+              href={`/dashboard${actions.basePath}/${row.original.id}`}
+              className='hover:underline'
+            >
+              {row.getValue('name')}
+            </Link>
           )
         }
       ]
