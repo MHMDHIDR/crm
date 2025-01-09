@@ -15,39 +15,42 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { Link } from '@/i18n/routing'
 import type { ActiveEmployee } from '@/actions/supervisor/get-supervisor-stats.ts'
 
-type DashboardDataProps =
-  | {
-      ClientsCount: number
-      ProjectsCount: number
+type DashboardDataProps = {
+  employeeData?: {
+    ClientsCount: number
+    ProjectsCount: number
+  }
+  supervisorData?: {
+    activeEmployees: ActiveEmployee[]
+    stats: {
+      totalEmployees: number
+      totalProjects: number
+      totalTasks: number
+      totalClients: number
     }
-  | {
-      activeEmployees: ActiveEmployee[]
-      stats: {
-        totalEmployees: number
-        totalProjects: number
-        totalTasks: number
-        totalClients: number
-      }
-    }
-  | {}
+  }
+}
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user.id) return null
   const user = session.user
 
-  let dashboardData: DashboardDataProps = {}
+  const dashboardData: DashboardDataProps = {}
 
   if (user.role === 'Employee') {
     const { count: ClientsCount } = await getClientsByEmployeeId(user.id)
     const { count: ProjectsCount } = await getProjectsByEmployeeId(user.id)
-    dashboardData = { ClientsCount, ProjectsCount }
+    dashboardData.employeeData = { ClientsCount, ProjectsCount }
   } else if (['Admin', 'Supervisor'].includes(user.role)) {
     const { data: activeEmployees } = await getActiveEmployees(user.id)
     const { data: stats } = await getSupervisorEmployeeStats(user.id)
-    dashboardData = { activeEmployees, stats }
+    if (activeEmployees && stats) {
+      dashboardData.supervisorData = { activeEmployees, stats }
+    }
   }
 
   return (
@@ -67,28 +70,32 @@ export default async function DashboardPage() {
       </header>
       <div className='flex flex-col flex-1 p-4 pt-0 gap-4'>
         <div className='grid auto-rows-min gap-4 md:grid-cols-2'>
-          {user.role === 'Employee' ? (
+          {user.role === 'Employee' && dashboardData.employeeData ? (
             <>
-              <MetricCard
-                title='Clients'
-                value={(dashboardData as any).ClientsCount}
-                icon={FileUser}
-              />
-              <MetricCard
-                title='Projects'
-                value={(dashboardData as any).ProjectsCount}
-                icon={ShoppingBagIcon}
-              />
+              <Link href='/dashboard/clients'>
+                <MetricCard
+                  title='Clients'
+                  value={dashboardData.employeeData.ClientsCount}
+                  icon={FileUser}
+                />
+              </Link>
+              <Link href='/dashboard/projects'>
+                <MetricCard
+                  title='Projects'
+                  value={dashboardData.employeeData.ProjectsCount}
+                  icon={ShoppingBagIcon}
+                />
+              </Link>
             </>
-          ) : ['Admin', 'Supervisor'].includes(user.role) ? (
+          ) : ['Admin', 'Supervisor'].includes(user.role) && dashboardData.supervisorData ? (
             <>
               <MetricCard
                 title='Active Employees'
-                value={(dashboardData as any).activeEmployees?.length || 0}
+                value={dashboardData.supervisorData.activeEmployees.length}
                 icon={UserCheck}
               >
                 <div className='mt-4 space-y-2'>
-                  {(dashboardData as any).activeEmployees?.map((employee: any) => (
+                  {dashboardData.supervisorData.activeEmployees.map(employee => (
                     <div key={employee.id} className='text-sm'>
                       {employee.name} - {new Date(employee.signedInAt).toLocaleTimeString()}
                     </div>
@@ -97,20 +104,25 @@ export default async function DashboardPage() {
               </MetricCard>
               <MetricCard
                 title='Total Employees'
-                value={(dashboardData as any).stats?.totalEmployees || 0}
+                value={dashboardData.supervisorData.stats.totalEmployees}
                 icon={Users}
               />
-              <MetricCard
-                title='Employees Projects'
-                value={(dashboardData as any).stats?.totalProjects || 0}
-                icon={ShoppingBagIcon}
-                subValue={`Tasks: ${(dashboardData as any).stats?.totalTasks || 0}`}
-              />
-              <MetricCard
-                title='Total Employee Clients'
-                value={(dashboardData as any).stats?.totalClients || 0}
-                icon={FileUser}
-              />
+              <Link href='/dashboard/projects'>
+                <MetricCard
+                  title='Employees Projects'
+                  value={dashboardData.supervisorData.stats.totalProjects}
+                  icon={ShoppingBagIcon}
+                  subValue={`Tasks: ${dashboardData.supervisorData.stats.totalTasks}`}
+                />
+              </Link>
+              <Link href='/dashboard/clients'>
+                <MetricCard
+                  title='Total Employee Clients'
+                  value={dashboardData.supervisorData.stats.totalClients}
+                  icon={FileUser}
+                  subValue={`with a total of ${dashboardData.supervisorData.stats.totalProjects} projects`}
+                />
+              </Link>
             </>
           ) : null}
         </div>
