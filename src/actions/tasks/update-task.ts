@@ -47,7 +47,8 @@ export async function updateTask({
   title,
   description,
   dueDate,
-  status
+  status,
+  files
 }: UpdateTaskParams) {
   try {
     const [updatedTask] = await database
@@ -56,7 +57,8 @@ export async function updateTask({
         title,
         description,
         dueDate: new Date(dueDate),
-        status
+        status,
+        files: files || []
       })
       .where(eq(tasks.id, taskId))
       .returning()

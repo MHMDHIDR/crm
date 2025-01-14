@@ -39,20 +39,21 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from '@/components/ui/drawer'
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLink,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from '@/components/ui/sheet'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useToast } from '@/hooks/use-toast'
 import { clsx } from '@/lib/cn'
@@ -290,7 +291,30 @@ export default function ProjectTasksClientPage({
   async function handleUpdateTask(data: z.infer<typeof taskSchema>) {
     if (!selectedTask) return
 
-    await handleTaskOperation({ operation: () => updateTask({ ...data, taskId: selectedTask.id }) })
+    await handleTaskOperation({
+      operation: () => updateTask({ ...data, taskId: selectedTask.id }),
+      onSuccess: () => {
+        // Update the task in the UI
+        const updatedTasks = { ...tasks }
+        const taskStatus = selectedTask.status as keyof TasksByStatus
+        const taskIndex = updatedTasks[taskStatus].findIndex(task => task.id === selectedTask.id)
+
+        if (taskIndex !== -1) {
+          // Remove from old status
+          updatedTasks[taskStatus].splice(taskIndex, 1)
+
+          // Add to new status
+          const newStatus = data.status as keyof TasksByStatus
+          updatedTasks[newStatus].push({
+            ...selectedTask,
+            ...data,
+            files: data.files || []
+          })
+
+          setTasks(updatedTasks)
+        }
+      }
+    })
   }
 
   async function handleDeleteTask(taskId: Task['id']) {
@@ -437,8 +461,8 @@ export default function ProjectTasksClientPage({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Sheet open={isUpdateTaskSheetOpen} onOpenChange={handleSheetOpenChange}>
-          <SheetTrigger asChild>
+        <Drawer open={isUpdateTaskSheetOpen} onOpenChange={handleSheetOpenChange}>
+          <DrawerTrigger asChild>
             <Button
               className='text-green-50 bg-green-600 hover:bg-green-900'
               onClick={() => setSelectedTask(null)}
@@ -446,34 +470,36 @@ export default function ProjectTasksClientPage({
               <Notebook className='w-5 h-5' />
               <strong>{tasksTranslation('newTask.createTask')}</strong>
             </Button>
-          </SheetTrigger>
-          <SheetContent side='bottom'>
-            <SheetHeader>
-              <SheetTitle className='text-center md:text-2xl'>
+          </DrawerTrigger>
+          <DrawerContent className='max-h-[95vh]'>
+            <DrawerHeader>
+              <DrawerTitle className='text-center md:text-2xl'>
                 {selectedTask
                   ? tasksTranslation('updateTask')
                   : tasksTranslation('newTask.createTask')}
-              </SheetTitle>
-              <SheetDescription className='text-center'>
+              </DrawerTitle>
+              <DrawerDescription className='text-center'>
                 {selectedTask
                   ? tasksTranslation('newTask.sheet.updateDescription')
                   : tasksTranslation('newTask.sheet.createDescription')}
-              </SheetDescription>
-            </SheetHeader>
-            <TaskForm
-              onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
-              onSuccess={() => handleSheetOpenChange(false)}
-              onDelete={handleDeleteTask}
-              initialData={selectedTask || undefined}
-              submitButtonText={
-                selectedTask
-                  ? tasksTranslation('updateTask')
-                  : tasksTranslation('newTask.createTask')
-              }
-              isEditing={!!selectedTask}
-            />
-          </SheetContent>
-        </Sheet>
+              </DrawerDescription>
+            </DrawerHeader>
+            <ScrollArea className='overflow-y-auto'>
+              <TaskForm
+                onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
+                onSuccess={() => handleSheetOpenChange(false)}
+                onDelete={handleDeleteTask}
+                initialData={selectedTask || undefined}
+                submitButtonText={
+                  selectedTask
+                    ? tasksTranslation('updateTask')
+                    : tasksTranslation('newTask.createTask')
+                }
+                isEditing={!!selectedTask}
+              />
+            </ScrollArea>
+          </DrawerContent>
+        </Drawer>
       </header>
 
       <section className='relative'>

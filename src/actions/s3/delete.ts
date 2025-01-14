@@ -8,7 +8,6 @@ import {
 } from '@aws-sdk/client-s3'
 import { eq } from 'drizzle-orm'
 import { getTranslations } from 'next-intl/server'
-import { updateTask } from '@/actions/tasks/update-task'
 import { database } from '@/db'
 import { tasks } from '@/db/schema'
 import { env } from '@/env'
@@ -55,10 +54,10 @@ export async function deleteMultipleObjects({
       }
     }
 
-    return { success: true, message: tasksTranslations('imgsDeleted') }
+    return { success: true, message: tasksTranslations('filesDeleted') }
   } catch (error) {
     console.error('Error deleting files from S3:', error)
-    return { success: false, message: tasksTranslations('imgsFailedDelete') }
+    return { success: false, message: tasksTranslations('filesFailedDelete') }
   }
 }
 
@@ -75,23 +74,20 @@ export async function deleteSingleObject({
   const tasksTranslations = await getTranslations('dashboard.tasks.files')
 
   try {
-    // Extract the key and taskId from the fileUrl
-    const urlParts = fileUrl.split('/')
-    const taskId = urlParts[3] // The part after 'com/'
-    const key = urlParts.slice(3).join('/')
-    const decodedKey = decodeURI(key) //doing this because if the key has spaces and we need to remove the %20
+    // Extract the key from the S3 URL by getting everything after the bucket name
+    const bucketDomain = `${env.AWS_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com`
+    const key = decodeURI(fileUrl.split(bucketDomain + '/')[1])
 
-    if (!decodedKey || !taskId) {
+    if (!key) {
       return { success: false, message: tasksTranslations('invalidURL') }
     }
 
-    const deleteParams = {
-      Bucket: env.AWS_BUCKET_NAME,
-      Key: decodedKey
-    }
+    // Extract taskId from the key (first part of the path)
+    const taskId = key.split('/')[0]
 
-    const deleteCommand = new DeleteObjectCommand(deleteParams)
-    await s3Client.send(deleteCommand)
+    if (!taskId) {
+      return { success: false, message: tasksTranslations('invalidURL') }
+    }
 
     // Get the current task to get its existing files
     const currentTask = await database.query.tasks.findFirst({
@@ -102,24 +98,36 @@ export async function deleteSingleObject({
       return { success: false, message: tasksTranslations('projectFailedUpdate') }
     }
 
+    // Find the exact file URL in the task's files array
+    const fileExists = currentTask.files?.some(file => file === fileUrl)
+    if (!fileExists) {
+      return { success: false, message: tasksTranslations('invalidURL') }
+    }
+
+    // Delete from S3
+    const deleteParams = {
+      Bucket: env.AWS_BUCKET_NAME,
+      Key: key
+    }
+
+    const deleteCommand = new DeleteObjectCommand(deleteParams)
+    await s3Client.send(deleteCommand)
+
     // Update the task by removing the deleted file URL
     const updatedFiles = currentTask.files?.filter(file => file !== fileUrl) || []
-    const updateResult = await updateTask({
-      taskId,
-      title: currentTask.title,
-      description: currentTask.description,
-      dueDate: currentTask.dueDate,
-      status: currentTask.status,
-      files: updatedFiles
-    })
+    const [updatedTask] = await database
+      .update(tasks)
+      .set({ files: updatedFiles })
+      .where(eq(tasks.id, taskId))
+      .returning()
 
-    if (!updateResult.success) {
+    if (!updatedTask) {
       return { success: false, message: tasksTranslations('projectFailedUpdate') }
     }
 
-    return { success: true, message: tasksTranslations('imgDeleted') }
+    return { success: true, message: tasksTranslations('fileDeleted') }
   } catch (error) {
     console.error('Error deleting file from S3 or updating task:', error)
-    return { success: false, message: tasksTranslations('imgFailedDelete') }
+    return { success: false, message: tasksTranslations('fileFailedDelete') }
   }
 }

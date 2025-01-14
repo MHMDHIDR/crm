@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { TaskStatus, taskStatusEnum } from '@/db/schema'
 
 export const taskSchema = z.object({
+  id: z.string().optional(),
   title: z
     .string()
     .min(2, 'Title must be at least 2 characters')

@@ -77,6 +77,9 @@ export function TaskForm({
 
   async function handleSubmit(data: z.infer<typeof taskSchema>) {
     try {
+      // Generate taskId here for new tasks
+      const taskId = initialData?.id || crypto.randomUUID()
+
       const fileDataPromises = files.map(async file => {
         let base64: string
         if (await isImageFile(file.type)) {
@@ -118,13 +121,19 @@ export function TaskForm({
       // Upload files to S3 using the server action if there are files
       let uploadedUrls: string[] = []
       if (fileData.length > 0) {
-        uploadedUrls = await uploadFiles(fileData, initialData?.id || crypto.randomUUID())
+        uploadedUrls = await uploadFiles(fileData, taskId)
       }
 
       // Combine existing files with new uploaded files
       const allFiles = [...existingFiles, ...uploadedUrls]
 
-      onSubmit({ ...data, files: allFiles })
+      // For new tasks, include the generated taskId
+      if (!isEditing) {
+        onSubmit({ ...data, id: taskId, files: allFiles })
+      } else {
+        onSubmit({ ...data, files: allFiles })
+      }
+
       onSuccess?.()
       if (!isEditing) {
         form.reset()
@@ -163,7 +172,7 @@ export function TaskForm({
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6 sm:px-8 px-3 pb-10'>
           <FormField
             control={form.control}
             name='title'
@@ -263,7 +272,7 @@ export function TaskForm({
           <FormField
             control={form.control}
             name='files'
-            render={({ field }) => (
+            render={() => (
               <FormItem>
                 <FormLabel>{tasksTranslation('newTask.files')}</FormLabel>
                 <FileUpload

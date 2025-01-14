@@ -232,10 +232,10 @@
         "dragAndDropFiles": "Drag and drop files here, or click to select files",
         "selectedFiles_Single": "{count} file selected",
         "selectedFiles_Multiple": "{count} files selected",
-        "imgDeleted": "File deleted from S3 and project updated successfully",
-        "imgsDeleted": "All project files deleted successfully from S3",
-        "imgFailedDelete": "Failed to delete file from S3 or update project",
-        "imgsFailedDelete": "Failed to delete project files from S3",
+        "fileDeleted": "File deleted from S3 and project updated successfully",
+        "filesDeleted": "All project files deleted successfully from S3",
+        "fileFailedDelete": "Failed to delete file from S3 or update project",
+        "filesFailedDelete": "Failed to delete project files from S3",
         "projectFailedUpdate": "File deleted from S3, but failed to update project",
         "invalidURL": "OOPS!, Invalid image URL"
       }
