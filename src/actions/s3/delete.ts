@@ -76,7 +76,7 @@ export async function deleteSingleObject({
   try {
     // Extract the key from the S3 URL by getting everything after the bucket name
     const bucketDomain = `${env.AWS_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com`
-    const key = decodeURI(fileUrl.split(bucketDomain + '/')[1])
+    const key = decodeURI(fileUrl.split(`${bucketDomain}/`)[1])
 
     if (!key) {
       return { success: false, message: tasksTranslations('invalidURL') }
