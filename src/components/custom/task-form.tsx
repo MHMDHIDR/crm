@@ -1,9 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarIcon, Trash2Icon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { isImageFile, optimizeImage } from '@/actions/s3/optimize-image'
+import { uploadFiles } from '@/actions/s3/upload'
 import { deleteTasks } from '@/actions/tasks/delete-task'
 import { ConfirmationDialog } from '@/components/custom/confirmation-dialog'
 import { Button } from '@/components/ui/button'
@@ -27,10 +29,10 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { TaskStatus } from '@/db/schema'
-import { useToast } from '@/hooks/use-toast'
-import { clsx, cn } from '@/lib/cn'
+import { clsx } from '@/lib/cn'
 import { formatDate } from '@/lib/format-date'
 import { getInitialProjectValues, taskSchema, TaskSchemaType } from '@/validators/task'
+import { FileUpload } from './file-upload'
 import type { Task } from '@/db/schema'
 
 type TaskFormProps = {
@@ -52,19 +54,99 @@ export function TaskForm({
   isEditing = false
 }: TaskFormProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [files, setFiles] = useState<Array<File>>([])
+  const [existingFiles, setExistingFiles] = useState<string[]>([])
   const tasksTranslation = useTranslations('dashboard.tasks')
+
+  // Initialize existingFiles when initialData changes
+  useEffect(() => {
+    if (initialData?.files) {
+      setExistingFiles(initialData.files)
+    }
+  }, [initialData])
 
   const form = useForm<TaskSchemaType>({
     resolver: zodResolver(taskSchema),
-    defaultValues: initialData || getInitialProjectValues()
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          files: initialData.files || []
+        }
+      : getInitialProjectValues()
   })
 
   async function handleSubmit(data: z.infer<typeof taskSchema>) {
-    onSubmit(data)
-    onSuccess?.()
-    if (!isEditing) {
-      form.reset()
+    try {
+      const fileDataPromises = files.map(async file => {
+        let base64: string
+        if (await isImageFile(file.type)) {
+          // If it's an image, optimize it and convert to webp
+          base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = () => resolve(reader.result as string)
+            reader.onerror = reject
+            reader.readAsDataURL(file)
+          })
+          base64 = await optimizeImage(base64, 70)
+          return {
+            name: file.name.replace(/\.[^.]+$/, '.webp'),
+            type: 'image/webp',
+            size: base64.length,
+            lastModified: file.lastModified,
+            base64
+          }
+        } else {
+          // If it's not an image, just convert to base64
+          base64 = await new Promise<string>((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = () => resolve(reader.result as string)
+            reader.onerror = reject
+            reader.readAsDataURL(file)
+          })
+          return {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lastModified: file.lastModified,
+            base64
+          }
+        }
+      })
+
+      const fileData = await Promise.all(fileDataPromises)
+
+      // Upload files to S3 using the server action if there are files
+      let uploadedUrls: string[] = []
+      if (fileData.length > 0) {
+        uploadedUrls = await uploadFiles(fileData, initialData?.id || crypto.randomUUID())
+      }
+
+      // Combine existing files with new uploaded files
+      const allFiles = [...existingFiles, ...uploadedUrls]
+
+      onSubmit({ ...data, files: allFiles })
+      onSuccess?.()
+      if (!isEditing) {
+        form.reset()
+        setFiles([])
+        setExistingFiles([])
+      }
+    } catch (error) {
+      console.error('Error handling file upload:', error)
+      throw error
     }
+  }
+
+  const handleFilesSelected = (selectedFiles: Array<File>) => {
+    setFiles(selectedFiles)
+  }
+
+  const handleExistingFileDelete = (fileUrl: string) => {
+    setExistingFiles(prev => prev.filter(file => file !== fileUrl))
+    form.setValue(
+      'files',
+      existingFiles.filter(file => file !== fileUrl)
+    )
   }
 
   async function handleDeleteConfirm() {
@@ -173,6 +255,22 @@ export function TaskForm({
                     </SelectItem>
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='files'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{tasksTranslation('newTask.files')}</FormLabel>
+                <FileUpload
+                  onFilesSelected={handleFilesSelected}
+                  existingFiles={existingFiles}
+                  onExistingFileDelete={handleExistingFileDelete}
+                />
                 <FormMessage />
               </FormItem>
             )}

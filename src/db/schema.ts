@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import { boolean, pgEnum, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core'
 
 export const UserRole = { ADMIN: 'Admin', SUPERVISOR: 'Supervisor', EMPLOYEE: 'Employee' } as const
@@ -234,6 +234,10 @@ export const tasks = pgTable('tasks', {
   projectId: text('project_id')
     .notNull()
     .references(() => projects.id, { onDelete: 'cascade' }),
+  files: text('files')
+    .array()
+    // .notNull()
+    .default(sql`ARRAY[]::text[]`),
   assignedEmployeeId: text('assigned_employee_id')
     .notNull()
     .references(() => users.id, { onDelete: 'set null' })

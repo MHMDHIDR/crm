@@ -17,7 +17,8 @@ export const taskSchema = z.object({
   status: z.enum(taskStatusEnum.enumValues, {
     required_error: 'Status is required',
     invalid_type_error: 'Invalid status selected'
-  })
+  }),
+  files: z.array(z.string()).optional()
 })
 
 export type TaskSchemaType = z.infer<typeof taskSchema>
@@ -27,5 +28,6 @@ export const getInitialProjectValues = (): TaskSchemaType => ({
   title: '',
   description: '',
   dueDate: new Date(),
-  status: TaskStatus.PENDING
+  status: TaskStatus.PENDING,
+  files: []
 })

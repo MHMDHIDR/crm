@@ -212,6 +212,7 @@
         "dueDate": "تاريخ الانتهاء",
         "pickDate": "اختر تاريخاً",
         "status": "الحالة",
+        "files": "ملفات",
         "createTask": "إنشاء مهمة",
         "sheet": {
           "createDescription": "الرجاء إدخال تفاصيل المهمة.",
@@ -225,7 +226,19 @@
       "inProgress": "قيد التنفيذ",
       "completed": "منجز",
       "updateProject": "تحديث المشروع",
-      "updateProjectDetails": "تحديث تفاصيل المشروع"
+      "updateProjectDetails": "تحديث تفاصيل المشروع",
+      "files": {
+        "dropFilesHere": "اسحب وأسقط الملفات هنا",
+        "dragAndDropFiles": "اسحب وأسقط الملفات هنا، أو انقر لتحديد الملفات",
+        "selectedFiles_Single": "{count} ملف محددة",
+        "selectedFiles_Multiple": "{count} ملفات محددة",
+        "fileDeleted": "تم حذف الملف بنجاح من S3",
+        "filesDeleted": "تم حذف ملفات المشروع بنجاح من S3",
+        "fileFailedDelete": "فشل حذف الملف من S3",
+        "filesFailedDelete": "فشل حذف ملفات المشروع من S3",
+        "projectFailedUpdate": "فشل تحديث ملفات المشروع",
+        "invalidURL": "الرجاء إدخال رابط صالح"
+      }
     },
     "clients": {
       "breadcrumb": {
