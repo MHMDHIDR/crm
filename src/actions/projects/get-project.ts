@@ -23,15 +23,16 @@ export async function getProjects(projectId?: Project['id']): Promise<{
 }> {
   try {
     const session = await auth()
-    if (!session) {
-      return { success: false, error: 'You must be logged in to fetch projects' }
+    const user = session?.user
+    if (!user) {
+      return { success: false, error: 'Unauthorized' }
     }
 
-    const role = session.user.role
-    const userId = session.user.id
+    const role = user.role
+    const userId = user.id
 
     // This is to get the client count of the Employee themselves
-    const { count: clientCount } = await getClientsByEmployeeId(session.user.id)
+    const { count: clientCount } = await getClientsByEmployeeId(user.id)
 
     if (!clientCount && !['Admin', 'Supervisor'].includes(role)) {
       return { success: false, error: 'no clients' }
@@ -114,6 +115,13 @@ export async function getProjectById(
   projectId: Project['id']
 ): Promise<{ success: boolean; data?: ExtendedProject; error?: string }> {
   try {
+    const session = await auth()
+    const user = session?.user
+    if (!user) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    // First get the project with its relations
     const projectWithRelations = await database.query.projects.findFirst({
       where: eq(projects.id, projectId),
       with: { assignedEmployee: true, client: true }
@@ -121,6 +129,28 @@ export async function getProjectById(
 
     if (!projectWithRelations) {
       return { success: false, error: 'Project not found' }
+    }
+
+    // Check access permissions
+    const canAccess = async () => {
+      // Admins and assigned employee can access all projects
+      if (user.role === 'Admin' || projectWithRelations.assignedEmployeeId === user.id) return true
+
+      // Check if user is the supervisor of the assignedEmployee
+      const assignedEmployee = await database.query.users.findFirst({
+        where: eq(users.id, projectWithRelations.assignedEmployeeId),
+        columns: { supervisorId: true }
+      })
+
+      // User is the supervisor of the assigned employee
+      if (assignedEmployee?.supervisorId === user.id) return true
+
+      return false
+    }
+    const canAccessProject = await canAccess()
+
+    if (!canAccessProject) {
+      return { success: false, error: 'You do not have permission to view this project' }
     }
 
     const extendedProject: ExtendedProject = {

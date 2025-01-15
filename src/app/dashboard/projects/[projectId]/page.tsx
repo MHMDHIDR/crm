@@ -1,7 +1,9 @@
+import { getLocale } from 'next-intl/server'
 import { getProjectById } from '@/actions/projects/get-project'
 import { getTasksByStatus } from '@/actions/tasks/get-task'
 import ProjectTasksClientPage from '@/app/dashboard/projects/[projectId]/project-tasks.client'
 import { env } from '@/env'
+import { redirect } from '@/i18n/routing'
 import type { Project } from '@/db/schema'
 import type { Metadata } from 'next'
 
@@ -25,6 +27,7 @@ export default async function ProjectTasksPage({
   params: Promise<{ projectId: Project['id'] }>
 }) {
   const { projectId } = await params
+  const locale = await getLocale()
 
   const [projectResult, tasksByStatus] = await Promise.all([
     getProjectById(projectId),
@@ -37,7 +40,9 @@ export default async function ProjectTasksPage({
     completed: tasksByStatus.data?.completed.length ?? 0
   }
 
-  return (
+  return !projectResult.success ? (
+    redirect({ href: '/dashboard/projects', locale })
+  ) : (
     <ProjectTasksClientPage
       projectId={projectId}
       initialProject={projectResult.data}

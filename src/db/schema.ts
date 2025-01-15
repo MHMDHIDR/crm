@@ -236,7 +236,7 @@ export const tasks = pgTable('tasks', {
     .references(() => projects.id, { onDelete: 'cascade' }),
   files: text('files')
     .array()
-    // .notNull()
+    .notNull()
     .default(sql`ARRAY[]::text[]`),
   assignedEmployeeId: text('assigned_employee_id')
     .notNull()
