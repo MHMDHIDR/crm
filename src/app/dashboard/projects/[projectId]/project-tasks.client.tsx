@@ -2,7 +2,7 @@
 
 import { Notebook, PenBoxIcon, SettingsIcon, ShoppingBagIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { z } from 'zod'
 import { getProjectById } from '@/actions/projects/get-project'
@@ -99,15 +99,14 @@ function TaskCard({
 }) {
   const { locale } = useLocale()
   const isPastDue = new Date(task.dueDate).getTime() - new Date().getTime() < 0
+  const isDone = task.status === 'completed'
 
   return (
     <Card
       className={clsx(
         className,
         'relative rounded-lg cursor-grab dark:hover:border-rose-900 hover:border-rose-200 hover:border-dashed hover:shadow-md min-w-80 max-w-[21rem] h-28 overflow-hidden',
-        {
-          'bg-red-100 dark:bg-red-950': isPastDue
-        }
+        { 'bg-red-100 dark:bg-red-950': isPastDue, 'bg-green-100 dark:bg-green-950': isDone }
       )}
       title={task.title}
     >
@@ -334,7 +333,10 @@ export default function ProjectTasksClientPage({
 
     const newTasks = { ...tasks }
     const [movedTask] = newTasks[sourceColumn].splice(source.index, 1)
-    newTasks[destinationColumn].splice(destination.index, 0, movedTask)
+    // Get the Updated task's status before adding the new column
+    const updatedTask = { ...movedTask, status: destinationColumn }
+
+    newTasks[destinationColumn].splice(destination.index, 0, updatedTask)
 
     setTasks(newTasks)
 
@@ -343,6 +345,8 @@ export default function ProjectTasksClientPage({
       toast.success(`Updated to ${destinationColumn}`)
     } else {
       toast.error('Failed to update task status')
+      const revertTasks = { ...tasks }
+      setTasks(revertTasks)
     }
   }
 
