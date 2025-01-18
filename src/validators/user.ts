@@ -28,7 +28,7 @@ export const userSchema = z.object({
 
   supervisorId: z.string(),
 
-  image: z.string().url('Please enter a valid URL for the image')
+  image: z.string().optional()
 })
 
 // Export the type for use in components

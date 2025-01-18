@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { addEvent } from '@/actions/events/add-event'
 import { database } from '@/db'
 import { users } from '@/db/schema'
+import { env } from '@/env'
 import { hashedString } from '@/lib/crypt'
 import { sendVerificationEmail } from '@/lib/mail'
 import { generateVerificationToken } from '@/lib/tokens'
@@ -38,7 +39,7 @@ export async function createUser(data: UserSchemaType): Promise<CreateUserResult
         name: validatedData.name,
         email: validatedData.email,
         role: validatedData.role,
-        image: validatedData.image,
+        image: validatedData.image ?? env.NEXT_PUBLIC_LOGO_URL,
         hashedPassword,
         supervisorId: validatedData.supervisorId
       })
