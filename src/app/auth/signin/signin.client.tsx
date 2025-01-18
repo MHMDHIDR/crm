@@ -110,7 +110,7 @@ export default function SignInClientPage() {
           )}
         </div>
 
-        <OpenTestUsers setTestUser={setTestUser} />
+        {!showTwoFactor && <OpenTestUsers setTestUser={setTestUser} />}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
