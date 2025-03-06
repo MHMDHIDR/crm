@@ -15,7 +15,7 @@ import {
 import { UserPreferences } from '@/db/schema'
 import { useToast } from '@/hooks/use-toast'
 import { Locale } from '@/i18n/routing'
-import { getCookie } from '@/lib/get-cookies'
+import { getCookie } from '@/lib/cookies'
 import { useLocale } from '@/providers/locale-provider'
 
 export default function LanguageSelector() {

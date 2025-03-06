@@ -14,13 +14,17 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { useToast } from '@/hooks/use-toast'
+import { getCookie, setCookie } from '@/lib/cookies'
 import type { Notification } from '@/db/schema'
+
+const COOKIE_NAME = 'NOTIFICATION_DISMISSED'
 
 export default function NotificationHandler({ notifications }: { notifications: Notification[] }) {
   const notificationTranslations = useTranslations('dashboard.notifications')
   const toast = useToast()
   const [permission, setPermission] = useState('default')
   const [showDialog, setShowDialog] = useState(false)
+  const [hasDismissed, setHasDismissed] = useState(() => getCookie(COOKIE_NAME))
 
   // Move showNotification into useCallback to prevent recreation on every render
   const showNotification = useCallback(
@@ -77,11 +81,11 @@ export default function NotificationHandler({ notifications }: { notifications: 
     const currentPermission = Notification.permission
     setPermission(currentPermission)
 
-    // Show dialog if permission is not granted
-    if (currentPermission !== 'granted') {
+    // Show dialog if permission is not granted and user hasn't dismissed it
+    if (currentPermission !== 'granted' && !hasDismissed) {
       setShowDialog(true)
     }
-  }, [toast])
+  }, [toast, hasDismissed])
 
   // Separate useEffect for handling notifications
   useEffect(() => {
@@ -95,7 +99,16 @@ export default function NotificationHandler({ notifications }: { notifications: 
   }, [notifications, showNotification, permission])
 
   return (
-    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+    <AlertDialog
+      open={showDialog}
+      onOpenChange={open => {
+        setShowDialog(open)
+        if (!open) {
+          setHasDismissed(true)
+          setCookie(COOKIE_NAME, true)
+        }
+      }}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className='flex items-center gap-2'>
